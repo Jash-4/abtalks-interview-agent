@@ -1,0 +1,47 @@
+{
+  "program": "31-Day Enterprise AI Engineering Cohort",
+  "modules": [
+    {
+      "module_id": "MOD_01",
+      "name": "Prompt Engineering & LLM Fundamentals",
+      "days": [1, 2, 3, 4, 5],
+      "topics": ["Few-shot & Chain-of-Thought", "Structured Outputs with JSON Schema", "System Instructions & Jailbreak Defense", "Tokenization & Context Windows", "Temperature & Top-p Sampling"],
+      "learning_objectives": "Master deterministic LLM steering, prompt chaining, and schema validation."
+    },
+    {
+      "module_id": "MOD_02",
+      "name": "Retrieval-Augmented Generation (RAG) & Embeddings",
+      "days": [6, 7, 8, 9, 10, 11, 12],
+      "topics": ["Chunking Strategies (Semantic vs Fixed)", "Dense Embeddings & Cosine Distance", "Hybrid Search (BM25 + Dense)", "Re-ranking with Cross-Encoders", "RAG Triad & Hallucination Mitigation", "Context Compression & Lost in the Middle"],
+      "learning_objectives": "Build production-grade ingestion pipelines with high retrieval precision and sub-200ms latency."
+    },
+    {
+      "module_id": "MOD_03",
+      "name": "Vector Databases & Indexing Internals",
+      "days": [13, 14, 15, 16, 17],
+      "topics": ["HNSW Graphs vs IVF Indexing", "Quantization (PQ & SQ)", "Metadata Filtering & Payload Indexing", "Distributed Sharding & Vector Replication", "Vector Store Benchmarking (QPS vs Recall)"],
+      "learning_objectives": "Understand vector storage trade-offs at million-scale dimensions."
+    },
+    {
+      "module_id": "MOD_04",
+      "name": "Agentic AI & Tool Calling Orchestration",
+      "days": [18, 19, 20, 21, 22, 23],
+      "topics": ["ReAct Loop (Reasoning + Acting)", "Multi-Agent Supervisor & Worker Topology", "State Machines & Human-in-the-Loop", "Plan-and-Solve & Reflection Agents", "Error Recovery & Retry Circuit Breakers"],
+      "learning_objectives": "Design autonomous multi-agent systems with self-correction and memory persistence."
+    },
+    {
+      "module_id": "MOD_05",
+      "name": "Model Context Protocol (MCP) & Custom Tools",
+      "days": [24, 25, 26, 27],
+      "topics": ["MCP Architecture (Host, Client, Server)", "JSON-RPC Protocol & Tool Definitions", "Dynamic Resource Fetching via MCP", "Prompt Templates over MCP", "Security & Permission Boundaries in MCP"],
+      "learning_objectives": "Standardize LLM tool execution using Model Context Protocol."
+    },
+    {
+      "module_id": "MOD_06",
+      "name": "AI Deployment & Production Systems",
+      "days": [28, 29, 30, 31],
+      "topics": ["vLLM & TensorRT-LLM Serving", "TTFT & TPOT Latency Optimization", "Semantic Caching (Redis/GPTCache)", "Telemetry, Tracing & OpenTelemetry", "LLM Guardrails & Red Teaming"],
+      "learning_objectives": "Deploy resilient, scalable AI infrastructure with real-time observability."
+    }
+  ]
+}

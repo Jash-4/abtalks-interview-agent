@@ -20,18 +20,18 @@ export class InterviewStateMachine {
   }
 
   /**
-   * Initializes a new candidate interview session
+   * Initializes a new candidate interview session grounded on the 31-Day AI Cohort
    */
   public async createSession(profile: CandidateProfile): Promise<InterviewSession> {
     const sessionId = `sess_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
     
-    // Simulate MCP GitHub inspection right at session start
+    // Simulate MCP tool invocation on candidate GitHub
     const mcpData = await MockGithubMcpService.inspectRepository(
       profile.githubUsername || profile.name.toLowerCase().replace(/\s+/g, '-'),
       profile.role
     );
 
-    const initialRubrics = RubricKnowledgeBase.retrieveRelevantRubrics(profile.role, 3);
+    const initialRubrics = RubricKnowledgeBase.retrieveRelevantRubrics('rag hybrid vector agent mcp', 4);
 
     const session: InterviewSession = {
       sessionId,
@@ -42,18 +42,18 @@ export class InterviewStateMachine {
       mcpData,
       rubricsRetrieved: initialRubrics,
       scoresAccumulated: {
-        technical: [85],
-        architecture: [82],
-        problemSolving: [88],
-        communication: [85],
-        codeCraft: [84],
-        domain: [83]
+        technical: [86],
+        architecture: [85],
+        problemSolving: [89],
+        communication: [86],
+        codeCraft: [85],
+        domain: [88]
       },
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
 
-    // Generate initial greeting message from FAANG EM
+    // Initial greeting from FAANG EM introducing Module 2 (RAG & Hybrid Search)
     const greeting = await this.agentEngine.generateResponse({
       persona: 'FAANG_EM',
       candidate: profile,
@@ -61,7 +61,8 @@ export class InterviewStateMachine {
       conversationHistory: [],
       rubrics: initialRubrics,
       mcpContext: mcpData,
-      isGreeting: true
+      isGreeting: true,
+      currentModule: 'RAG_EMBEDDINGS'
     });
 
     const greetingMsg: ChatMessage = {
@@ -84,7 +85,8 @@ export class InterviewStateMachine {
   }
 
   /**
-   * Processes a candidate reply, dynamically updates phases, retrieves RAG rubrics, and triggers appropriate persona
+   * Processes a candidate message, progresses through Cohort Modules (RAG, Vector DBs, Agents, MCP, vLLM),
+   * and dynamically updates the RAG rubrics and score metrics.
    */
   public async processCandidateMessage(sessionId: string, userText: string, codeSnippet?: string): Promise<{
     session: InterviewSession;
@@ -96,7 +98,7 @@ export class InterviewStateMachine {
       throw new Error(`Interview session '${sessionId}' not found.`);
     }
 
-    // 1. Record User Message
+    // 1. Record Candidate Turn
     const userMsg: ChatMessage = {
       id: `msg_${Date.now()}_u`,
       sender: 'user',
@@ -107,7 +109,7 @@ export class InterviewStateMachine {
     };
     session.history.push(userMsg);
 
-    // 2. RAG Semantic Retrieval: Find relevant rubrics based on user's answer
+    // 2. RAG Semantic Retrieval based on response context
     const contextText = `${userText} ${codeSnippet || ''}`;
     const dynamicRubrics = RubricKnowledgeBase.retrieveRelevantRubrics(contextText, 2);
     dynamicRubrics.forEach(r => {
@@ -116,41 +118,52 @@ export class InterviewStateMachine {
       }
     });
 
-    // 3. Dynamic Score Update based on keyword richness and depth
+    // 3. Dynamic Score Evaluation
     const words = userText.toLowerCase();
-    if (words.includes('lock') || words.includes('mutex') || words.includes('atomic') || words.includes('isolate')) {
+    if (words.includes('bm25') || words.includes('dense') || words.includes('rrf') || words.includes('chunk')) {
       session.scoresAccumulated.technical.push(92);
     }
-    if (words.includes('cache') || words.includes('redis') || words.includes('rate limit') || words.includes('sliding')) {
+    if (words.includes('hnsw') || words.includes('ivf') || words.includes('quantization') || words.includes('pq')) {
       session.scoresAccumulated.architecture.push(90);
     }
-    if (words.includes('tradeoff') || words.includes('latency') || words.includes('scale') || words.includes('degrade')) {
+    if (words.includes('react') || words.includes('supervisor') || words.includes('circuit') || words.includes('mcp')) {
       session.scoresAccumulated.problemSolving.push(94);
     }
-    if (userText.length > 150) {
+    if (words.includes('vllm') || words.includes('pagedattention') || words.includes('ttft') || words.includes('cache')) {
+      session.scoresAccumulated.technical.push(93);
+    }
+    if (userText.length > 120) {
       session.scoresAccumulated.communication.push(88);
     }
 
-    // 4. State Machine Phase Progression
+    // 4. Cohort Curriculum Multi-Turn State Machine Progression
     const candidateTurnCount = session.history.filter(m => m.sender === 'user').length;
     let isFinished = false;
+    let currentModule = 'RAG_EMBEDDINGS';
 
     if (candidateTurnCount === 1) {
-      session.currentPhase = 'TECHNICAL_CORE';
+      session.currentPhase = 'TECHNICAL_CORE'; // Days 13-17: Vector Databases & HNSW
+      currentModule = 'VECTOR_INDEXING';
       session.activePersona = 'FAANG_EM';
     } else if (candidateTurnCount === 2) {
-      session.currentPhase = 'SYSTEM_DESIGN_CODE';
+      session.currentPhase = 'SYSTEM_DESIGN_CODE'; // Days 18-23: Agentic ReAct & Tool Orchestration
+      currentModule = 'AGENTIC_AI';
       session.activePersona = 'FAANG_EM';
     } else if (candidateTurnCount === 3) {
-      session.currentPhase = 'MCP_CODE_REVIEW';
+      session.currentPhase = 'MCP_CODE_REVIEW'; // Days 24-27: Model Context Protocol (MCP)
+      currentModule = 'MCP_PROTOCOL';
       session.activePersona = 'FAANG_EM';
-    } else if (candidateTurnCount >= 4) {
+    } else if (candidateTurnCount === 4) {
+      session.currentPhase = 'SYSTEM_DESIGN_CODE'; // Days 28-31: vLLM & Production Serving
+      currentModule = 'PRODUCTION_SERVING';
+      session.activePersona = 'FAANG_EM';
+    } else if (candidateTurnCount >= 5) {
       session.currentPhase = 'CAREER_SYNTHESIS';
-      session.activePersona = 'ABTALKS_MENTOR'; // Switch to ABTalks Anil Bajpai persona!
+      session.activePersona = 'ABTALKS_MENTOR'; // Switch to Anil Bajpai Career Mentor!
       isFinished = true;
     }
 
-    // 5. Generate Agent Response
+    // 5. Generate Persona Response
     const response = await this.agentEngine.generateResponse({
       persona: session.activePersona,
       candidate: session.candidate,
@@ -159,7 +172,8 @@ export class InterviewStateMachine {
       rubrics: session.rubricsRetrieved,
       mcpContext: session.mcpData,
       isCodeChallenge: session.currentPhase === 'SYSTEM_DESIGN_CODE',
-      isWrapUp: session.currentPhase === 'CAREER_SYNTHESIS'
+      isWrapUp: session.currentPhase === 'CAREER_SYNTHESIS',
+      currentModule: currentModule
     });
 
     const agentMsg: ChatMessage = {
@@ -169,12 +183,12 @@ export class InterviewStateMachine {
       text: response.reply,
       timestamp: new Date().toISOString(),
       phase: session.currentPhase,
-      mcpContextUsed: session.currentPhase === 'MCP_CODE_REVIEW'
+      mcpContextUsed: currentModule === 'MCP_PROTOCOL'
     };
 
     session.history.push(agentMsg);
 
-    // 6. Generate final report if complete
+    // 6. Generate final report if wrap-up reached
     if (isFinished || session.currentPhase === 'CAREER_SYNTHESIS') {
       session.finalReport = InterviewEvaluator.generateStructuredReport(session);
       session.currentPhase = 'COMPLETED';
@@ -188,9 +202,6 @@ export class InterviewStateMachine {
     };
   }
 
-  /**
-   * Triggers explicit completion and returns the final JSON scorecard
-   */
   public finalizeInterview(sessionId: string): StructuredInterviewReport {
     const session = this.sessions.get(sessionId);
     if (!session) {

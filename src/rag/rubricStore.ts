@@ -3,92 +3,84 @@ import { RubricCriteria } from '../types';
 /**
  * Rubric Knowledge Base & Retrieval-Augmented Generation (RAG) Store.
  * 
- * Provides vector-like semantic matching against FAANG grading benchmarks
- * and ABTalks readiness standards to ground the agent's grading.
+ * Specifically grounded on the 31-Day Enterprise AI Engineering Cohort curriculum:
+ * - Module 1: Prompt Engineering & Deterministic LLMs (Days 1-5)
+ * - Module 2: Retrieval-Augmented Generation & Embeddings (Days 6-12)
+ * - Module 3: Vector Databases & Indexing Internals (Days 13-17)
+ * - Module 4: Agentic AI & Tool Calling Orchestration (Days 18-23)
+ * - Module 5: Model Context Protocol (MCP) & Custom Tools (Days 24-27)
+ * - Module 6: Production AI Systems, vLLM & Deployment (Days 28-31)
  */
 export class RubricKnowledgeBase {
   private static rubrics: RubricCriteria[] = [
     {
-      id: 'rubric_concurrency_01',
-      category: 'concurrency',
-      topic: 'Race Conditions & Distributed Locks',
-      difficulty: 'Senior',
-      expectedKeywords: ['mutex', 'distributed lock', 'redis redlock', 'optimistic locking', 'isolation level', 'deadlock prevention'],
-      evaluationGuide: 'Check if candidate understands atomicity, avoids naive check-then-act, mentions database transaction isolation (e.g. SERIALIZABLE or Repeatable Read), and selects appropriate distributed coordination.',
-      weight: 1.2
-    },
-    {
-      id: 'rubric_system_arch_02',
+      id: 'rubric_rag_01',
       category: 'system_architecture',
-      topic: 'API Rate Limiting & High Throughput Ingestion',
+      topic: 'Hybrid Search (BM25 + Dense) & Reciprocal Rank Fusion',
       difficulty: 'Senior',
-      expectedKeywords: ['token bucket', 'leaky bucket', 'sliding window counter', 'redis cluster', 'backpressure', 'circuit breaker'],
-      evaluationGuide: 'Look for understanding of token bucket vs sliding window algorithms, Redis atomic scripts (Lua), and how to return HTTP 429 Retry-After headers gracefully without overwhelming downstream services.',
-      weight: 1.15
-    },
-    {
-      id: 'rubric_data_structures_03',
-      category: 'data_structures',
-      topic: 'Caching Strategies & Cache Invalidation',
-      difficulty: 'Mid',
-      expectedKeywords: ['lru', 'write-through', 'cache-aside', 'ttl', 'thundering herd', 'bloom filter', 'eviction policy'],
-      evaluationGuide: 'Candidate must explain difference between Cache-Aside and Write-Through, address cache stampede / thundering herd (e.g., probabilistic early expiration or mutex locks), and space complexity.',
-      weight: 1.0
-    },
-    {
-      id: 'rubric_problem_solving_04',
-      category: 'problem_solving',
-      topic: 'Edge Case Probing & Tradeoff Analysis',
-      difficulty: 'Senior',
-      expectedKeywords: ['graceful degradation', 'fallbacks', 'latency vs consistency', 'cap theorem', 'memory leaks', 'monitoring/telemetry'],
-      evaluationGuide: 'Does candidate volunteer tradeoffs before being asked? Do they identify single points of failure (SPOF) and discuss observability (p99 latency, Prometheus metrics)?',
-      weight: 1.1
-    },
-    {
-      id: 'rubric_industry_readiness_05',
-      category: 'industry_readiness',
-      topic: 'ABTalks Real-World Engineering Maturity & Communication',
-      difficulty: 'Mid',
-      expectedKeywords: ['business impact', 'clarity', 'cross-functional collaboration', 'pragmatic solutions', 'maintainability', 'ownership'],
-      evaluationGuide: 'Evaluates whether the candidate communicates with high signal-to-noise ratio, justifies tech choices using business value rather than resume buzzwords, and exhibits mentorable, growth-oriented mindset.',
+      expectedKeywords: ['bm25', 'dense embeddings', 'reciprocal rank fusion', 'cross-encoder', 'semantic similarity', 'cosine distance'],
+      evaluationGuide: 'Assess whether candidate explains why keyword search (BM25) complements dense vector retrieval for exact acronyms/IDs, and how RRF normalizes rank scores.',
       weight: 1.25
     },
     {
-      id: 'rubric_code_quality_06',
-      category: 'problem_solving',
-      topic: 'Clean Architecture, Dependency Injection & Modularity',
-      difficulty: 'Mid',
-      expectedKeywords: ['solid principles', 'unit testing', 'dependency inversion', 'interface separation', 'separation of concerns'],
-      evaluationGuide: 'Candidate demonstrates modular structure, avoids monolithic controller logic, uses type safety effectively, and implements robust error boundary patterns.',
-      weight: 1.0
-    },
-    {
-      id: 'rubric_domain_knowledge_07',
-      category: 'domain_knowledge',
-      topic: 'Database Optimization & Indexing',
+      id: 'rubric_vectordb_02',
+      category: 'data_structures',
+      topic: 'Vector Indexing: HNSW Graphs vs IVF & Product Quantization',
       difficulty: 'Senior',
-      expectedKeywords: ['b-tree', 'execution plan', 'index scan', 'query optimization', 'normalization', 'sharding'],
-      evaluationGuide: 'Assess the candidate\'s ability to design database schemas efficiently and optimize queries, knowing when to denormalize for read performance.',
+      expectedKeywords: ['hnsw', 'ivf', 'product quantization', 'pq', 'recall vs latency', 'm parameter', 'efconstruction'],
+      evaluationGuide: 'Check if candidate understands memory vs recall trade-offs. Can they explain how HNSW multi-layer graphs achieve logarithmic search speed compared to cluster-based IVF?',
       weight: 1.2
     },
     {
-      id: 'rubric_domain_knowledge_08',
-      category: 'domain_knowledge',
-      topic: 'Security & Authentication',
+      id: 'rubric_agentic_03',
+      category: 'problem_solving',
+      topic: 'Agentic ReAct Loop & Multi-Agent State Machines',
+      difficulty: 'Senior',
+      expectedKeywords: ['react loop', 'thought action observation', 'supervisor agent', 'circuit breaker', 'self-correction', 'langgraph/state machine'],
+      evaluationGuide: 'Look for understanding of preventing infinite agent loops, implementing reflection/evaluator steps, and passing structured state across tool calls.',
+      weight: 1.3
+    },
+    {
+      id: 'rubric_mcp_04',
+      category: 'system_architecture',
+      topic: 'Model Context Protocol (MCP) Architecture & Tool Execution',
+      difficulty: 'Senior',
+      expectedKeywords: ['mcp host', 'json-rpc', 'mcp server', 'permission boundaries', 'tool schemas', 'resource templates'],
+      evaluationGuide: 'Candidate must explain how MCP standardizes tool discovery and execution via JSON-RPC, keeping tool runtime isolated from LLM prompt injection.',
+      weight: 1.15
+    },
+    {
+      id: 'rubric_prompt_05',
+      category: 'communication',
+      topic: 'Structured Outputs, System Instructions & Jailbreak Defense',
       difficulty: 'Mid',
-      expectedKeywords: ['oauth2', 'jwt', 'csrf', 'xss', 'sql injection', 'rbac'],
-      evaluationGuide: 'Ensure candidate understands common web vulnerabilities and how to implement secure, state-less authentication using modern standards.',
-      weight: 1.1
+      expectedKeywords: ['json schema', 'few-shot', 'chain of thought', 'guardrails', 'token limits', 'temperature'],
+      evaluationGuide: 'Evaluates whether the candidate uses JSON schema enforcement over fragile regex parsing, and implements clear system prompt sandboxing.',
+      weight: 1.0
+    },
+    {
+      id: 'rubric_production_06',
+      category: 'concurrency',
+      topic: 'vLLM Serving, TTFT / TPOT & Semantic Caching',
+      difficulty: 'Senior',
+      expectedKeywords: ['vllm', 'pagedattention', 'time to first token', 'tpot', 'semantic caching', 'continuous batching', 'opentelemetry'],
+      evaluationGuide: 'Checks mastery of high-throughput LLM serving: continuous batching, PagedAttention memory optimization, and caching similar prompts in Redis.',
+      weight: 1.25
+    },
+    {
+      id: 'rubric_industry_readiness_07',
+      category: 'industry_readiness',
+      topic: 'ABTalks Real-World Engineering Maturity & Systems Ownership',
+      difficulty: 'Mid',
+      expectedKeywords: ['business impact', 'cost per token', 'production monitoring', 'maintainability', 'failure modes'],
+      evaluationGuide: 'Evaluates whether candidate balances cutting-edge AI architecture with business ROI, reliability SLAs, and clear technical communication.',
+      weight: 1.3
     }
   ];
 
-  /**
-   * RAG Semantic Retrieval: Finds the most relevant rubrics based on candidate query/response context.
-   */
   public static retrieveRelevantRubrics(context: string, maxResults: number = 3): RubricCriteria[] {
     const normalized = context.toLowerCase();
     
-    // Compute semantic relevance score based on keyword matches and term frequencies
     const scored = this.rubrics.map((rubric) => {
       let score = 0;
       for (const kw of rubric.expectedKeywords) {
@@ -105,23 +97,14 @@ export class RubricKnowledgeBase {
       return { rubric, score: score * rubric.weight };
     });
 
-    // Sort descending by score
     scored.sort((a, b) => b.score - a.score);
-
-    // Pick top rubrics or fallback to diverse default rubrics
     const results = scored.filter(s => s.score > 0).map(s => s.rubric).slice(0, maxResults);
-    if (results.length === 0) {
-      return this.rubrics.slice(0, maxResults);
-    }
-    return results;
+    return results.length > 0 ? results : this.rubrics.slice(0, maxResults);
   }
 
-  /**
-   * Formats rubrics into an LLM instruction string for RAG grounding
-   */
   public static formatRubricsForPrompt(rubrics: RubricCriteria[]): string {
     return rubrics.map((r, i) => `
-[RUBRIC CRITERION ${i + 1}: ${r.topic} (${r.difficulty} Level)]
+[COHORT RUBRIC ${i + 1}: ${r.topic} (${r.difficulty} Level)]
 Category: ${r.category}
 Key Concepts Expected: ${r.expectedKeywords.join(', ')}
 Evaluation Guide: ${r.evaluationGuide}

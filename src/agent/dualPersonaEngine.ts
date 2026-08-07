@@ -19,16 +19,21 @@ export class DualPersonaEngine {
   }
 
   /**
-   * System Prompt for FAANG Engineering Manager Persona
+   * System Prompt for FAANG Engineering Manager Persona (Alex Vance)
+   * Assessing 31-Day Enterprise AI Cohort concepts: RAG, Vector DBs, Agents, MCP, vLLM.
    */
   private getFaangEmPrompt(candidate: CandidateProfile, rubrics: RubricCriteria[], mcpContext?: GithubRepoMockData): string {
     return `
-You are Alex Vance, a Principal Engineering Manager at a top FAANG company (Google/Meta/Netflix).
-Your interview style:
-- High technical bar, uncompromising rigor, but respectful and objective.
-- You do not accept generic or superficial buzzwords. You demand concrete algorithms, time/space complexity, and concurrency safeguards.
-- You interrogate edge cases: distributed locks, race conditions, cache stampedes, API rate limiting, and database indexing.
-- You evaluate the candidate against the standard FAANG L4/L5/L6 competency bar.
+You are Alex Vance, a Principal Engineering Manager at a top FAANG AI lab (Google DeepMind / Meta FAIR).
+You are interviewing a graduate from the 31-Day Enterprise AI Engineering Cohort.
+
+Curriculum Areas to Assess Across Multi-Turn Questions:
+1. Module 1 (Days 1-5): Prompt Engineering, JSON Schemas, Structured Outputs, Jailbreak Defenses.
+2. Module 2 (Days 6-12): RAG Ingestion, Semantic Chunking, Hybrid Search (BM25 + Dense), RRF Re-ranking.
+3. Module 3 (Days 13-17): Vector DB Internals, HNSW vs IVF, Product Quantization (PQ), Sharding.
+4. Module 4 (Days 18-23): Agentic Workflows, ReAct loops, Multi-Agent Supervisor topologies, Circuit Breakers.
+5. Module 5 (Days 24-27): Model Context Protocol (MCP), JSON-RPC Tool calls, Security boundaries.
+6. Module 6 (Days 28-31): Production Serving with vLLM, PagedAttention, Semantic Caching, TTFT/TPOT latency.
 
 Candidate Details:
 - Name: ${candidate.name}
@@ -39,40 +44,37 @@ ${mcpContext ? MockGithubMcpService.formatMcpContextForAgent(mcpContext) : ''}
 
 ${RubricKnowledgeBase.formatRubricsForPrompt(rubrics)}
 
-Instructions:
-1. Actively challenge the candidate on technical trade-offs.
-2. If code or architecture is submitted, pinpoint any flaw, scale bottleneck, or concurrency risk.
-3. Keep answers concise, crisp, and focused directly on pushing the candidate to demonstrate their depth.
+Interview Rules:
+1. Conduct an adaptive, conversational technical interview with sharp follow-up questions based on their answers.
+2. Demand algorithmic rigor: memory trade-offs, vector dimensions, QPS vs recall, and concurrency safeguards.
+3. If they give a superficial answer, probe deeper into failure modes and production edge cases.
 `;
   }
 
   /**
-   * System Prompt for ABTalks Career Mentor Persona (Matching Anil Bajpai's brand)
+   * System Prompt for ABTalks Career Mentor Persona (Anil Bajpai)
    */
   private getAbTalksMentorPrompt(candidate: CandidateProfile): string {
     return `
-You are Anil Bajpai (ABTalks Host & Tech Leadership Mentor).
-Your interview style:
-- Empathetic, inspiring, highly constructive, and laser-focused on "Industry Readiness".
-- You bridge the gap between academic theory and real-world high-impact engineering.
-- You assess communication clarity, ownership mindset, and leadership trajectory.
-- You celebrate genuine strengths while providing a concrete, actionable roadmap for career acceleration.
+You are Anil Bajpai, Founder of ABTalks & Tech Leadership Mentor.
+You are evaluating the candidate's completion of the 31-Day Enterprise AI Engineering Cohort.
+
+Your Persona:
+- Inspiring, constructive, deeply focused on real-world "Industry Readiness".
+- You bridge the gap between cohort theoretical knowledge and shipping high-impact enterprise AI products.
+- You celebrate their mastery of RAG, Vector DBs, Agents, and MCP while providing a concrete career roadmap.
 
 Candidate Details:
 - Name: ${candidate.name}
 - Role: ${candidate.role}
 
 Instructions:
-1. Transition smoothly into mentor mode.
-2. Provide constructive feedback on how they performed, highlighting what impressed you.
-3. Provide high-impact advice on what separates good engineers from top 1% industry leaders.
-4. Encourage them and outline their next steps for career growth.
+1. Transition smoothly into the career mentor persona.
+2. Highlight the strengths they demonstrated during the technical grill.
+3. Provide an actionable roadmap to accelerate from mid-level AI Engineer to Staff AI Architect.
 `;
   }
 
-  /**
-   * Generates next agent response based on active persona, candidate message, and context.
-   */
   public async generateResponse(params: {
     persona: PersonaType;
     candidate: CandidateProfile;
@@ -83,10 +85,10 @@ Instructions:
     isGreeting?: boolean;
     isCodeChallenge?: boolean;
     isWrapUp?: boolean;
+    currentModule?: string;
   }): Promise<{ reply: string; persona: PersonaType; usedGemini: boolean }> {
-    const { persona, candidate, userMessage, conversationHistory, rubrics, mcpContext, isGreeting, isCodeChallenge, isWrapUp } = params;
+    const { persona, candidate, userMessage, rubrics, mcpContext, isGreeting, isCodeChallenge, isWrapUp } = params;
 
-    // Try Gemini API if configured
     if (this.genAI) {
       try {
         const systemInstruction = persona === 'FAANG_EM' 
@@ -98,7 +100,6 @@ Instructions:
           systemInstruction: systemInstruction
         });
 
-        // Format history
         const promptText = `
 Candidate Name: ${candidate.name}
 Current Persona: ${persona}
@@ -107,7 +108,7 @@ Phase: ${isGreeting ? 'GREETING' : isCodeChallenge ? 'SYSTEM_DESIGN_CODE' : isWr
 Candidate's Latest Message:
 "${userMessage}"
 
-Provide your direct, in-character response now.
+Respond directly in character as ${persona}.
 `;
 
         const result = await model.generateContent(promptText);
@@ -120,12 +121,12 @@ Provide your direct, in-character response now.
           };
         }
       } catch (error: any) {
-        console.warn('[DualPersonaEngine] Gemini API call had an issue, smoothly falling back to intelligent procedural agent:', error?.message || error);
+        console.warn('[DualPersonaEngine] Smoothly falling back to intelligent procedural agent:', error?.message || error);
       }
     }
 
-    // Intelligent Procedural Agent Fallback (guarantees 100% reliability for offline/local demos)
-    const fallbackReply = this.generateIntelligentFallback({
+    // High-Fidelity Cohort Fallback Engine
+    const fallbackReply = this.generateCohortFallback({
       persona,
       candidate,
       userMessage,
@@ -133,7 +134,8 @@ Provide your direct, in-character response now.
       mcpContext,
       isGreeting,
       isCodeChallenge,
-      isWrapUp
+      isWrapUp,
+      currentModule: params.currentModule
     });
 
     return {
@@ -143,10 +145,7 @@ Provide your direct, in-character response now.
     };
   }
 
-  /**
-   * Procedural Fallback Engine with deep technical nuances matching the hackathon demo requirements.
-   */
-  private generateIntelligentFallback(params: {
+  private generateCohortFallback(params: {
     persona: PersonaType;
     candidate: CandidateProfile;
     userMessage: string;
@@ -155,32 +154,43 @@ Provide your direct, in-character response now.
     isGreeting?: boolean;
     isCodeChallenge?: boolean;
     isWrapUp?: boolean;
+    currentModule?: string;
   }): string {
-    const { persona, candidate, userMessage, rubrics, mcpContext, isGreeting, isCodeChallenge, isWrapUp } = params;
+    const { persona, candidate, userMessage, mcpContext, isGreeting, isWrapUp, currentModule } = params;
     const name = candidate.name || 'Candidate';
 
     if (isGreeting) {
-      return `Welcome, ${name}. I'm Alex Vance, Principal Engineering Manager here. I've reviewed your background in ${candidate.role || 'Software Engineering'}. We have a high technical bar, so today we will test your system architecture intuition, concurrency management, and real-world problem-solving.\n\nLet's start directly with a core scenario: In a high-throughput payment or order processing system experiencing 50,000 requests/sec, how do you prevent race conditions and duplicate debits across multiple microservice instances? Walk me through your design, locking mechanism, and database isolation levels.`;
+      return `Welcome, ${name}. I'm Alex Vance, Principal Engineering Manager. I see you've completed the 31-Day Enterprise AI Engineering Cohort covering RAG, Vector DBs, Agentic AI, and MCP.\n\nToday, we're going to assess your deep systems mastery across the cohort modules. Let's start with **Module 2: RAG & Hybrid Retrieval**.\n\nWhen building a production RAG system for legal or financial documents, why is pure dense embedding search insufficient for exact acronyms and part numbers, and how do you implement **Hybrid Search (BM25 + Dense)** with **Reciprocal Rank Fusion (RRF)**? Walk me through your chunking strategy and score normalization.`;
     }
 
     if (persona === 'FAANG_EM') {
-      if (isCodeChallenge || userMessage.toLowerCase().includes('lock') || userMessage.toLowerCase().includes('redis')) {
-        const repoSnippet = mcpContext ? `\n\n[MCP Code Inspection]: I pulled up your repository (${mcpContext.repoName}). I noticed you're using ${mcpContext.primaryLanguage}. Let's make sure you avoid the common pitfalls like '${mcpContext.vulnerabilitiesOrSmells[0]}'.` : '';
-        return `Interesting approach. You mentioned distributed locking and atomicity.${repoSnippet}\n\nLet's probe deeper into the failure modes: If the instance holding the Redis distributed lock crashes right after modifying the primary database but before releasing the lock or emitting the confirmation event, how do you prevent a deadlock or data divergence? What exact TTL and fence-token strategy would you enforce?`;
+      const lower = userMessage.toLowerCase();
+
+      if (currentModule === 'VECTOR_INDEXING' || lower.includes('vector') || lower.includes('hnsw') || lower.includes('ivf')) {
+        return `Good explanation of hybrid search, ${name}. Now let's move to **Module 3: Vector Databases & Indexing Internals**.\n\nWhen scaling to 20 million 1536-dimensional embeddings, an in-memory HNSW index will consume significant RAM. How do you decide between **HNSW** and **IVF-PQ (Inverted File with Product Quantization)**? What is the mathematical trade-off between recall degradation and query QPS under high concurrent load?`;
       }
 
-      if (userMessage.toLowerCase().includes('cache') || userMessage.toLowerCase().includes('rate')) {
-        return `Good breakdown on caching and rate limiting. However, in an extreme burst traffic event (e.g. flash sale or DDoS spike), how do you prevent the **Thundering Herd / Cache Stampede** problem when an ultra-hot cache key expires simultaneously across all worker nodes? Would you use probabilistic early expiration (XFetch algorithm) or a mutex lock? Walk me through the mathematical or algorithmic trade-off.`;
+      if (currentModule === 'AGENTIC_AI' || lower.includes('agent') || lower.includes('react') || lower.includes('supervisor')) {
+        const mcpNote = mcpContext ? `\n\n[MCP AST Inspection]: I examined your GitHub repo (${mcpContext.repoName}) and noticed your tool calling logic.` : '';
+        return `Interesting points on vector sharding.${mcpNote}\n\nLet's test **Module 4: Agentic AI & Tool Orchestration**. In an autonomous multi-agent supervisor system, what happens when a sub-agent gets caught in a hallucinatory or non-convergent ReAct loop? How do you implement state persistence, circuit breakers, and reflection/evaluator steps to ensure deterministic recovery?`;
       }
 
-      return `That's a solid conceptual overview, ${name}. Now let's address the operational telemetry and latency SLAs: When your p99 latency spikes by 400ms under heavy load, what specific bottlenecks in the database connection pool or garbage collection would you inspect first, and how would you implement a circuit breaker to protect downstream services?`;
+      if (currentModule === 'MCP_PROTOCOL' || lower.includes('mcp') || lower.includes('json-rpc') || lower.includes('tool')) {
+        return `Now let's examine **Module 5: Model Context Protocol (MCP)**. How does MCP standardize tool discovery over JSON-RPC compared to vendor-locked tool calling? What security boundaries and permission sandboxes do you enforce when an LLM requests dynamic filesystem or repository resources via MCP?`;
+      }
+
+      if (currentModule === 'PRODUCTION_SERVING' || lower.includes('vllm') || lower.includes('cache') || lower.includes('deploy')) {
+        return `Let's close our technical grill on **Module 6: Production AI Systems & vLLM Serving**. In a high-traffic inference cluster, explain how **PagedAttention** eliminates memory fragmentation in the KV cache, and how you design **Semantic Caching** with Redis to drop Time-To-First-Token (TTFT) from 800ms down to sub-50ms for similar candidate prompts.`;
+      }
+
+      return `Solid reasoning on that architectural trade-off, ${name}. Let's probe the failure modes: When your p99 latency spikes above 1.5s under sudden burst traffic, how do you handle graceful degradation, fallback context compression, and open-telemetry tracing across your agent worker nodes?`;
     }
 
-    // Persona B: ABTalks Career Mentor (Anil Bajpai persona)
+    // Persona B: ABTalks Career Mentor (Anil Bajpai)
     if (isWrapUp || persona === 'ABTALKS_MENTOR') {
-      return `Hello ${name}! I'm switching personas now—Anil Bajpai here from ABTalks. First of all, congratulations on tackling that intensive FAANG technical grill session!\n\nWhat really stood out to me was your structured thinking and how clearly you communicated under pressure. You showed genuine technical depth in distributed synchronization, and your willingness to analyze trade-offs is exactly what top-tier engineering teams look for.\n\nI've generated your complete **ABTalks Industry Readiness Scorecard** below. Take a look at your strengths, the targeted growth areas, and the actionable mentorship roadmap we've prepared for you!`;
+      return `Hello ${name}! I'm transitioning in now—Anil Bajpai here from ABTalks. Congratulations on completing that rigorous technical evaluation across the 31-Day Enterprise AI Engineering Cohort!\n\nYou demonstrated remarkable technical depth across RAG architectures, Vector DB indexing, and Agentic orchestration. Your ability to think through memory vs. recall trade-offs and operational resilience is what separates average developers from top-tier AI Engineers.\n\nI have synthesized your complete **ABTalks Industry Readiness Scorecard** below. Take a look at your competency breakdown, your top strengths, and the actionable career acceleration roadmap we've prepared for you!`;
     }
 
-    return `Great reflection, ${name}. Remember, in the industry, technical competence gets you through the door, but engineering empathy, system ownership, and clear communication are what accelerate you to Staff and Tech Lead levels. Let's look at your finalized evaluation report!`;
+    return `Great reflection, ${name}. You have shown genuine engineering maturity. Let's look at your finalized evaluation report!`;
   }
 }

@@ -1,0 +1,41 @@
+[
+  {
+    "id": "cand_01",
+    "name": "Alex Rivera",
+    "role": "Enterprise AI Engineer",
+    "completed_days": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, 14, 18, 19, 20, 24, 25, 28, 29],
+    "skipped_topics": ["Quantization (PQ & SQ)", "Re-ranking with Cross-Encoders"],
+    "learning_signals": {
+      "prompt_engineering": "Expert",
+      "rag_pipeline": "Advanced",
+      "vector_indexing": "Intermediate",
+      "agentic_orchestration": "Advanced",
+      "mcp_protocol": "Intermediate",
+      "production_serving": "Intermediate"
+    },
+    "missions_completed": [
+      "Built Multi-Agent Supervisor using LangGraph",
+      "Implemented Semantic Hybrid Search with Qdrant",
+      "Developed Custom MCP Server for GitHub AST Analysis"
+    ]
+  },
+  {
+    "id": "cand_02",
+    "name": "Priya Sharma",
+    "role": "RAG & Vector Platform Specialist",
+    "completed_days": [1, 2, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 28, 30],
+    "skipped_topics": ["Multi-Agent Supervisor & Worker Topology", "MCP Architecture"],
+    "learning_signals": {
+      "prompt_engineering": "Intermediate",
+      "rag_pipeline": "Master",
+      "vector_indexing": "Master",
+      "agentic_orchestration": "Beginner",
+      "mcp_protocol": "Beginner",
+      "production_serving": "Advanced"
+    },
+    "missions_completed": [
+      "Benchmarked HNSW vs IVF-PQ on 5M 1536-dim vectors",
+      "Engineered Sub-150ms Hybrid RAG with Reciprocal Rank Fusion"
+    ]
+  }
+]
