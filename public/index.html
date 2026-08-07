@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ABTalks AI Interview Agent — God Mode Dual-Persona</title>
+  <meta name="description" content="AI Technical Interview Agent with Dual-Persona FAANG EM & ABTalks Mentor, Vector RAG Rubrics, and Mock MCP Code Inspector">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header Bar -->
+  <header class="app-header">
+    <div class="logo-area">
+      <div class="logo-badge">AB</div>
+      <div class="brand-text">
+        <h1>ABTalks <span>AI Interview Agent</span></h1>
+        <p class="subtitle">God Mode Dual-Persona • RAG Rubrics • MCP Code Review</p>
+      </div>
+    </div>
+    <div class="status-tags">
+      <span class="badge badge-mcp" id="mcpBadge">⚡ Mock MCP: Ready</span>
+      <span class="badge badge-rag" id="ragBadge">📚 RAG: 6 FAANG Rubrics</span>
+      <span class="badge badge-persona" id="personaBadge">🎭 Persona: FAANG EM</span>
+    </div>
+  </header>
+
+  <main class="app-container">
+    <!-- Left Sidebar: Session Config & Candidate Profile -->
+    <aside class="sidebar" id="sidebarPanel">
+      <div class="card config-card" id="configCard">
+        <h2>Candidate Setup</h2>
+        <p class="desc">Enter candidate parameters to ground the FAANG EM & RAG questions.</p>
+        
+        <form id="startForm">
+          <div class="form-group">
+            <label for="candidateName">Candidate Name</label>
+            <input type="text" id="candidateName" value="Alex Rivera" placeholder="e.g. Alex Rivera" required />
+          </div>
+
+          <div class="form-group">
+            <label for="candidateRole">Target Role</label>
+            <select id="candidateRole">
+              <option value="Senior Backend Engineer (Distributed Systems)">Senior Backend Engineer</option>
+              <option value="Full Stack Engineer (React/Node/Cloud)">Full Stack Engineer</option>
+              <option value="Staff Systems Architect (High Throughput)">Staff Systems Architect</option>
+              <option value="AI / RAG Platform Engineer">AI / RAG Platform Engineer</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="experienceYears">Experience</label>
+              <input type="number" id="experienceYears" value="4" min="0" max="25" />
+            </div>
+            <div class="form-group">
+              <label for="targetLevel">Target Level</label>
+              <input type="text" id="targetLevel" value="FAANG L5" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="githubUsername">Candidate GitHub (MCP)</label>
+            <input type="text" id="githubUsername" value="alex-rivera-dev" />
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="startBtn">
+            🚀 Launch Interview Agent
+          </button>
+        </form>
+      </div>
+
+      <!-- Live MCP Inspector Drawer -->
+      <div class="card mcp-card hidden" id="mcpCard">
+        <div class="card-header">
+          <h3>⚡ Mock MCP Tool Inspector</h3>
+          <span class="badge badge-live">Live AST</span>
+        </div>
+        <div class="mcp-details" id="mcpContent">
+          <div class="mcp-row"><strong>Repo:</strong> <span id="mcpRepo">candidate-repo</span></div>
+          <div class="mcp-row"><strong>Quality:</strong> <span class="grade" id="mcpGrade">Grade A</span></div>
+          <div class="mcp-row"><strong>Architecture:</strong> <span id="mcpArch">Layered</span></div>
+          <div class="mcp-divider"></div>
+          <div class="mcp-highlight-title">🔍 Strengths in Repo:</div>
+          <ul id="mcpHighlights" class="mcp-list"></ul>
+          <div class="mcp-highlight-title warn">⚠️ Potential Smells:</div>
+          <ul id="mcpSmells" class="mcp-list warn-list"></ul>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Chat & Code Arena -->
+    <section class="main-arena">
+      <!-- Top Stage Tracker -->
+      <div class="stage-bar">
+        <div class="stage-item active" id="stageGreeting">1. Greeting</div>
+        <div class="stage-item" id="stageTech">2. Concurrency & DB</div>
+        <div class="stage-item" id="stageDesign">3. System & Caching</div>
+        <div class="stage-item" id="stageMCP">4. Code & MCP</div>
+        <div class="stage-item" id="stageReport">5. ABTalks Scorecard</div>
+      </div>
+
+      <!-- Chat History Stream -->
+      <div class="chat-viewport" id="chatViewport">
+        <div class="empty-state" id="emptyState">
+          <div class="empty-icon">🎙️</div>
+          <h2>Ready to Begin Your Technical Evaluation</h2>
+          <p>Fill in your profile on the left and click <strong>Launch Interview Agent</strong>. The FAANG EM will initiate the interview and test your real-world architecture readiness.</p>
+        </div>
+      </div>
+
+      <!-- Input Controls -->
+      <div class="input-container hidden" id="inputContainer">
+        <!-- Quick Code Insert Toggle -->
+        <div class="quick-tools">
+          <button type="button" class="btn-tool" id="toggleCodeBtn">💻 Add Code / Architecture Snippet</button>
+          <button type="button" class="btn-tool" id="finishEarlyBtn">🏁 Finish & View ABTalks Report</button>
+        </div>
+
+        <div class="code-editor-box hidden" id="codeBox">
+          <label for="codeSnippet">Code / System Design Schema (Optional):</label>
+          <textarea id="codeSnippet" placeholder="// Paste your locking logic, SQL schema, or TypeScript code here..."></textarea>
+        </div>
+
+        <form id="messageForm" class="message-form">
+          <textarea id="userInput" placeholder="Explain your answer, trade-offs, and algorithms... (Shift+Enter for newline, Enter to send)" rows="3" required></textarea>
+          <button type="submit" class="btn btn-send" id="sendBtn">
+            <span>Send</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+          </button>
+        </form>
+      </div>
+
+      <!-- Final ABTalks Scorecard Report Modal / View -->
+      <div class="report-view hidden" id="reportView">
+        <div class="report-header">
+          <div class="report-title-area">
+            <span class="report-tag">ABTalks Career Mentor • Final Evaluation</span>
+            <h2 id="repCandidateName">Alex Rivera — Full Stack Engineer</h2>
+            <p id="repTimestamp">Evaluated on August 2026</p>
+          </div>
+          <div class="verdict-box" id="repVerdictBox">
+            <div class="verdict-label">Overall Verdict</div>
+            <div class="verdict-value" id="repVerdict">Immediate Strong Hire</div>
+          </div>
+        </div>
+
+        <!-- Metric Gauges Grid -->
+        <div class="metrics-grid">
+          <div class="metric-card score-hero">
+            <div class="metric-num" id="repReadinessScore">87</div>
+            <div class="metric-title">Industry Readiness Index</div>
+            <div class="metric-sub">Anil Bajpai ABTalks Standard</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-title">Technical Depth</div>
+            <div class="bar-container"><div class="bar-fill" id="barTech" style="width: 88%"></div></div>
+            <div class="metric-footer"><span id="valTech">88%</span> • Concurrency & Data Structures</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-title">System Architecture</div>
+            <div class="bar-container"><div class="bar-fill" id="barArch" style="width: 85%"></div></div>
+            <div class="metric-footer"><span id="valArch">85%</span> • Caching & Rate Limiting</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-title">Problem Solving & Trade-offs</div>
+            <div class="bar-container"><div class="bar-fill" id="barSolve" style="width: 90%"></div></div>
+            <div class="metric-footer"><span id="valSolve">90%</span> • Edge Cases & Scalability</div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-title">Communication Clarity</div>
+            <div class="bar-container"><div class="bar-fill" id="barComm" style="width: 86%"></div></div>
+            <div class="metric-footer"><span id="valComm">86%</span> • Signal-to-Noise Ratio</div>
+          </div>
+        </div>
+
+        <!-- Detailed Breakdown Panels -->
+        <div class="report-panels">
+          <div class="panel panel-strengths">
+            <h3>🌟 Key Engineering Strengths</h3>
+            <ul id="repStrengthsList"></ul>
+          </div>
+
+          <div class="panel panel-improvements">
+            <h3>🎯 Targeted Growth Areas</h3>
+            <ul id="repImprovementsList"></ul>
+          </div>
+        </div>
+
+        <div class="panel panel-roadmap">
+          <h3>🚀 ABTalks Mentorship & Career Acceleration Roadmap</h3>
+          <ul id="repRoadmapList"></ul>
+        </div>
+
+        <div class="json-export-area">
+          <div class="json-header">
+            <h4>📦 Structured Output JSON (Judges Submission Standard)</h4>
+            <button class="btn-copy" id="copyJsonBtn">📋 Copy JSON</button>
+          </div>
+          <pre><code id="jsonCodeBlock">{}</code></pre>
+        </div>
+
+        <div class="report-actions">
+          <button class="btn btn-primary" id="restartBtn">🔄 Start Another Interview</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
