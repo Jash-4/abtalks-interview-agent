@@ -31,7 +31,7 @@ export interface ChatMessage {
 
 export interface RubricCriteria {
   id: string;
-  category: 'data_structures' | 'system_architecture' | 'concurrency' | 'problem_solving' | 'communication' | 'industry_readiness';
+  category: 'data_structures' | 'system_architecture' | 'concurrency' | 'problem_solving' | 'communication' | 'industry_readiness' | 'domain_knowledge';
   topic: string;
   difficulty: 'Junior' | 'Mid' | 'Senior' | 'Staff';
   expectedKeywords: string[];
@@ -55,6 +55,7 @@ export interface ScorecardBreakdown {
   problemSolving: number;        // 0 - 100
   communicationClarity: number;  // 0 - 100
   codeCraftsmanship: number;     // 0 - 100
+  domainExpertise: number;       // 0 - 100
 }
 
 export interface StructuredInterviewReport {
@@ -92,6 +93,7 @@ export interface InterviewSession {
     problemSolving: number[];
     communication: number[];
     codeCraft: number[];
+    domain: number[];
   };
   finalReport?: StructuredInterviewReport;
   createdAt: string;

@@ -46,7 +46,8 @@ export class InterviewStateMachine {
         architecture: [82],
         problemSolving: [88],
         communication: [85],
-        codeCraft: [84]
+        codeCraft: [84],
+        domain: [83]
       },
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
