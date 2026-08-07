@@ -61,6 +61,24 @@ export class RubricKnowledgeBase {
       expectedKeywords: ['solid principles', 'unit testing', 'dependency inversion', 'interface separation', 'separation of concerns'],
       evaluationGuide: 'Candidate demonstrates modular structure, avoids monolithic controller logic, uses type safety effectively, and implements robust error boundary patterns.',
       weight: 1.0
+    },
+    {
+      id: 'rubric_domain_knowledge_07',
+      category: 'domain_knowledge',
+      topic: 'Database Optimization & Indexing',
+      difficulty: 'Senior',
+      expectedKeywords: ['b-tree', 'execution plan', 'index scan', 'query optimization', 'normalization', 'sharding'],
+      evaluationGuide: 'Assess the candidate\'s ability to design database schemas efficiently and optimize queries, knowing when to denormalize for read performance.',
+      weight: 1.2
+    },
+    {
+      id: 'rubric_domain_knowledge_08',
+      category: 'domain_knowledge',
+      topic: 'Security & Authentication',
+      difficulty: 'Mid',
+      expectedKeywords: ['oauth2', 'jwt', 'csrf', 'xss', 'sql injection', 'rbac'],
+      evaluationGuide: 'Ensure candidate understands common web vulnerabilities and how to implement secure, state-less authentication using modern standards.',
+      weight: 1.1
     }
   ];
 

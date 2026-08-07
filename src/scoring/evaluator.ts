@@ -17,13 +17,15 @@ export class InterviewEvaluator {
     const problemSolving = avg(session.scoresAccumulated.problemSolving, 88);
     const communication = avg(session.scoresAccumulated.communication, 86);
     const codeCraft = avg(session.scoresAccumulated.codeCraft, 85);
+    const domainExpertise = avg(session.scoresAccumulated.domain, 83);
 
     const breakdown: ScorecardBreakdown = {
       technicalProficiency: technical,
       systemArchitecture: architecture,
       problemSolving: problemSolving,
       communicationClarity: communication,
-      codeCraftsmanship: codeCraft
+      codeCraftsmanship: codeCraft,
+      domainExpertise: domainExpertise
     };
 
     // ABTalks Industry Readiness Index Formula (Weighted composite)
