@@ -1,7 +1,5 @@
 import { 
   InterviewSession, 
-  InterviewPhase, 
-  PersonaType, 
   CandidateProfile, 
   ChatMessage, 
   StructuredInterviewReport 
@@ -19,13 +17,9 @@ export class InterviewStateMachine {
     this.agentEngine = new DualPersonaEngine();
   }
 
-  /**
-   * Initializes a new candidate interview session grounded on the 31-Day AI Cohort
-   */
   public async createSession(profile: CandidateProfile): Promise<InterviewSession> {
     const sessionId = `sess_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
     
-    // Simulate MCP tool invocation on candidate GitHub
     const mcpData = await MockGithubMcpService.inspectRepository(
       profile.githubUsername || profile.name.toLowerCase().replace(/\s+/g, '-'),
       profile.role
@@ -42,18 +36,17 @@ export class InterviewStateMachine {
       mcpData,
       rubricsRetrieved: initialRubrics,
       scoresAccumulated: {
-        technical: [86],
-        architecture: [85],
-        problemSolving: [89],
-        communication: [86],
-        codeCraft: [85],
-        domain: [88]
+        technical: [],
+        architecture: [],
+        problemSolving: [],
+        communication: [],
+        codeCraft: [],
+        domain: []
       },
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
 
-    // Initial greeting from FAANG EM introducing Module 2 (RAG & Hybrid Search)
     const greeting = await this.agentEngine.generateResponse({
       persona: 'FAANG_EM',
       candidate: profile,
@@ -84,10 +77,6 @@ export class InterviewStateMachine {
     return this.sessions.get(sessionId);
   }
 
-  /**
-   * Processes a candidate message, progresses through Cohort Modules (RAG, Vector DBs, Agents, MCP, vLLM),
-   * and dynamically updates the RAG rubrics and score metrics.
-   */
   public async processCandidateMessage(sessionId: string, userText: string, codeSnippet?: string): Promise<{
     session: InterviewSession;
     agentMessage: ChatMessage;
@@ -98,7 +87,10 @@ export class InterviewStateMachine {
       throw new Error(`Interview session '${sessionId}' not found.`);
     }
 
-    // 1. Record Candidate Turn
+    const trimmed = userText.trim();
+    const lower = trimmed.toLowerCase();
+
+    // 1. Record User Message
     const userMsg: ChatMessage = {
       id: `msg_${Date.now()}_u`,
       sender: 'user',
@@ -109,7 +101,47 @@ export class InterviewStateMachine {
     };
     session.history.push(userMsg);
 
-    // 2. RAG Semantic Retrieval based on response context
+    // 2. Strict Technical Depth & Vague Answer Detection
+    const isVague = trimmed.length < 25 || lower === 'hi' || lower === 'hello' || lower === 'ok' || lower === 'yes';
+    
+    if (isVague) {
+      // Punish vague answers in scores
+      session.scoresAccumulated.technical.push(45);
+      session.scoresAccumulated.architecture.push(40);
+      session.scoresAccumulated.problemSolving.push(45);
+      session.scoresAccumulated.communication.push(50);
+      session.scoresAccumulated.domain.push(40);
+
+      // Do NOT advance module, push back strictly!
+      const pushback = await this.agentEngine.generateResponse({
+        persona: 'FAANG_EM',
+        candidate: session.candidate,
+        userMessage: userText,
+        conversationHistory: session.history.map(h => ({ sender: h.sender, text: h.text })),
+        rubrics: session.rubricsRetrieved,
+        mcpContext: session.mcpData,
+        isPushback: true
+      });
+
+      const pushbackMsg: ChatMessage = {
+        id: `msg_${Date.now()}_a`,
+        sender: 'agent',
+        persona: 'FAANG_EM',
+        text: pushback.reply,
+        timestamp: new Date().toISOString(),
+        phase: session.currentPhase
+      };
+      session.history.push(pushbackMsg);
+      session.updatedAt = new Date().toISOString();
+
+      return {
+        session,
+        agentMessage: pushbackMsg,
+        isFinished: false
+      };
+    }
+
+    // 3. Genuine Technical Scoring for Substance
     const contextText = `${userText} ${codeSnippet || ''}`;
     const dynamicRubrics = RubricKnowledgeBase.retrieveRelevantRubrics(contextText, 2);
     dynamicRubrics.forEach(r => {
@@ -118,52 +150,57 @@ export class InterviewStateMachine {
       }
     });
 
-    // 3. Dynamic Score Evaluation
-    const words = userText.toLowerCase();
-    if (words.includes('bm25') || words.includes('dense') || words.includes('rrf') || words.includes('chunk')) {
-      session.scoresAccumulated.technical.push(92);
+    let turnTech = 80;
+    let turnArch = 80;
+    let turnSolve = 80;
+
+    if (lower.includes('bm25') || lower.includes('dense') || lower.includes('rrf') || lower.includes('chunk')) {
+      turnTech += 15;
     }
-    if (words.includes('hnsw') || words.includes('ivf') || words.includes('quantization') || words.includes('pq')) {
-      session.scoresAccumulated.architecture.push(90);
+    if (lower.includes('hnsw') || lower.includes('ivf') || lower.includes('quantization') || lower.includes('pq')) {
+      turnArch += 15;
     }
-    if (words.includes('react') || words.includes('supervisor') || words.includes('circuit') || words.includes('mcp')) {
-      session.scoresAccumulated.problemSolving.push(94);
+    if (lower.includes('react') || lower.includes('supervisor') || lower.includes('circuit') || lower.includes('mcp')) {
+      turnSolve += 15;
     }
-    if (words.includes('vllm') || words.includes('pagedattention') || words.includes('ttft') || words.includes('cache')) {
-      session.scoresAccumulated.technical.push(93);
-    }
-    if (userText.length > 120) {
-      session.scoresAccumulated.communication.push(88);
+    if (lower.includes('vllm') || lower.includes('pagedattention') || lower.includes('ttft') || lower.includes('cache')) {
+      turnTech += 12;
     }
 
-    // 4. Cohort Curriculum Multi-Turn State Machine Progression
-    const candidateTurnCount = session.history.filter(m => m.sender === 'user').length;
+    session.scoresAccumulated.technical.push(Math.min(100, turnTech));
+    session.scoresAccumulated.architecture.push(Math.min(100, turnArch));
+    session.scoresAccumulated.problemSolving.push(Math.min(100, turnSolve));
+    session.scoresAccumulated.communication.push(userText.length > 100 ? 90 : 80);
+    session.scoresAccumulated.domain.push(90);
+
+    // 4. Cohort State Progression on Valid Technical Answer
+    const validTurnCount = session.history.filter(m => m.sender === 'user' && m.text.trim().length >= 25).length;
     let isFinished = false;
     let currentModule = 'RAG_EMBEDDINGS';
 
-    if (candidateTurnCount === 1) {
-      session.currentPhase = 'TECHNICAL_CORE'; // Days 13-17: Vector Databases & HNSW
+    if (validTurnCount === 1) {
+      session.currentPhase = 'TECHNICAL_CORE';
       currentModule = 'VECTOR_INDEXING';
       session.activePersona = 'FAANG_EM';
-    } else if (candidateTurnCount === 2) {
-      session.currentPhase = 'SYSTEM_DESIGN_CODE'; // Days 18-23: Agentic ReAct & Tool Orchestration
+    } else if (validTurnCount === 2) {
+      session.currentPhase = 'SYSTEM_DESIGN_CODE';
       currentModule = 'AGENTIC_AI';
       session.activePersona = 'FAANG_EM';
-    } else if (candidateTurnCount === 3) {
-      session.currentPhase = 'MCP_CODE_REVIEW'; // Days 24-27: Model Context Protocol (MCP)
+    } else if (validTurnCount === 3) {
+      session.currentPhase = 'MCP_CODE_REVIEW';
       currentModule = 'MCP_PROTOCOL';
       session.activePersona = 'FAANG_EM';
-    } else if (candidateTurnCount === 4) {
-      session.currentPhase = 'SYSTEM_DESIGN_CODE'; // Days 28-31: vLLM & Production Serving
+    } else if (validTurnCount === 4) {
+      session.currentPhase = 'SYSTEM_DESIGN_CODE';
       currentModule = 'PRODUCTION_SERVING';
       session.activePersona = 'FAANG_EM';
-    } else if (candidateTurnCount >= 5) {
+    } else if (validTurnCount >= 5) {
       session.currentPhase = 'CAREER_SYNTHESIS';
-      session.activePersona = 'ABTALKS_MENTOR'; // Switch to Anil Bajpai Career Mentor!
+      session.activePersona = 'ABTALKS_MENTOR';
       isFinished = true;
     }
 
-    // 5. Generate Persona Response
+    // 5. Generate Agent Response
     const response = await this.agentEngine.generateResponse({
       persona: session.activePersona,
       candidate: session.candidate,
@@ -188,7 +225,6 @@ export class InterviewStateMachine {
 
     session.history.push(agentMsg);
 
-    // 6. Generate final report if wrap-up reached
     if (isFinished || session.currentPhase === 'CAREER_SYNTHESIS') {
       session.finalReport = InterviewEvaluator.generateStructuredReport(session);
       session.currentPhase = 'COMPLETED';

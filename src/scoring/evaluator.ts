@@ -1,23 +1,20 @@
 import { InterviewSession, StructuredInterviewReport, ScorecardBreakdown } from '../types';
 
 export class InterviewEvaluator {
-  /**
-   * Generates the structured scorecard JSON using conversation history, accumulated rubrics, and MCP data.
-   */
   public static generateStructuredReport(session: InterviewSession): StructuredInterviewReport {
     const candidateName = session.candidate.name || 'Candidate';
-    const role = session.candidate.role || 'Full Stack Engineer';
+    const role = session.candidate.role || 'Enterprise AI Engineer';
 
     // Calculate aggregated scores with safety bounds
     const avg = (nums: number[], fallback: number) => 
       nums.length > 0 ? Math.round(nums.reduce((a, b) => a + b, 0) / nums.length) : fallback;
 
-    const technical = avg(session.scoresAccumulated.technical, 84);
-    const architecture = avg(session.scoresAccumulated.architecture, 82);
-    const problemSolving = avg(session.scoresAccumulated.problemSolving, 88);
-    const communication = avg(session.scoresAccumulated.communication, 86);
-    const codeCraft = avg(session.scoresAccumulated.codeCraft, 85);
-    const domainExpertise = avg(session.scoresAccumulated.domain, 83);
+    const technical = avg(session.scoresAccumulated.technical, 50);
+    const architecture = avg(session.scoresAccumulated.architecture, 50);
+    const problemSolving = avg(session.scoresAccumulated.problemSolving, 50);
+    const communication = avg(session.scoresAccumulated.communication, 50);
+    const codeCraft = avg(session.scoresAccumulated.codeCraft, 50);
+    const domainExpertise = avg(session.scoresAccumulated.domain, 50);
 
     const breakdown: ScorecardBreakdown = {
       technicalProficiency: technical,
@@ -28,7 +25,7 @@ export class InterviewEvaluator {
       domainExpertise: domainExpertise
     };
 
-    // ABTalks Industry Readiness Index Formula (Weighted composite)
+    // ABTalks Industry Readiness Index Formula
     const industryReadinessScore = Math.round(
       technical * 0.30 +
       architecture * 0.25 +
@@ -36,9 +33,9 @@ export class InterviewEvaluator {
       communication * 0.20
     );
 
-    // Determine verdict
-    let overallVerdict: StructuredInterviewReport['overallVerdict'] = 'Hire (L4/Mid-Level)';
-    if (industryReadinessScore >= 90) {
+    // Dynamic verdict based on actual candidate performance
+    let overallVerdict: StructuredInterviewReport['overallVerdict'] = 'Needs Mentorship & Refinement';
+    if (industryReadinessScore >= 88) {
       overallVerdict = 'Immediate Strong Hire';
     } else if (industryReadinessScore >= 75) {
       overallVerdict = 'Hire (L4/Mid-Level)';
@@ -48,51 +45,61 @@ export class InterviewEvaluator {
       overallVerdict = 'Not Ready Yet';
     }
 
-    // Strengths extracted from high scoring competencies
-    const strengths: string[] = [
-      'Strong grasp of high-throughput distributed system concepts and transaction isolation levels.',
-      'Clear modular architectural thinking with decoupled service layers and dependency management.',
-      'Articulated tradeoffs between latency, consistency, and storage overhead when designing caching layers.'
+    const isHighPerformer = industryReadinessScore >= 75;
+
+    const strengths: string[] = isHighPerformer ? [
+      'Strong understanding of Hybrid Search (BM25 + Dense) and Reciprocal Rank Fusion.',
+      'Clear grasp of Vector Indexing trade-offs: HNSW memory footprint vs IVF-PQ quantization.',
+      'Articulated autonomous multi-agent state machines with circuit breakers and reflection.',
+      'Understands high-throughput vLLM serving, PagedAttention, and semantic caching.'
+    ] : [
+      'Familiarity with high-level AI terminology and modern AI stack components.',
+      'Willingness to engage with technical interviewer prompts.'
     ];
 
     if (session.mcpData && session.mcpData.highlights.length > 0) {
       strengths.push(`GitHub Code Quality: ${session.mcpData.highlights[0]}`);
     }
 
-    // Areas for Improvement
-    const areasForImprovement: string[] = [
-      'Consider evaluating cache stampede / thundering herd mitigations (e.g. probabilistic early expiration) under extreme burst traffic.',
-      'Explicitly discuss backpressure and dead-letter queues when proposing asynchronous processing.',
-      'Be more proactive with p99 latency SLA targets and telemetry monitoring (Prometheus/OpenTelemetry).'
+    const areasForImprovement: string[] = isHighPerformer ? [
+      'Deepen understanding of PagedAttention block table fragmentation under extreme burst concurrency.',
+      'Proactively calculate QPS vs RAM footprints before choosing vector quantization compression ratios.',
+      'Enforce OpenTelemetry tracing spans across autonomous agent sub-worker execution nodes.'
+    ] : [
+      'Requires substantial technical depth: avoid one-word answers and provide concrete algorithms/trade-offs.',
+      'Review Module 2 (RAG Hybrid Search & RRF score normalization formulas).',
+      'Study Module 3 Vector Indexing (HNSW graphs vs IVF Product Quantization).'
     ];
 
     if (session.mcpData && session.mcpData.vulnerabilitiesOrSmells.length > 0) {
       areasForImprovement.push(`Codebase Observation: Address ${session.mcpData.vulnerabilitiesOrSmells[0]}`);
     }
 
-    // FAANG EM Hard-Nosed Observations
-    const faangEmObservations: string[] = [
-      'Demonstrated solid algorithmic foundation; was able to walk through time/space complexity without prompting.',
-      'Maintained good composure when challenged with concurrent edge cases and distributed state synchronization.',
-      'Suggested production-grade error boundaries rather than relying purely on happy path assumptions.'
+    const faangEmObservations: string[] = isHighPerformer ? [
+      'Demonstrated rigorous systems intuition and handled memory trade-offs effectively.',
+      'Responded with concrete architectures when challenged on distributed edge cases.'
+    ] : [
+      'Struggled to provide concrete implementation details when pushed by the interviewer.',
+      'Relied on high-level statements rather than algorithmic or mathematical rigor.'
     ];
 
-    // ABTalks Career Mentorship & Anil Bajpai Style Growth Roadmap
     const careerMentorshipRoadmap: string[] = [
-      'Deep dive into Distributed Locking algorithms (Redis Redlock vs etcd Raft leases) to solidify Staff-level mastery.',
-      'Practice building end-to-end event-driven sagas with outbox patterns for reliable distributed transactions.',
-      'Read "Designing Data-Intensive Applications" (Martin Kleppmann) Chapter 7 on Transactions to master snapshot isolation nuances.',
-      'Refine your storytelling: Frame architectural decisions through Business Impact (Cost, Latency, MTTR) as advocated in ABTalks sessions.'
+      'Master Chapter 3 of the AI Cohort: Practice indexing 10M+ vectors with IVF-PQ in Qdrant/Milvus.',
+      'Build an end-to-end multi-agent supervisor with LangGraph and test circuit breaker state recovery.',
+      'Deploy vLLM with PagedAttention and benchmark TTFT latency improvements against vanilla HuggingFace.',
+      'Frame technical solutions through business ROI and MTTR impact as advocated in ABTalks sessions.'
     ];
 
-    // Build question analysis
     const userMessages = session.history.filter(m => m.sender === 'user');
     const questionByQuestionAnalysis = userMessages.map((msg, index) => {
+      const isBrief = msg.text.trim().length < 25;
       return {
-        question: `Interview Prompt ${index + 1}: ${msg.phase}`,
-        candidateResponseSummary: msg.text.length > 120 ? msg.text.substring(0, 117) + '...' : msg.text,
-        score: Math.min(100, Math.max(70, Math.round(industryReadinessScore + (Math.sin(index) * 6)))),
-        feedback: 'Good structured breakdown with clear technical terminology and concrete examples.'
+        question: `Interview Turn ${index + 1}: ${msg.phase}`,
+        candidateResponseSummary: msg.text.length > 100 ? msg.text.substring(0, 97) + '...' : msg.text,
+        score: isBrief ? 45 : Math.min(100, Math.max(65, industryReadinessScore + (index % 2 === 0 ? 3 : -2))),
+        feedback: isBrief 
+          ? 'Response was too brief and lacked technical substance.' 
+          : 'Good technical articulation with concrete terminology and architecture.'
       };
     });
 
