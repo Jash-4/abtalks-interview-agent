@@ -61,6 +61,15 @@ Synthesize their strengths, honest growth areas, and outline an actionable caree
   }): Promise<{ reply: string; persona: PersonaType; usedGemini: boolean }> {
     const { persona, candidate, userMessage, rubrics, mcpContext, isGreeting, isWrapUp, currentModule, isPushback } = params;
 
+    // Hard pushback override for vague/short/troll answers
+    if (isPushback) {
+      return {
+        reply: `That answer ("${userMessage.trim()}") is not an engineering response, ${candidate.name}. In a Principal FAANG systems evaluation, one-word answers, greetings, or vague statements will not pass.\n\nPlease address the technical challenge: How do you implement **Hybrid Search (BM25 + Dense embeddings)** and normalize ranking scores using **Reciprocal Rank Fusion (RRF)**? What chunking strategy prevents context fragmentation?`,
+        persona: persona,
+        usedGemini: false
+      };
+    }
+
     if (this.genAI) {
       try {
         const systemInstruction = persona === 'FAANG_EM' 
