@@ -16,7 +16,13 @@ An intelligent, autonomous AI Technical Interview Agent built for the **ABTalks 
    - Evaluates answers in real-time against dynamic FAANG grading rubrics and systems benchmarks.
 3. **⚡ Mock Model Context Protocol (MCP)**:
    - Simulates live inspection of the candidate’s GitHub repository (`mcp__inspect_github_repo`), detecting architecture patterns, test coverage, and code smells to tailor interview questions.
-4. **📦 Structured Output JSON**:
+4. **📊 6-Dimensional Competency SVG Radar Visualization**:
+   - Renders dynamic SVG Radar Chart polygon, axis spokes, vertex data points, and dimension labels (*Technical Depth*, *Architecture*, *Problem Solving*, *Communication*, *Code Craft*, *Domain Expertise*).
+5. **🔊 AI Text Reader Voice Engine**:
+   - Real-time SpeechSynthesis text reader with auto-silence upon entering the ABTalks report card view.
+6. **📄 1-Click Markdown & JSON Export**:
+   - Exports `ABTalks_Report_CandidateName.md` and copies structured JSON payloads directly for judge evaluation.
+7. **📦 Structured Output JSON**:
    - Outputs a production-grade scorecard with category-by-category metrics, key strengths, targeted growth areas, and the ABTalks Industry Readiness Index.
 
 ---
