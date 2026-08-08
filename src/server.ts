@@ -170,11 +170,16 @@ app.get('*', (req: Request, res: Response) => {
 });
 
 // Start Server
-app.listen(PORT, () => {
-  console.log(`=======================================================`);
-  console.log(`🚀 ABTalks AI Interview Agent API running on port ${PORT}`);
-  console.log(`🌐 Candidate Portal: http://localhost:${PORT}`);
-  console.log(`📡 Health Endpoint: http://localhost:${PORT}/health`);
-  console.log(`🤖 Dual Personas: FAANG Engineering Manager + ABTalks Career Mentor`);
-  console.log(`=======================================================`);
-});
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.log(`=======================================================`);
+    console.log(`🚀 ABTalks AI Interview Agent API running on port ${PORT}`);
+    console.log(`🌐 Candidate Portal: http://localhost:${PORT}`);
+    console.log(`📡 Health Endpoint: http://localhost:${PORT}/health`);
+    console.log(`🤖 Dual Personas: FAANG Engineering Manager + ABTalks Career Mentor`);
+    console.log(`=======================================================`);
+  });
+}
+
+export default app;
+export { app };
