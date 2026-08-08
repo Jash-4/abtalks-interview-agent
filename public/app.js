@@ -1,6 +1,36 @@
 // State
 let currentSessionId = null;
 let activePersona = 'FAANG_EM';
+let voiceEnabled = false;
+
+// DOM Elements
+const voiceToggleBtn = document.getElementById('voiceToggleBtn');
+if (voiceToggleBtn) {
+  voiceToggleBtn.addEventListener('click', () => {
+    voiceEnabled = !voiceEnabled;
+    if (voiceEnabled) {
+      voiceToggleBtn.innerText = '🔊 Voice Audio: ON';
+      voiceToggleBtn.style.background = 'rgba(99, 102, 241, 0.35)';
+      voiceToggleBtn.style.color = '#fff';
+      speakText('Voice synthesis activated. I am ready to begin your technical interview.');
+    } else {
+      voiceToggleBtn.innerText = '🔇 Voice Audio: OFF';
+      voiceToggleBtn.style.background = 'rgba(6, 182, 212, 0.15)';
+      voiceToggleBtn.style.color = '#22d3ee';
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    }
+  });
+}
+
+function speakText(text) {
+  if (!voiceEnabled || !('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const clean = text.replace(/[*_#`]/g, '');
+  const utterance = new SpeechSynthesisUtterance(clean);
+  utterance.rate = 1.05;
+  utterance.pitch = 0.95;
+  window.speechSynthesis.speak(utterance);
+}
 
 // DOM Elements
 const startForm = document.getElementById('startForm');
@@ -96,6 +126,7 @@ startForm.addEventListener('submit', async (e) => {
     // Add Greeting Bubble
     appendMessage('agent', data.greeting, activePersona);
     updateStages('GREETING');
+    speakText(data.greeting);
 
   } catch (err) {
     alert('Error: ' + err.message);
@@ -150,6 +181,7 @@ messageForm.addEventListener('submit', async (e) => {
 
     // Append agent reply
     appendMessage('agent', data.agentReply, activePersona);
+    speakText(data.agentReply);
 
     // Check if interview completed
     if (data.isFinished && data.finalReport) {

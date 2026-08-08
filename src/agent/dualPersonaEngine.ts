@@ -163,6 +163,11 @@ Respond directly in character as ${persona}.
       return `Welcome, ${name}. I'm Alex Vance, Principal Engineering Manager. I see you've completed the 31-Day Enterprise AI Engineering Cohort covering RAG, Vector DBs, Agentic AI, and MCP.\n\nToday, we're going to assess your deep systems mastery across the cohort modules. Let's start with **Module 2: RAG & Hybrid Retrieval**.\n\nWhen building a production RAG system for legal or financial documents, why is pure dense embedding search insufficient for exact acronyms and part numbers, and how do you implement **Hybrid Search (BM25 + Dense)** with **Reciprocal Rank Fusion (RRF)**? Walk me through your chunking strategy and score normalization.`;
     }
 
+    // Edge-case safeguard: Handle brief/vague single-word answers
+    if (persona === 'FAANG_EM' && userMessage.trim().length < 25 && !isWrapUp) {
+      return `That's a bit too brief and high-level, ${name}. In a FAANG systems evaluation, we expect concrete technical reasoning rather than high-level buzzwords. Walk me through the exact algorithmic steps, memory footprints, and failure handling you would engineer.`;
+    }
+
     if (persona === 'FAANG_EM') {
       const lower = userMessage.toLowerCase();
 
