@@ -2,6 +2,9 @@
 
 An intelligent, autonomous AI Technical Interview Agent built for the **ABTalks Hackathon** (judged by **Anil Bajpai**).
 
+🎬 **Demo Video**: [Watch 2-Min Live Interview Demo](https://youtube.com) *(Update with your YouTube Link)*
+🌐 **Live App**: [https://abtalks-interview-agent.vercel.app](https://abtalks-interview-agent.vercel.app)
+
 ---
 
 ## 🌟 What Makes It "God Mode"?
@@ -15,6 +18,17 @@ An intelligent, autonomous AI Technical Interview Agent built for the **ABTalks 
    - Simulates live inspection of the candidate’s GitHub repository (`mcp__inspect_github_repo`), detecting architecture patterns, test coverage, and code smells to tailor interview questions.
 4. **📦 Structured Output JSON**:
    - Outputs a production-grade scorecard with category-by-category metrics, key strengths, targeted growth areas, and the ABTalks Industry Readiness Index.
+
+---
+
+## 🏆 The 4 Evaluation Rating Tiers
+
+| Score Range | Verdict Tag | Meaning in ABTalks Cohort Evaluation |
+| :--- | :--- | :--- |
+| **88 – 100** | 🟢 **Immediate Strong Hire** | Passed deep technical grill (RAG BM25 + Dense, HNSW vector indexing, vLLM PagedAttention). FAANG L5/L6 Ready. |
+| **75 – 87** | 🔵 **Hire (L4 / Mid-Level)** | Solid technical depth, clean code snippets, and good system design intuition. |
+| **60 – 74** | 🟠 **Needs Mentorship & Refinement** | Baseline setup completed & role background verified. Ready to complete Stage 2-4 technical modules. |
+| **0 – 59** | 🔴 **Not Ready Yet** | Submitted brief/vague one-word answers (`"hi"`, `"idk"`) during technical questions or failed trade-off rigor. |
 
 ---
 

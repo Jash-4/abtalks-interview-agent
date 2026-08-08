@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
   <!-- Header Bar -->
@@ -21,9 +21,10 @@
       </div>
     </div>
     <div class="status-tags">
-      <span class="badge badge-mcp" id="mcpBadge">⚡ Mock MCP: Ready</span>
-      <span class="badge badge-rag" id="ragBadge">📚 RAG: 6 FAANG Rubrics</span>
-      <span class="badge badge-persona" id="personaBadge">🎭 Persona: FAANG EM</span>
+      <button type="button" class="badge badge-mcp clickable-badge" id="voiceToggleBtn" title="Toggle AI Text Reader Voice" onclick="toggleVoiceAudio(event)">🔊 Voice Audio: Off</button>
+      <button type="button" class="badge badge-mcp clickable-badge" id="mcpBadge" title="Inspect GitHub Mock MCP AST Tool" onclick="showMcpCard(event)">⚡ Mock MCP: Ready</button>
+      <button type="button" class="badge badge-rag clickable-badge" id="ragBadge" title="View 6 FAANG Assessment Rubrics" onclick="toggleRubricsModal(true)">📚 RAG: 6 FAANG Rubrics</button>
+      <button type="button" class="badge badge-persona clickable-badge" id="personaBadge" title="View Dual-Persona Details" onclick="togglePersonaModal(true)">🎭 Persona: FAANG EM</button>
     </div>
   </header>
 
@@ -66,7 +67,7 @@
             <input type="text" id="githubUsername" value="alex-rivera-dev" />
           </div>
 
-          <button type="submit" class="btn btn-primary" id="startBtn">
+          <button type="button" class="btn btn-primary" id="startBtn" onclick="handleStartInterview(event)">
             🚀 Launch Interview Agent
           </button>
         </form>
@@ -95,11 +96,11 @@
     <section class="main-arena">
       <!-- Top Stage Tracker -->
       <div class="stage-bar">
-        <div class="stage-item active" id="stageGreeting">1. Greeting</div>
-        <div class="stage-item" id="stageTech">2. Concurrency & DB</div>
-        <div class="stage-item" id="stageDesign">3. System & Caching</div>
-        <div class="stage-item" id="stageMCP">4. Code & MCP</div>
-        <div class="stage-item" id="stageReport">5. ABTalks Scorecard</div>
+        <button type="button" class="stage-item active" id="stageGreeting" onclick="switchStageView('GREETING')">1. Greeting</button>
+        <button type="button" class="stage-item" id="stageTech" onclick="switchStageView('TECHNICAL_CORE')">2. Concurrency & DB</button>
+        <button type="button" class="stage-item" id="stageDesign" onclick="switchStageView('SYSTEM_DESIGN')">3. System & Caching</button>
+        <button type="button" class="stage-item" id="stageMCP" onclick="switchStageView('CODE_REVIEW')">4. Code & MCP</button>
+        <button type="button" class="stage-item" id="stageReport" onclick="handleFinishEarly(event)">5. ABTalks Scorecard</button>
       </div>
 
       <!-- Chat History Stream -->
@@ -115,8 +116,8 @@
       <div class="input-container hidden" id="inputContainer">
         <!-- Quick Code Insert Toggle -->
         <div class="quick-tools">
-          <button type="button" class="btn-tool" id="toggleCodeBtn">💻 Add Code / Architecture Snippet</button>
-          <button type="button" class="btn-tool" id="finishEarlyBtn">🏁 Finish & View ABTalks Report</button>
+          <button type="button" class="btn-tool" id="toggleCodeBtn" onclick="toggleCode(event)">💻 Add Code / Architecture Snippet</button>
+          <button type="button" class="btn-tool" id="finishEarlyBtn" onclick="handleFinishEarly(event)">🏁 Finish & View ABTalks Report</button>
         </div>
 
         <div class="code-editor-box hidden" id="codeBox">
@@ -124,9 +125,9 @@
           <textarea id="codeSnippet" placeholder="// Paste your locking logic, SQL schema, or TypeScript code here..."></textarea>
         </div>
 
-        <form id="messageForm" class="message-form">
-          <textarea id="userInput" placeholder="Explain your answer, trade-offs, and algorithms... (Shift+Enter for newline, Enter to send)" rows="3" required></textarea>
-          <button type="submit" class="btn btn-send" id="sendBtn">
+        <form id="messageForm" class="message-form" onsubmit="handleSendMessage(event)">
+          <textarea id="userInput" placeholder="Explain your answer, trade-offs, and algorithms... (Shift+Enter for newline, Enter to send)" rows="3" onkeydown="if(event.key === 'Enter' && !event.shiftKey){ event.preventDefault(); handleSendMessage(event); }" required></textarea>
+          <button type="button" class="btn btn-send" id="sendBtn" onclick="handleSendMessage(event)">
             <span>Send</span>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
           </button>
@@ -143,40 +144,48 @@
           </div>
           <div class="verdict-box" id="repVerdictBox">
             <div class="verdict-label">Overall Verdict</div>
-            <div class="verdict-value" id="repVerdict">Immediate Strong Hire</div>
+            <div class="verdict-value" id="repVerdict">Pending Evaluation</div>
           </div>
         </div>
 
         <!-- Metric Gauges Grid -->
         <div class="metrics-grid">
           <div class="metric-card score-hero">
-            <div class="metric-num" id="repReadinessScore">87</div>
+            <div class="metric-num" id="repReadinessScore">0</div>
             <div class="metric-title">Industry Readiness Index</div>
             <div class="metric-sub">Anil Bajpai ABTalks Standard</div>
           </div>
 
           <div class="metric-card">
             <div class="metric-title">Technical Depth</div>
-            <div class="bar-container"><div class="bar-fill" id="barTech" style="width: 88%"></div></div>
-            <div class="metric-footer"><span id="valTech">88%</span> • Concurrency & Data Structures</div>
+            <div class="metric-bar-bg"><div class="metric-bar-fill" id="barTech" style="width: 0%"></div></div>
+            <div class="metric-footer"><span id="valTech">0%</span> • RAG & Algorithmic Rigor</div>
           </div>
 
           <div class="metric-card">
             <div class="metric-title">System Architecture</div>
-            <div class="bar-container"><div class="bar-fill" id="barArch" style="width: 85%"></div></div>
-            <div class="metric-footer"><span id="valArch">85%</span> • Caching & Rate Limiting</div>
+            <div class="metric-bar-bg"><div class="metric-bar-fill" id="barArch" style="width: 0%"></div></div>
+            <div class="metric-footer"><span id="valArch">0%</span> • Quantization & Serving</div>
           </div>
 
           <div class="metric-card">
-            <div class="metric-title">Problem Solving & Trade-offs</div>
-            <div class="bar-container"><div class="bar-fill" id="barSolve" style="width: 90%"></div></div>
-            <div class="metric-footer"><span id="valSolve">90%</span> • Edge Cases & Scalability</div>
+            <div class="metric-title">Problem Solving</div>
+            <div class="metric-bar-bg"><div class="metric-bar-fill" id="barSolve" style="width: 0%"></div></div>
+            <div class="metric-footer"><span id="valSolve">0%</span> • ReAct & Circuit Breakers</div>
           </div>
 
           <div class="metric-card">
             <div class="metric-title">Communication Clarity</div>
-            <div class="bar-container"><div class="bar-fill" id="barComm" style="width: 86%"></div></div>
-            <div class="metric-footer"><span id="valComm">86%</span> • Signal-to-Noise Ratio</div>
+            <div class="metric-bar-bg"><div class="metric-bar-fill" id="barComm" style="width: 0%"></div></div>
+            <div class="metric-footer"><span id="valComm">0%</span> • Signal-to-Noise Ratio</div>
+          </div>
+        </div>
+
+        <!-- Interactive SVG Radar Chart Panel -->
+        <div class="panel panel-radar">
+          <h3>📊 6-Dimensional Competency Radar Visualization</h3>
+          <div class="radar-svg-wrapper">
+            <svg id="radarSvg" viewBox="0 0 400 320" width="100%" height="240"></svg>
           </div>
         </div>
 
@@ -201,18 +210,651 @@
         <div class="json-export-area">
           <div class="json-header">
             <h4>📦 Structured Output JSON (Judges Submission Standard)</h4>
-            <button class="btn-copy" id="copyJsonBtn">📋 Copy JSON</button>
+            <div class="json-actions">
+              <button type="button" class="btn-copy" id="copyJsonBtn" onclick="copyJsonPayload(event)">📋 Copy JSON</button>
+              <button type="button" class="btn-copy" id="downloadMdBtn" onclick="downloadReportMd(event)">📄 Download Report (.md)</button>
+            </div>
           </div>
           <pre><code id="jsonCodeBlock">{}</code></pre>
         </div>
 
         <div class="report-actions">
-          <button class="btn btn-primary" id="restartBtn">🔄 Start Another Interview</button>
+          <button type="button" class="btn btn-primary" id="restartBtn" onclick="location.reload()">🔄 Start Another Interview</button>
         </div>
       </div>
     </section>
   </main>
 
-  <script src="app.js"></script>
+  <!-- Interactive Rubrics Modal -->
+  <div class="modal-overlay hidden" id="rubricsModalOverlay" onclick="if(event.target===this)toggleRubricsModal(false)">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>📚 RAG Knowledge Base — 6 FAANG System Rubrics</h3>
+        <button type="button" class="btn-close" id="closeRubricsBtn" onclick="toggleRubricsModal(false)">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">These 6 core FAANG engineering criteria ground Alex Vance's technical evaluation and score weights:</p>
+        <div class="rubrics-grid">
+          <div class="rubric-item">
+            <div class="rubric-title">1. RAG & Hybrid Retrieval (BM25 + Dense + RRF)</div>
+            <div class="rubric-detail">Weight: 30% • Tests chunking strategies, exact acronym matching via BM25, semantic vector embeddings, and Reciprocal Rank Fusion normalization.</div>
+          </div>
+          <div class="rubric-item">
+            <div class="rubric-title">2. Vector DB Indexing (HNSW vs IVF-PQ)</div>
+            <div class="rubric-detail">Weight: 25% • Evaluates memory footprints, recall degradation, quantization trade-offs, and high-concurrency QPS bounds.</div>
+          </div>
+          <div class="rubric-item">
+            <div class="rubric-title">3. Agentic AI & Tool Orchestration (ReAct Loops)</div>
+            <div class="rubric-detail">Weight: 25% • Assesses infinite ReAct loop detection, state persistence, circuit breakers, and supervisor agent reflection loops.</div>
+          </div>
+          <div class="rubric-item">
+            <div class="rubric-title">4. Model Context Protocol (MCP v1.0)</div>
+            <div class="rubric-detail">Weight: 20% • Tests standard JSON-RPC tool discovery, security permission boundaries, AST parsing, and database resources.</div>
+          </div>
+          <div class="rubric-item">
+            <div class="rubric-title">5. Production Serving & vLLM (PagedAttention)</div>
+            <div class="rubric-detail">Weight: 20% • Tests KV cache memory fragmentation elimination, Redis semantic caching, and Time-To-First-Token (TTFT) reduction.</div>
+          </div>
+          <div class="rubric-item">
+            <div class="rubric-title">6. Distributed Systems Observability & Telemetry</div>
+            <div class="rubric-detail">Weight: 15% • Tests p99 latency SLA targets, circuit breaking, OpenTelemetry tracing, and graceful degradation under burst traffic.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Dual-Persona Modal -->
+  <div class="modal-overlay hidden" id="personaModalOverlay" onclick="if(event.target===this)togglePersonaModal(false)">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>🎭 Dual-Persona Architectural Architecture</h3>
+        <button type="button" class="btn-close" id="closePersonaBtn" onclick="togglePersonaModal(false)">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="persona-card-row">
+          <div class="persona-info-box em">
+            <h4>⚡ Alex Vance (Principal FAANG EM)</h4>
+            <p>Phase 1 to 4 Interrogator. Demands algorithmic precision, memory footprints, concurrency trade-offs, and pushes back strictly on vague/short inputs.</p>
+          </div>
+          <div class="persona-info-box mentor">
+            <h4>🎙️ Anil Bajpai (ABTalks Career Mentor)</h4>
+            <p>Phase 5 Evaluator. Synthesizes overall performance, generates the ABTalks Industry Readiness Scorecard, and delivers an actionable mentorship roadmap.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.voiceEnabled = false;
+
+    function speakText(text) {
+      if (!window.voiceEnabled) return;
+      if (!('speechSynthesis' in window)) return;
+      
+      try {
+        window.speechSynthesis.cancel();
+        var clean = (text || '').replace(/[*_#`]/g, '').replace(/<[^>]*>/g, '');
+        if (!clean.trim()) return;
+        var utterance = new SpeechSynthesisUtterance(clean);
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;
+
+        var voices = window.speechSynthesis.getVoices();
+        if (voices && voices.length > 0) {
+          var englishVoice = voices.find(function(v) {
+            return v.lang && v.lang.startsWith('en') && (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Daniel') || v.name.includes('Alex') || v.name.includes('Microsoft') || v.name.includes('English'));
+          });
+          if (englishVoice) utterance.voice = englishVoice;
+        }
+
+        setTimeout(function() {
+          window.speechSynthesis.speak(utterance);
+        }, 60);
+      } catch (err) {
+        console.warn('Speech synthesis error:', err);
+      }
+    }
+    window.speakText = speakText;
+
+    function toggleVoiceAudio(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      var btn = document.getElementById('voiceToggleBtn');
+      window.voiceEnabled = !window.voiceEnabled;
+      if (btn) {
+        if (window.voiceEnabled) {
+          btn.innerText = '🔊 Voice Audio: ON';
+          btn.style.background = 'rgba(16, 185, 129, 0.25)';
+          btn.style.borderColor = 'rgba(16, 185, 129, 0.5)';
+          btn.style.color = '#34d399';
+          speakText('Voice text reader enabled.');
+        } else {
+          btn.innerText = '🔊 Voice Audio: OFF';
+          btn.style.background = 'rgba(99, 102, 241, 0.2)';
+          btn.style.borderColor = '#818cf8';
+          btn.style.color = '#fff';
+          if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        }
+      }
+    }
+    function toggleMic(e) {}
+
+    function showMcpCard(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      var mcpCard = document.getElementById('mcpCard');
+      if (mcpCard) {
+        mcpCard.classList.remove('hidden');
+        mcpCard.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    function toggleRubricsModal(show) {
+      var overlay = document.getElementById('rubricsModalOverlay');
+      if (overlay) {
+        if (show) overlay.classList.remove('hidden');
+        else overlay.classList.add('hidden');
+      }
+    }
+
+    function togglePersonaModal(show) {
+      var overlay = document.getElementById('personaModalOverlay');
+      if (overlay) {
+        if (show) overlay.classList.remove('hidden');
+        else overlay.classList.add('hidden');
+      }
+    }
+
+    function toggleCode(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      var codeBox = document.getElementById('codeBox');
+      if (codeBox) codeBox.classList.toggle('hidden');
+    }
+
+    function toggleMic(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert('Web Speech API is not supported in this browser version.');
+        return;
+      }
+      var recognition = new SpeechRecognition();
+      recognition.lang = 'en-US';
+      recognition.interimResults = false;
+      var micBtn = document.getElementById('micBtn');
+      if (micBtn) micBtn.style.background = 'rgba(239, 68, 68, 0.4)';
+      recognition.onresult = function(event) {
+        var transcript = event.results[0][0].transcript;
+        var userInput = document.getElementById('userInput');
+        if (userInput) userInput.value = (userInput.value ? userInput.value + ' ' : '') + transcript;
+        if (micBtn) micBtn.style.background = 'rgba(99, 102, 241, 0.2)';
+      };
+      recognition.onerror = function() {
+        if (micBtn) micBtn.style.background = 'rgba(99, 102, 241, 0.2)';
+      };
+      recognition.onend = function() {
+        if (micBtn) micBtn.style.background = 'rgba(99, 102, 241, 0.2)';
+      };
+      recognition.start();
+    }
+
+    async function handleStartInterview(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      var btn = document.getElementById('startBtn');
+      if (!btn) return;
+      btn.disabled = true;
+      btn.innerText = 'Initializing Agent & MCP...';
+
+      var nameVal = document.getElementById('candidateName') ? document.getElementById('candidateName').value : 'Alex Rivera';
+      var roleVal = document.getElementById('candidateRole') ? document.getElementById('candidateRole').value : 'Full Stack Engineer';
+      var expVal = document.getElementById('experienceYears') ? document.getElementById('experienceYears').value : '4';
+      var levelVal = document.getElementById('targetLevel') ? document.getElementById('targetLevel').value : 'FAANG L5';
+      var ghVal = document.getElementById('githubUsername') ? document.getElementById('githubUsername').value : 'alex-rivera-dev';
+
+      try {
+        var res = await fetch('/api/interview/start', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: nameVal,
+            role: roleVal,
+            experienceYears: expVal,
+            targetCompanyLevel: levelVal,
+            githubUsername: ghVal
+          })
+        });
+
+        var data = await res.json();
+        if (!data.success) throw new Error(data.error || 'Start failed');
+
+        window.currentSessionId = data.sessionId;
+        window.activePersona = data.activePersona;
+
+        // Auto-enable Voice Audio on session launch
+        window.voiceEnabled = true;
+        var btnVoice = document.getElementById('voiceToggleBtn');
+        if (btnVoice) {
+          btnVoice.innerText = '🔊 Voice Audio: ON';
+          btnVoice.style.background = 'rgba(16, 185, 129, 0.25)';
+          btnVoice.style.borderColor = 'rgba(16, 185, 129, 0.5)';
+          btnVoice.style.color = '#34d399';
+        }
+
+        var emptyState = document.getElementById('emptyState');
+        if (emptyState) emptyState.style.display = 'none';
+
+        var inputContainer = document.getElementById('inputContainer');
+        if (inputContainer) inputContainer.classList.remove('hidden');
+
+        var mcpCard = document.getElementById('mcpCard');
+        if (data.mcpGithubContext && mcpCard) {
+          mcpCard.classList.remove('hidden');
+          var mcpRepo = document.getElementById('mcpRepo');
+          var mcpGrade = document.getElementById('mcpGrade');
+          var mcpArch = document.getElementById('mcpArch');
+          var mcpHighlights = document.getElementById('mcpHighlights');
+          var mcpSmells = document.getElementById('mcpSmells');
+          if (mcpRepo) mcpRepo.innerText = data.mcpGithubContext.repoName;
+          if (mcpGrade) mcpGrade.innerText = 'Grade ' + data.mcpGithubContext.codeQualityRating;
+          if (mcpArch) mcpArch.innerText = data.mcpGithubContext.architectureType;
+          if (mcpHighlights) mcpHighlights.innerHTML = data.mcpGithubContext.highlights.map(h => '<li>✨ ' + h + '</li>').join('');
+          if (mcpSmells) mcpSmells.innerHTML = data.mcpGithubContext.vulnerabilitiesOrSmells.map(s => '<li>⚠️ ' + s + '</li>').join('');
+        }
+
+        if (typeof appendMessage === 'function') {
+          appendMessage('agent', data.greeting, window.activePersona);
+        } else {
+          var viewport = document.getElementById('chatViewport');
+          var bubble = document.createElement('div');
+          bubble.className = 'chat-bubble agent';
+          bubble.innerHTML = '<div class="bubble-meta"><span>⚡ Alex Vance (FAANG Principal EM)</span></div><div style="margin-top:8px;">' + data.greeting + '</div>';
+          if (viewport) viewport.appendChild(bubble);
+        }
+
+        speakText(data.greeting);
+
+      } catch (err) {
+        alert('Session Start Error: ' + err.message);
+        btn.disabled = false;
+        btn.innerText = '🚀 Launch Interview Agent';
+      }
+    }
+
+    async function handleSendMessage(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      var userInput = document.getElementById('userInput');
+      var codeSnippet = document.getElementById('codeSnippet');
+      if (!userInput) return;
+      var text = userInput.value.trim();
+      var code = codeSnippet ? codeSnippet.value.trim() : '';
+
+      if (!text || !window.currentSessionId) {
+        if (!window.currentSessionId) alert('Please click Launch Interview Agent first!');
+        return;
+      }
+
+      if (typeof appendMessage === 'function') {
+        appendMessage('user', text, null, code || undefined);
+      } else {
+        var viewport = document.getElementById('chatViewport');
+        var bubble = document.createElement('div');
+        bubble.className = 'chat-bubble user';
+        bubble.innerHTML = '<div class="bubble-meta"><span>👤 Candidate</span></div><div style="margin-top:8px;">' + text + '</div>';
+        if (viewport) viewport.appendChild(bubble);
+      }
+
+      userInput.value = '';
+      if (codeSnippet) codeSnippet.value = '';
+      var codeBox = document.getElementById('codeBox');
+      if (codeBox) codeBox.classList.add('hidden');
+
+      var chatViewport = document.getElementById('chatViewport');
+      var typingIndicator = document.createElement('div');
+      typingIndicator.className = 'chat-bubble agent';
+      typingIndicator.id = 'typingIndicator';
+      typingIndicator.innerText = window.activePersona === 'FAANG_EM' ? 'Alex Vance is analyzing system trade-offs...' : 'Anil Bajpai is evaluating Industry Readiness...';
+      if (chatViewport) {
+        chatViewport.appendChild(typingIndicator);
+        chatViewport.scrollTop = chatViewport.scrollHeight;
+      }
+
+      try {
+        var res = await fetch('/api/interview/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sessionId: window.currentSessionId,
+            message: text,
+            codeSnippet: code || undefined
+          })
+        });
+
+        var data = await res.json();
+        if (!data.success) throw new Error(data.error || 'Chat failed');
+
+        var ind = document.getElementById('typingIndicator');
+        if (ind) ind.remove();
+
+        window.activePersona = data.activePersona;
+        if (typeof updatePersonaBadge === 'function') updatePersonaBadge(window.activePersona);
+        if (typeof updateStages === 'function') updateStages(data.currentPhase);
+
+        if (typeof appendMessage === 'function') {
+          appendMessage('agent', data.agentReply, window.activePersona);
+        } else {
+          var bubble = document.createElement('div');
+          var isMentor = window.activePersona === 'ABTALKS_MENTOR';
+          bubble.className = 'chat-bubble agent ' + (isMentor ? 'mentor' : '');
+          var title = isMentor ? '🎙️ Anil Bajpai (ABTalks Career Mentor)' : '⚡ Alex Vance (FAANG Principal EM)';
+          bubble.innerHTML = '<div class="bubble-meta"><span>' + title + '</span></div><div style="margin-top:8px;">' + data.agentReply + '</div>';
+          if (chatViewport) chatViewport.appendChild(bubble);
+        }
+
+        speakText(data.agentReply);
+
+        if (data.isFinished && data.finalReport) {
+          setTimeout(function() {
+            if (typeof renderFinalReport === 'function') renderFinalReport(data.finalReport);
+          }, 1000);
+        }
+
+      } catch (err) {
+        var ind = document.getElementById('typingIndicator');
+        if (ind) ind.remove();
+        alert('Communication Error: ' + err.message);
+      }
+    }
+
+    async function handleFinishEarly(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      if (!window.currentSessionId) {
+        alert('Please launch an interview session first!');
+        return;
+      }
+      if (!confirm('Are you ready to conclude the technical grill and generate your ABTalks Industry Readiness Scorecard?')) return;
+
+      try {
+        var res = await fetch('/api/interview/finish', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sessionId: window.currentSessionId })
+        });
+        var data = await res.json();
+        if (data.success && data.report) {
+          if (typeof renderFinalReport === 'function') renderFinalReport(data.report);
+        }
+      } catch (err) {
+        alert('Error finalizing: ' + err.message);
+      }
+    }
+
+    function updateStages(currentPhase) {
+      var stages = {
+        'GREETING': 'stageGreeting',
+        'TECHNICAL_CORE': 'stageTech',
+        'SYSTEM_DESIGN': 'stageDesign',
+        'CODE_REVIEW': 'stageMCP',
+        'REPORT': 'stageReport'
+      };
+      var allKeys = Object.keys(stages);
+      var activeId = stages[currentPhase] || 'stageGreeting';
+
+      allKeys.forEach(function(phase) {
+        var el = document.getElementById(stages[phase]);
+        if (el) {
+          if (stages[phase] === activeId) {
+            el.classList.add('active');
+          } else {
+            el.classList.remove('active');
+          }
+        }
+      });
+    }
+
+    function switchStageView(stage) {
+      updateStages(stage);
+      if (stage === 'REPORT') {
+        window.voiceEnabled = false;
+        var btnVoice = document.getElementById('voiceToggleBtn');
+        if (btnVoice) {
+          btnVoice.innerText = '🔊 Voice Audio: OFF';
+          btnVoice.style.background = 'rgba(99, 102, 241, 0.2)';
+          btnVoice.style.borderColor = '#818cf8';
+          btnVoice.style.color = '#fff';
+        }
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      }
+      var chatViewport = document.getElementById('chatViewport');
+      var inputContainer = document.getElementById('inputContainer');
+      var reportView = document.getElementById('reportView');
+      if (reportView) reportView.classList.add('hidden');
+      if (chatViewport) chatViewport.classList.remove('hidden');
+      if (inputContainer && window.currentSessionId) inputContainer.classList.remove('hidden');
+    }
+
+    function renderRadarChart(scores, baseScore) {
+      var svg = document.getElementById('radarSvg');
+      if (!svg) return;
+
+      var fallback = baseScore || 53;
+      var s = scores || {};
+      var tech = (s.technicalProficiency !== undefined) ? s.technicalProficiency : ((s.technicalDepth !== undefined) ? s.technicalDepth : fallback);
+      var arch = (s.systemArchitecture !== undefined) ? s.systemArchitecture : ((s.architecture !== undefined) ? s.architecture : fallback);
+      var solve = (s.problemSolving !== undefined) ? s.problemSolving : fallback;
+      var comm = (s.communicationClarity !== undefined) ? s.communicationClarity : fallback;
+      var craft = (s.codeCraftsmanship !== undefined) ? s.codeCraftsmanship : ((s.codeCraft !== undefined) ? s.codeCraft : fallback);
+      var domain = (s.domainExpertise !== undefined) ? s.domainExpertise : ((s.domain !== undefined) ? s.domain : fallback);
+
+      var cx = 200, cy = 150, maxR = 95;
+      var labels = ['Technical Depth', 'Architecture', 'Problem Solving', 'Communication', 'Code Craft', 'Domain Expertise'];
+      var vals = [tech, arch, solve, comm, craft, domain];
+      var angles = [-90, -30, 30, 90, 150, 210];
+
+      var svgContent = '';
+
+      // Grid rings (20%, 40%, 60%, 80%, 100%)
+      [0.2, 0.4, 0.6, 0.8, 1.0].forEach(function(level) {
+        var ringPoints = angles.map(function(a) {
+          var rad = a * (Math.PI / 180);
+          var r = maxR * level;
+          return (cx + r * Math.cos(rad)).toFixed(1) + ',' + (cy + r * Math.sin(rad)).toFixed(1);
+        }).join(' ');
+        svgContent += '<polygon points="' + ringPoints + '" fill="none" stroke="rgba(255, 255, 255, 0.12)" stroke-width="1"/>';
+      });
+
+      // Axis spokes & labels
+      angles.forEach(function(a, idx) {
+        var rad = a * (Math.PI / 180);
+        var x2 = cx + maxR * Math.cos(rad);
+        var y2 = cy + maxR * Math.sin(rad);
+        svgContent += '<line x1="' + cx + '" y1="' + cy + '" x2="' + x2 + '" y2="' + y2 + '" stroke="rgba(255, 255, 255, 0.2)" stroke-width="1"/>';
+
+        var lx = cx + (maxR + 32) * Math.cos(rad);
+        var ly = cy + (maxR + 16) * Math.sin(rad);
+        var anchor = (Math.abs(Math.cos(rad)) < 0.2) ? 'middle' : (Math.cos(rad) > 0 ? 'start' : 'end');
+        svgContent += '<text x="' + lx.toFixed(1) + '" y="' + ly.toFixed(1) + '" fill="#cbd5e1" font-size="11" font-weight="600" text-anchor="' + anchor + '">' + labels[idx] + ' (' + vals[idx] + '%)</text>';
+      });
+
+      // Data polygon
+      var dataPointsArr = angles.map(function(a, idx) {
+        var rad = a * (Math.PI / 180);
+        var r = (vals[idx] / 100) * maxR;
+        return {
+          x: cx + r * Math.cos(rad),
+          y: cy + r * Math.sin(rad)
+        };
+      });
+      var polyPoints = dataPointsArr.map(function(p) { return p.x.toFixed(1) + ',' + p.y.toFixed(1); }).join(' ');
+
+      svgContent += '<polygon points="' + polyPoints + '" fill="rgba(99, 102, 241, 0.4)" stroke="#818cf8" stroke-width="3"/>';
+
+      // Data dots
+      dataPointsArr.forEach(function(p) {
+        svgContent += '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="4.5" fill="#38bdf8" stroke="#ffffff" stroke-width="2"/>';
+      });
+
+      svg.innerHTML = svgContent;
+    }
+
+    function renderFinalReport(report) {
+      window.voiceEnabled = false;
+      var btnVoice = document.getElementById('voiceToggleBtn');
+      if (btnVoice) {
+        btnVoice.innerText = '🔊 Voice Audio: OFF';
+        btnVoice.style.background = 'rgba(99, 102, 241, 0.2)';
+        btnVoice.style.borderColor = '#818cf8';
+        btnVoice.style.color = '#fff';
+      }
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      window.lastReportData = report;
+      var chatViewport = document.getElementById('chatViewport');
+      var inputContainer = document.getElementById('inputContainer');
+      var reportView = document.getElementById('reportView');
+
+      if (chatViewport) chatViewport.classList.add('hidden');
+      if (inputContainer) inputContainer.classList.add('hidden');
+      if (reportView) reportView.classList.remove('hidden');
+
+      updateStages('REPORT');
+
+      var repName = document.getElementById('repCandidateName');
+      var repVerdict = document.getElementById('repVerdict');
+      var repScore = document.getElementById('repReadinessScore');
+      var repVerdictBox = document.getElementById('repVerdictBox');
+
+      if (repName) repName.innerText = (report.candidate || 'Alex Rivera') + ' — ' + (report.role || 'Software Engineer');
+      var scoreVal = report.readinessScore || report.industryReadinessScore || 75;
+      if (repScore) repScore.innerText = scoreVal;
+
+      var verdictText = report.verdict || report.overallVerdict || 'Needs Mentorship';
+      if (repVerdict) repVerdict.innerText = verdictText;
+
+      if (repVerdictBox) {
+        if (scoreVal >= 80) {
+          repVerdictBox.style.background = 'rgba(16, 185, 129, 0.2)';
+          repVerdictBox.style.borderColor = '#10b981';
+          if (repVerdict) repVerdict.style.color = '#34d399';
+        } else if (scoreVal >= 65) {
+          repVerdictBox.style.background = 'rgba(245, 158, 11, 0.2)';
+          repVerdictBox.style.borderColor = '#f59e0b';
+          if (repVerdict) repVerdict.style.color = '#fbbf24';
+        } else {
+          repVerdictBox.style.background = 'rgba(239, 68, 68, 0.2)';
+          repVerdictBox.style.borderColor = '#ef4444';
+          if (repVerdict) repVerdict.style.color = '#f87171';
+        }
+      }
+
+      var b = report.scores || report.breakdown || {};
+      var valTech = document.getElementById('valTech');
+      var barTech = document.getElementById('barTech');
+      var valArch = document.getElementById('valArch');
+      var barArch = document.getElementById('barArch');
+      var valSolve = document.getElementById('valSolve');
+      var barSolve = document.getElementById('barSolve');
+      var valComm = document.getElementById('valComm');
+      var barComm = document.getElementById('barComm');
+
+      var tVal = (b.technicalProficiency !== undefined) ? b.technicalProficiency : ((b.technicalDepth !== undefined) ? b.technicalDepth : scoreVal);
+      var aVal = (b.systemArchitecture !== undefined) ? b.systemArchitecture : ((b.architecture !== undefined) ? b.architecture : scoreVal);
+      var sVal = (b.problemSolving !== undefined) ? b.problemSolving : scoreVal;
+      var cVal = (b.communicationClarity !== undefined) ? b.communicationClarity : scoreVal;
+
+      if (valTech) valTech.innerText = tVal + '%';
+      if (barTech) barTech.style.width = tVal + '%';
+      if (valArch) valArch.innerText = aVal + '%';
+      if (barArch) barArch.style.width = aVal + '%';
+      if (valSolve) valSolve.innerText = sVal + '%';
+      if (barSolve) barSolve.style.width = sVal + '%';
+      if (valComm) valComm.innerText = cVal + '%';
+      if (barComm) barComm.style.width = cVal + '%';
+
+      renderRadarChart(b, scoreVal);
+
+      var strList = document.getElementById('repStrengthsList');
+      var impList = document.getElementById('repImprovementsList');
+      var roadList = document.getElementById('repRoadmapList');
+
+      if (strList && report.strengths) strList.innerHTML = report.strengths.map(function(s) { return '<li>' + s + '</li>'; }).join('');
+      if (impList && (report.areasForImprovement || report.improvements)) {
+        var arr = report.areasForImprovement || report.improvements;
+        impList.innerHTML = arr.map(function(i) { return '<li>' + i + '</li>'; }).join('');
+      }
+      if (roadList && (report.careerMentorshipRoadmap || report.roadmap)) {
+        var arrR = report.careerMentorshipRoadmap || report.roadmap;
+        roadList.innerHTML = arrR.map(function(r) { return '<li>' + r + '</li>'; }).join('');
+      }
+
+      var jsonBlock = document.getElementById('jsonCodeBlock');
+      if (jsonBlock) jsonBlock.innerText = JSON.stringify(report, null, 2);
+
+      if (reportView) reportView.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function downloadReportMd(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      var report = window.lastReportData;
+      if (!report) {
+        alert('No active evaluation report found to download.');
+        return;
+      }
+      var b = report.scores || report.breakdown || {};
+      var mdContent = '# ABTalks Technical Evaluation & Readiness Certificate\n\n' +
+        '**Candidate Name:** ' + (report.candidate || 'Alex Rivera') + '\n' +
+        '**Target Role:** ' + (report.role || 'Senior Backend Engineer') + '\n' +
+        '**Overall Readiness Score:** ' + (report.readinessScore || report.industryReadinessScore || 75) + '/100\n' +
+        '**Verdict:** ' + (report.verdict || report.overallVerdict || 'Needs Mentorship') + '\n\n' +
+        '## Competency Score Breakdown\n' +
+        '- Technical Depth: ' + (b.technicalDepth || b.technicalProficiency || 70) + '/100\n' +
+        '- System Architecture: ' + (b.architecture || b.systemArchitecture || 70) + '/100\n' +
+        '- Problem Solving: ' + (b.problemSolving || 70) + '/100\n' +
+        '- Communication Clarity: ' + (b.communicationClarity || 70) + '/100\n\n' +
+        '## Key Strengths\n' +
+        (report.strengths ? report.strengths.map(function(s) { return '- ' + s; }).join('\n') : '- Strong technical fundamentals') + '\n\n' +
+        '## Growth Areas\n' +
+        ((report.areasForImprovement || report.improvements) ? (report.areasForImprovement || report.improvements).map(function(i) { return '- ' + i; }).join('\n') : '- Deepen distributed locking mechanics') + '\n\n' +
+        '## ABTalks Career Roadmap\n' +
+        ((report.careerMentorshipRoadmap || report.roadmap) ? (report.careerMentorshipRoadmap || report.roadmap).map(function(r) { return '1. ' + r; }).join('\n') : '1. Practice HNSW vs IVF vector indexing');
+
+      var blob = new Blob([mdContent], { type: 'text/markdown' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'ABTalks_Report_' + (report.candidate || 'Candidate').replace(/\s+/g, '_') + '.md';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function copyJsonPayload(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      var jsonBlock = document.getElementById('jsonCodeBlock');
+      if (jsonBlock && jsonBlock.innerText) {
+        navigator.clipboard.writeText(jsonBlock.innerText).then(function() {
+          alert('ABTalks Scorecard JSON copied to clipboard!');
+        });
+      }
+    }
+
+    window.handleStartInterview = handleStartInterview;
+    window.handleSendMessage = handleSendMessage;
+    window.handleFinishEarly = handleFinishEarly;
+    window.toggleCode = toggleCode;
+    window.toggleMic = toggleMic;
+    window.toggleVoiceAudio = toggleVoiceAudio;
+    window.showMcpCard = showMcpCard;
+    window.toggleRubricsModal = toggleRubricsModal;
+    window.togglePersonaModal = togglePersonaModal;
+    window.switchStageView = switchStageView;
+    window.renderFinalReport = renderFinalReport;
+    window.downloadReportMd = downloadReportMd;
+    window.copyJsonPayload = copyJsonPayload;
+    window.updateStages = updateStages;
+  </script>
+  <script src="app.js?v=7_inline_all"></script>
 </body>
 </html>

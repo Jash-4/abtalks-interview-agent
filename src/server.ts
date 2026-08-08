@@ -15,7 +15,17 @@ const PORT = process.env.PORT || 3000;
 // Middlewares
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '../public')));
+
+// Disable Caching for Vercel Serverless
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  next();
+});
+
+const publicDir = path.resolve(process.cwd(), 'public');
+app.use(express.static(publicDir));
 
 // Initialize State Machine
 const stateMachine = new InterviewStateMachine();
@@ -31,11 +41,13 @@ app.get('/health', (req: Request, res: Response) => {
   });
 });
 
+const apiRouter = express.Router();
+
 /**
- * 1. Start Interview Session
- * POST /api/interview/start
+ * 1. Initialize Interview Session
+ * POST /api/interview/session
  */
-app.post('/api/interview/start', async (req: Request, res: Response): Promise<void> => {
+apiRouter.post(['/interview/start', '/interview/session'], async (req: Request, res: Response): Promise<void> => {
   try {
     const { name, role, experienceYears, targetCompanyLevel, githubUsername, techStack } = req.body;
 
@@ -70,16 +82,17 @@ app.post('/api/interview/start', async (req: Request, res: Response): Promise<vo
  * 2. Send Candidate Message / Code
  * POST /api/interview/chat
  */
-app.post('/api/interview/chat', async (req: Request, res: Response): Promise<void> => {
+apiRouter.post('/interview/chat', async (req: Request, res: Response): Promise<void> => {
   try {
-    const { sessionId, message, codeSnippet } = req.body;
+    const { sessionId, message, userText, codeSnippet } = req.body;
+    const textToProcess = message || userText;
 
-    if (!sessionId || !message) {
-      res.status(400).json({ success: false, error: 'sessionId and message are required.' });
+    if (!sessionId || !textToProcess) {
+      res.status(400).json({ success: false, error: 'sessionId and message (or userText) are required.' });
       return;
     }
 
-    const result = await stateMachine.processCandidateMessage(sessionId, message, codeSnippet);
+    const result = await stateMachine.processCandidateMessage(sessionId, textToProcess, codeSnippet);
 
     res.status(200).json({
       success: true,
@@ -100,7 +113,7 @@ app.post('/api/interview/chat', async (req: Request, res: Response): Promise<voi
  * 3. Finalize & Get Structured JSON Report
  * POST /api/interview/finish
  */
-app.post('/api/interview/finish', (req: Request, res: Response): void => {
+apiRouter.post('/interview/finish', (req: Request, res: Response): void => {
   try {
     const { sessionId } = req.body;
     if (!sessionId) {
@@ -123,7 +136,7 @@ app.post('/api/interview/finish', (req: Request, res: Response): void => {
  * 4. Fetch Session Snapshot
  * GET /api/interview/:id
  */
-app.get('/api/interview/:id', (req: Request, res: Response): void => {
+apiRouter.get('/interview/:id', (req: Request, res: Response): void => {
   const session = stateMachine.getSession(req.params.id);
   if (!session) {
     res.status(404).json({ success: false, error: 'Session not found.' });
@@ -136,7 +149,7 @@ app.get('/api/interview/:id', (req: Request, res: Response): void => {
  * 5. Mock MCP Endpoint (Direct query for judges/testing)
  * GET /api/mcp/github-inspect?username=...
  */
-app.get('/api/mcp/github-inspect', async (req: Request, res: Response): Promise<void> => {
+apiRouter.get('/mcp/github-inspect', async (req: Request, res: Response): Promise<void> => {
   try {
     const username = (req.query.username as string) || 'candidate-dev';
     const role = (req.query.role as string) || 'backend';
@@ -156,7 +169,7 @@ app.get('/api/mcp/github-inspect', async (req: Request, res: Response): Promise<
  * 6. Query RAG Rubrics
  * GET /api/rubrics
  */
-app.get('/api/rubrics', (req: Request, res: Response): void => {
+apiRouter.get('/rubrics', (req: Request, res: Response): void => {
   const query = (req.query.q as string) || '';
   const rubrics = query 
     ? RubricKnowledgeBase.retrieveRelevantRubrics(query, 5)
@@ -164,17 +177,26 @@ app.get('/api/rubrics', (req: Request, res: Response): void => {
   res.status(200).json({ success: true, count: rubrics.length, rubrics });
 });
 
+// Mount router on both /api and root / for Vercel Serverless Function compatibility
+app.use('/api', apiRouter);
+app.use('/', apiRouter);
+
 // Fallback to Index for SPA
 app.get('*', (req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
+  res.sendFile(path.resolve(process.cwd(), 'public/index.html'));
 });
 
 // Start Server
-app.listen(PORT, () => {
-  console.log(`=======================================================`);
-  console.log(`🚀 ABTalks AI Interview Agent API running on port ${PORT}`);
-  console.log(`🌐 Candidate Portal: http://localhost:${PORT}`);
-  console.log(`📡 Health Endpoint: http://localhost:${PORT}/health`);
-  console.log(`🤖 Dual Personas: FAANG Engineering Manager + ABTalks Career Mentor`);
-  console.log(`=======================================================`);
-});
+if (process.env.NODE_ENV !== 'test' && !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`=======================================================`);
+    console.log(`🚀 ABTalks AI Interview Agent API running on port ${PORT}`);
+    console.log(`🌐 Candidate Portal: http://localhost:${PORT}`);
+    console.log(`📡 Health Endpoint: http://localhost:${PORT}/health`);
+    console.log(`🤖 Dual Personas: FAANG Engineering Manager + ABTalks Career Mentor`);
+    console.log(`=======================================================`);
+  });
+}
+
+export default app;
+export { app };
