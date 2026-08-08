@@ -7,6 +7,7 @@ let voiceEnabled = false;
 const voiceToggleBtn = document.getElementById('voiceToggleBtn');
 
 function speakText(text) {
+  if (!window.voiceEnabled && !voiceEnabled) return;
   if (!('speechSynthesis' in window)) return;
   window.speechSynthesis.cancel();
   const clean = text.replace(/[*_#`]/g, '');
