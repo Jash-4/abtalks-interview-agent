@@ -187,6 +187,7 @@ async function handleStartInterview(e) {
 
 if (startForm) startForm.onsubmit = handleStartInterview;
 if (startBtn) startBtn.onclick = handleStartInterview;
+window.handleStartInterview = handleStartInterview;
 
 // 2. Handle Sending Candidate Message
 messageForm.addEventListener('submit', async (e) => {
