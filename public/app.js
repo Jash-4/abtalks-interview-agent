@@ -146,7 +146,8 @@ async function handleStartInterview(e) {
   };
 
   try {
-    const res = await fetch('/api/interview/start', {
+    const apiBase = window.location.origin;
+    const res = await fetch(`${apiBase}/api/interview/start`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
@@ -212,7 +213,8 @@ messageForm.addEventListener('submit', async (e) => {
   chatViewport.scrollTop = chatViewport.scrollHeight;
 
   try {
-    const res = await fetch('/api/interview/chat', {
+    const apiBase = window.location.origin;
+    const res = await fetch(`${apiBase}/api/interview/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
