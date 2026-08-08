@@ -289,6 +289,78 @@
     </div>
   </div>
 
-  <script src="app.js?v=5_fresh"></script>
+  <script>
+    async function handleStartInterview(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      var btn = document.getElementById('startBtn');
+      if (!btn) return;
+      btn.disabled = true;
+      btn.innerText = 'Initializing Agent & MCP...';
+
+      var nameVal = document.getElementById('candidateName') ? document.getElementById('candidateName').value : 'Alex Rivera';
+      var roleVal = document.getElementById('candidateRole') ? document.getElementById('candidateRole').value : 'Full Stack Engineer';
+      var expVal = document.getElementById('experienceYears') ? document.getElementById('experienceYears').value : '4';
+      var levelVal = document.getElementById('targetLevel') ? document.getElementById('targetLevel').value : 'FAANG L5';
+      var ghVal = document.getElementById('githubUsername') ? document.getElementById('githubUsername').value : 'alex-rivera-dev';
+
+      try {
+        var res = await fetch('/api/interview/start', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: nameVal,
+            role: roleVal,
+            experienceYears: expVal,
+            targetCompanyLevel: levelVal,
+            githubUsername: ghVal
+          })
+        });
+
+        var data = await res.json();
+        if (!data.success) throw new Error(data.error || 'Start failed');
+
+        window.currentSessionId = data.sessionId;
+        window.activePersona = data.activePersona;
+
+        var emptyState = document.getElementById('emptyState');
+        if (emptyState) emptyState.style.display = 'none';
+
+        var inputContainer = document.getElementById('inputContainer');
+        if (inputContainer) inputContainer.classList.remove('hidden');
+
+        var mcpCard = document.getElementById('mcpCard');
+        if (data.mcpGithubContext && mcpCard) {
+          mcpCard.classList.remove('hidden');
+          var mcpRepo = document.getElementById('mcpRepo');
+          var mcpGrade = document.getElementById('mcpGrade');
+          var mcpArch = document.getElementById('mcpArch');
+          var mcpHighlights = document.getElementById('mcpHighlights');
+          var mcpSmells = document.getElementById('mcpSmells');
+          if (mcpRepo) mcpRepo.innerText = data.mcpGithubContext.repoName;
+          if (mcpGrade) mcpGrade.innerText = 'Grade ' + data.mcpGithubContext.codeQualityRating;
+          if (mcpArch) mcpArch.innerText = data.mcpGithubContext.architectureType;
+          if (mcpHighlights) mcpHighlights.innerHTML = data.mcpGithubContext.highlights.map(h => '<li>✨ ' + h + '</li>').join('');
+          if (mcpSmells) mcpSmells.innerHTML = data.mcpGithubContext.vulnerabilitiesOrSmells.map(s => '<li>⚠️ ' + s + '</li>').join('');
+        }
+
+        if (typeof appendMessage === 'function') {
+          appendMessage('agent', data.greeting, window.activePersona);
+        } else {
+          var viewport = document.getElementById('chatViewport');
+          var bubble = document.createElement('div');
+          bubble.className = 'chat-bubble agent';
+          bubble.innerHTML = '<div class="bubble-meta"><span>⚡ Alex Vance (FAANG Principal EM)</span></div><div style="margin-top:8px;">' + data.greeting + '</div>';
+          if (viewport) viewport.appendChild(bubble);
+        }
+
+      } catch (err) {
+        alert('Session Start Result: ' + err.message);
+        btn.disabled = false;
+        btn.innerText = '🚀 Launch Interview Agent';
+      }
+    }
+    window.handleStartInterview = handleStartInterview;
+  </script>
+  <script src="app.js?v=6_inline_fix"></script>
 </body>
 </html>
