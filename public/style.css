@@ -274,7 +274,15 @@ input:focus, select:focus, textarea:focus {
   font-size: 0.75rem;
   color: var(--text-sub);
   white-space: nowrap;
-  transition: 0.3s;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.stage-item:hover {
+  background: rgba(99, 102, 241, 0.2);
+  border-color: var(--primary);
+  color: #c7d2fe;
+  transform: translateY(-1px);
 }
 
 .stage-item.active {
