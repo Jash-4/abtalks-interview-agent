@@ -127,6 +127,9 @@
 
         <form id="messageForm" class="message-form">
           <textarea id="userInput" placeholder="Explain your answer, trade-offs, and algorithms... (Shift+Enter for newline, Enter to send)" rows="3" required></textarea>
+          <button type="button" class="btn btn-mic" id="micBtn" title="Click to speak your answer (Voice Speech-to-Text)">
+            <span id="micIcon">🎙️</span>
+          </button>
           <button type="submit" class="btn btn-send" id="sendBtn">
             <span>Send</span>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
@@ -158,26 +161,34 @@
 
           <div class="metric-card">
             <div class="metric-title">Technical Depth</div>
-            <div class="bar-container"><div class="bar-fill" id="barTech" style="width: 0%"></div></div>
-            <div class="metric-footer"><span id="valTech">0%</span> • Concurrency & Data Structures</div>
+            <div class="metric-bar-bg"><div class="metric-bar-fill" id="barTech" style="width: 0%"></div></div>
+            <div class="metric-footer"><span id="valTech">0%</span> • RAG & Algorithmic Rigor</div>
           </div>
 
           <div class="metric-card">
             <div class="metric-title">System Architecture</div>
-            <div class="bar-container"><div class="bar-fill" id="barArch" style="width: 0%"></div></div>
-            <div class="metric-footer"><span id="valArch">0%</span> • Caching & Rate Limiting</div>
+            <div class="metric-bar-bg"><div class="metric-bar-fill" id="barArch" style="width: 0%"></div></div>
+            <div class="metric-footer"><span id="valArch">0%</span> • Quantization & Serving</div>
           </div>
 
           <div class="metric-card">
-            <div class="metric-title">Problem Solving & Trade-offs</div>
-            <div class="bar-container"><div class="bar-fill" id="barSolve" style="width: 0%"></div></div>
-            <div class="metric-footer"><span id="valSolve">0%</span> • Edge Cases & Scalability</div>
+            <div class="metric-title">Problem Solving</div>
+            <div class="metric-bar-bg"><div class="metric-bar-fill" id="barSolve" style="width: 0%"></div></div>
+            <div class="metric-footer"><span id="valSolve">0%</span> • ReAct & Circuit Breakers</div>
           </div>
 
           <div class="metric-card">
             <div class="metric-title">Communication Clarity</div>
-            <div class="bar-container"><div class="bar-fill" id="barComm" style="width: 0%"></div></div>
+            <div class="metric-bar-bg"><div class="metric-bar-fill" id="barComm" style="width: 0%"></div></div>
             <div class="metric-footer"><span id="valComm">0%</span> • Signal-to-Noise Ratio</div>
+          </div>
+        </div>
+
+        <!-- Interactive SVG Radar Chart Panel -->
+        <div class="panel panel-radar">
+          <h3>📊 6-Dimensional Competency Radar Visualization</h3>
+          <div class="radar-svg-wrapper">
+            <svg id="radarSvg" viewBox="0 0 400 320" width="100%" height="240"></svg>
           </div>
         </div>
 
@@ -202,7 +213,10 @@
         <div class="json-export-area">
           <div class="json-header">
             <h4>📦 Structured Output JSON (Judges Submission Standard)</h4>
-            <button class="btn-copy" id="copyJsonBtn">📋 Copy JSON</button>
+            <div class="json-actions">
+              <button class="btn-copy" id="copyJsonBtn">📋 Copy JSON</button>
+              <button class="btn-copy" id="downloadMdBtn">📄 Download Report (.md)</button>
+            </div>
           </div>
           <pre><code id="jsonCodeBlock">{}</code></pre>
         </div>

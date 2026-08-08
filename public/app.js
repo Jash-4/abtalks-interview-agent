@@ -416,32 +416,12 @@ function renderFinalReport(report) {
 
   // Dynamic Verdict Styling
   const verdictBox = document.getElementById('repVerdictBox');
-  if (verdictBox) {
-    if (report.overallVerdict === 'Not Ready Yet') {
-      verdictBox.style.background = 'rgba(239, 68, 68, 0.2)';
-      verdictBox.style.borderColor = 'rgba(239, 68, 68, 0.4)';
-      repVerdict.style.color = '#f87171';
-    } else if (report.overallVerdict === 'Needs Mentorship & Refinement') {
-      verdictBox.style.background = 'rgba(245, 158, 11, 0.2)';
-      verdictBox.style.borderColor = 'rgba(245, 158, 11, 0.4)';
-      repVerdict.style.color = '#fbbf24';
-    } else if (report.overallVerdict === 'Hire (L4/Mid-Level)') {
-      verdictBox.style.background = 'rgba(59, 130, 246, 0.2)';
-      verdictBox.style.borderColor = 'rgba(59, 130, 246, 0.4)';
-      repVerdict.style.color = '#60a5fa';
-    } else {
-      verdictBox.style.background = 'rgba(16, 185, 129, 0.2)';
-      verdictBox.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+  // Render dynamic verdict badge color
+  if (repVerdictBox && repVerdict) {
+    if (report.industryReadinessScore >= 88) {
+      repVerdictBox.style.background = 'rgba(16, 185, 129, 0.2)';
+      repVerdictBox.style.borderColor = 'rgba(16, 185, 129, 0.5)';
       repVerdict.style.color = '#34d399';
-    }
-  }
-
-  const b = report.breakdown;
-  valTech.innerText = `${b.technicalProficiency}%`;
-  barTech.style.width = `${b.technicalProficiency}%`;
-
-  valArch.innerText = `${b.systemArchitecture}%`;
-  barArch.style.width = `${b.systemArchitecture}%`;
 
   valSolve.innerText = `${b.problemSolving}%`;
   barSolve.style.width = `${b.problemSolving}%`;
