@@ -158,7 +158,7 @@ body {
   background: rgba(255, 255, 255, 0.3);
 }
 
-/* Cards */
+/* Cards with 3D Depth */
 .card {
   background: var(--bg-card);
   backdrop-filter: blur(16px);
@@ -166,6 +166,14 @@ body {
   border-radius: var(--border-radius);
   padding: 1.5rem;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: perspective(1000px) translateZ(0);
+}
+
+.card:hover {
+  transform: perspective(1000px) translateY(-3px) scale(1.008);
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4), 0 0 20px rgba(99, 102, 241, 0.15);
 }
 
 .card h2, .card h3 {
@@ -538,8 +546,17 @@ input:focus, select:focus, textarea:focus {
 .metric-card {
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 10px;
-  padding: 1rem;
+  border-radius: 12px;
+  padding: 1.15rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: perspective(800px) translateZ(0);
+}
+
+.metric-card:hover {
+  transform: perspective(800px) translateY(-4px) scale(1.015);
+  border-color: rgba(99, 102, 241, 0.35);
+  background: rgba(30, 41, 59, 0.5);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35), 0 0 16px rgba(99, 102, 241, 0.2);
 }
 
 .score-hero {
@@ -548,8 +565,14 @@ input:focus, select:focus, textarea:focus {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(236, 72, 153, 0.15));
-  border-color: rgba(99, 102, 241, 0.3);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(236, 72, 153, 0.2));
+  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.25);
+}
+
+.score-hero:hover {
+  transform: perspective(800px) translateY(-5px) scale(1.025);
+  box-shadow: 0 18px 40px rgba(99, 102, 241, 0.4);
 }
 
 .metric-num {
