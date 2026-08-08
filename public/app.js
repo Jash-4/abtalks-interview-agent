@@ -3,6 +3,41 @@ let currentSessionId = null;
 let activePersona = 'FAANG_EM';
 let voiceEnabled = false;
 
+// Theme Management
+function toggleTheme(e) {
+  if (e) { e.preventDefault(); e.stopPropagation(); }
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  setTheme(newTheme);
+}
+
+function setTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('abtalks_theme', theme);
+  const themeBtn = document.getElementById('themeToggleBtn');
+  if (themeBtn) {
+    if (theme === 'light') {
+      themeBtn.innerText = '☀️ Theme: Light';
+      themeBtn.style.background = 'rgba(79, 70, 229, 0.15)';
+      themeBtn.style.borderColor = 'rgba(79, 70, 229, 0.4)';
+      themeBtn.style.color = '#4f46e5';
+    } else {
+      themeBtn.innerText = '🌙 Theme: Dark';
+      themeBtn.style.background = 'rgba(99, 102, 241, 0.15)';
+      themeBtn.style.borderColor = 'rgba(99, 102, 241, 0.3)';
+      themeBtn.style.color = '#818cf8';
+    }
+  }
+}
+
+(function initTheme() {
+  const saved = localStorage.getItem('abtalks_theme') || 'dark';
+  setTheme(saved);
+})();
+
+window.appToggleTheme = toggleTheme;
+window.setTheme = setTheme;
+
 // DOM Elements
 const voiceToggleBtn = document.getElementById('voiceToggleBtn');
 

@@ -3,6 +3,8 @@
   --bg-card: rgba(18, 24, 38, 0.75);
   --bg-card-border: rgba(255, 255, 255, 0.08);
   --bg-input: #111827;
+  --bg-body-grad: radial-gradient(circle at top right, #1e1b4b 0%, #0b0f19 50%, #030712 100%);
+  --header-bg: rgba(11, 15, 25, 0.85);
   --primary: #6366f1;
   --primary-hover: #4f46e5;
   --primary-glow: rgba(99, 102, 241, 0.35);
@@ -12,9 +14,43 @@
   --text-main: #f3f4f6;
   --text-muted: #9ca3af;
   --text-sub: #6b7280;
+  --modal-bg: #0f172a;
+  --modal-header-bg: rgba(15, 23, 42, 0.8);
+  --chat-agent-bg: rgba(30, 41, 59, 0.7);
+  --chat-user-bg: rgba(79, 70, 229, 0.2);
+  --chat-user-border: rgba(99, 102, 241, 0.3);
+  --code-box-bg: #030712;
+  --stage-btn-bg: rgba(30, 41, 59, 0.6);
+  --stage-btn-text: #f3f4f6;
   --border-radius: 14px;
   --font-main: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
+}
+
+[data-theme="light"] {
+  --bg-dark: #f8fafc;
+  --bg-card: rgba(255, 255, 255, 0.9);
+  --bg-card-border: rgba(0, 0, 0, 0.08);
+  --bg-input: #ffffff;
+  --bg-body-grad: radial-gradient(circle at top right, #e0e7ff 0%, #f1f5f9 50%, #f8fafc 100%);
+  --header-bg: rgba(255, 255, 255, 0.92);
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --primary-glow: rgba(79, 70, 229, 0.25);
+  --accent-gold: #d97706;
+  --accent-green: #059669;
+  --accent-cyan: #0891b2;
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --text-sub: #64748b;
+  --modal-bg: #ffffff;
+  --modal-header-bg: rgba(241, 245, 249, 0.95);
+  --chat-agent-bg: rgba(241, 245, 249, 0.95);
+  --chat-user-bg: rgba(224, 231, 255, 0.85);
+  --chat-user-border: rgba(99, 102, 241, 0.35);
+  --code-box-bg: #1e293b;
+  --stage-btn-bg: rgba(241, 245, 249, 0.95);
+  --stage-btn-text: #1e293b;
 }
 
 * {
@@ -24,13 +60,14 @@
 }
 
 body {
-  background: radial-gradient(circle at top right, #1e1b4b 0%, #0b0f19 50%, #030712 100%);
+  background: var(--bg-body-grad);
   color: var(--text-main);
   font-family: var(--font-main);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 /* Header */
@@ -39,12 +76,13 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  background: rgba(11, 15, 25, 0.85);
+  background: var(--header-bg);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--bg-card-border);
   position: sticky;
   top: 0;
   z-index: 100;
+  transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .logo-area {
@@ -115,6 +153,12 @@ body {
   background: rgba(168, 85, 247, 0.15);
   color: #c084fc;
   border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+.badge-theme {
+  background: rgba(99, 102, 241, 0.15);
+  color: #818cf8;
+  border: 1px solid rgba(99, 102, 241, 0.3);
 }
 
 /* Layout */
@@ -722,7 +766,7 @@ pre {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(3, 7, 18, 0.85);
+  background: var(--modal-overlay-bg);
   backdrop-filter: blur(10px);
   z-index: 9999;
   display: flex;
@@ -733,9 +777,9 @@ pre {
 }
 
 .modal-card {
-  background: #0f172a;
-  border: 1px solid rgba(129, 140, 248, 0.3);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 30px rgba(99, 102, 241, 0.2);
+  background: var(--modal-bg);
+  border: 1px solid var(--bg-card-border);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 30px rgba(99, 102, 241, 0.2);
   border-radius: 16px;
   max-width: 750px;
   width: 100%;
@@ -747,8 +791,8 @@ pre {
 
 .modal-header {
   padding: 1.25rem 1.5rem;
-  background: rgba(15, 23, 42, 0.8);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--modal-header-bg);
+  border-bottom: 1px solid var(--bg-card-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -757,14 +801,14 @@ pre {
 .modal-header h3 {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--text-main);
   margin: 0;
 }
 
 .btn-close {
   background: transparent;
   border: none;
-  color: #94a3b8;
+  color: var(--text-muted);
   font-size: 1.5rem;
   cursor: pointer;
   padding: 0 0.5rem;
@@ -778,13 +822,13 @@ pre {
 .modal-body {
   padding: 1.5rem;
   overflow-y: auto;
-  color: #cbd5e1;
+  color: var(--text-main);
   font-size: 0.9rem;
 }
 
 .modal-desc {
   margin-bottom: 1rem;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .rubrics-grid {
@@ -794,22 +838,22 @@ pre {
 }
 
 .rubric-item {
-  background: rgba(30, 41, 59, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--stage-btn-bg);
+  border: 1px solid var(--bg-card-border);
   border-radius: 10px;
   padding: 0.85rem 1.1rem;
 }
 
 .rubric-title {
   font-weight: 600;
-  color: #818cf8;
+  color: var(--primary);
   font-size: 0.92rem;
   margin-bottom: 0.25rem;
 }
 
 .rubric-detail {
   font-size: 0.82rem;
-  color: #cbd5e1;
+  color: var(--text-muted);
   line-height: 1.45;
 }
 
