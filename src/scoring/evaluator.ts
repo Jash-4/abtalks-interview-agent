@@ -9,12 +9,12 @@ export class InterviewEvaluator {
     const avg = (nums: number[], fallback: number) => 
       nums.length > 0 ? Math.round(nums.reduce((a, b) => a + b, 0) / nums.length) : fallback;
 
-    const technical = avg(session.scoresAccumulated.technical, 50);
-    const architecture = avg(session.scoresAccumulated.architecture, 50);
-    const problemSolving = avg(session.scoresAccumulated.problemSolving, 50);
-    const communication = avg(session.scoresAccumulated.communication, 50);
-    const codeCraft = avg(session.scoresAccumulated.codeCraft, 50);
-    const domainExpertise = avg(session.scoresAccumulated.domain, 50);
+    const technical = avg(session.scoresAccumulated.technical, 30);
+    const architecture = avg(session.scoresAccumulated.architecture, 30);
+    const problemSolving = avg(session.scoresAccumulated.problemSolving, 30);
+    const communication = avg(session.scoresAccumulated.communication, 35);
+    const codeCraft = avg(session.scoresAccumulated.codeCraft, 30);
+    const domainExpertise = avg(session.scoresAccumulated.domain, 30);
 
     const breakdown: ScorecardBreakdown = {
       technicalProficiency: technical,
