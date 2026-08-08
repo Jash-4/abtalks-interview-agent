@@ -627,17 +627,18 @@
       if (inputContainer && window.currentSessionId) inputContainer.classList.remove('hidden');
     }
 
-    function renderRadarChart(scores) {
+    function renderRadarChart(scores, baseScore) {
       var svg = document.getElementById('radarSvg');
       if (!svg) return;
 
+      var fallback = baseScore || 53;
       var s = scores || {};
-      var tech = s.technicalDepth || s.technicalProficiency || 70;
-      var arch = s.architecture || s.systemArchitecture || 70;
-      var solve = s.problemSolving || 70;
-      var comm = s.communicationClarity || 70;
-      var craft = s.codeCraftsmanship || 70;
-      var domain = s.domainExpertise || 70;
+      var tech = (s.technicalProficiency !== undefined) ? s.technicalProficiency : ((s.technicalDepth !== undefined) ? s.technicalDepth : fallback);
+      var arch = (s.systemArchitecture !== undefined) ? s.systemArchitecture : ((s.architecture !== undefined) ? s.architecture : fallback);
+      var solve = (s.problemSolving !== undefined) ? s.problemSolving : fallback;
+      var comm = (s.communicationClarity !== undefined) ? s.communicationClarity : fallback;
+      var craft = (s.codeCraftsmanship !== undefined) ? s.codeCraftsmanship : ((s.codeCraft !== undefined) ? s.codeCraft : fallback);
+      var domain = (s.domainExpertise !== undefined) ? s.domainExpertise : ((s.domain !== undefined) ? s.domain : fallback);
 
       var cx = 200, cy = 150, maxR = 95;
       var labels = ['Technical Depth', 'Architecture', 'Problem Solving', 'Communication', 'Code Craft', 'Domain Expertise'];
@@ -743,10 +744,10 @@
       var valComm = document.getElementById('valComm');
       var barComm = document.getElementById('barComm');
 
-      var tVal = b.technicalDepth || b.technicalProficiency || 70;
-      var aVal = b.architecture || b.systemArchitecture || 70;
-      var sVal = b.problemSolving || 70;
-      var cVal = b.communicationClarity || 70;
+      var tVal = (b.technicalProficiency !== undefined) ? b.technicalProficiency : ((b.technicalDepth !== undefined) ? b.technicalDepth : scoreVal);
+      var aVal = (b.systemArchitecture !== undefined) ? b.systemArchitecture : ((b.architecture !== undefined) ? b.architecture : scoreVal);
+      var sVal = (b.problemSolving !== undefined) ? b.problemSolving : scoreVal;
+      var cVal = (b.communicationClarity !== undefined) ? b.communicationClarity : scoreVal;
 
       if (valTech) valTech.innerText = tVal + '%';
       if (barTech) barTech.style.width = tVal + '%';
@@ -757,7 +758,7 @@
       if (valComm) valComm.innerText = cVal + '%';
       if (barComm) barComm.style.width = cVal + '%';
 
-      renderRadarChart(b);
+      renderRadarChart(b, scoreVal);
 
       var strList = document.getElementById('repStrengthsList');
       var impList = document.getElementById('repImprovementsList');
