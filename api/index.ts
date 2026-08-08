@@ -1,4 +1,5 @@
-// ABTalks Vercel Serverless Entrypoint (Build Timestamp: 2026-08-08)
 import app from '../src/server';
 
-export default app;
+export default function handler(req: any, res: any) {
+  return app(req, res);
+}

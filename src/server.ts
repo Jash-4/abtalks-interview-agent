@@ -84,14 +84,15 @@ apiRouter.post(['/interview/start', '/interview/session'], async (req: Request, 
  */
 apiRouter.post('/interview/chat', async (req: Request, res: Response): Promise<void> => {
   try {
-    const { sessionId, message, codeSnippet } = req.body;
+    const { sessionId, message, userText, codeSnippet } = req.body;
+    const textToProcess = message || userText;
 
-    if (!sessionId || !message) {
-      res.status(400).json({ success: false, error: 'sessionId and message are required.' });
+    if (!sessionId || !textToProcess) {
+      res.status(400).json({ success: false, error: 'sessionId and message (or userText) are required.' });
       return;
     }
 
-    const result = await stateMachine.processCandidateMessage(sessionId, message, codeSnippet);
+    const result = await stateMachine.processCandidateMessage(sessionId, textToProcess, codeSnippet);
 
     res.status(200).json({
       success: true,
