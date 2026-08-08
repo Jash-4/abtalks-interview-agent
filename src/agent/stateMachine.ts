@@ -102,15 +102,20 @@ export class InterviewStateMachine {
     session.history.push(userMsg);
 
     // 2. Strict Technical Depth & Vague Answer Detection
-    const isVague = trimmed.length < 25 || lower === 'hi' || lower === 'hello' || lower === 'ok' || lower === 'yes';
+    const isVague = trimmed.length < 30 || 
+      lower === 'hi' || lower === 'hello' || lower === 'ok' || lower === 'yes' || lower === 'no' ||
+      lower.includes('idk') || lower.includes('no idea') || lower.includes('don\'t know') ||
+      lower.includes('shit') || lower.includes('whatever') || lower.includes('bad') || lower.includes('skip') ||
+      lower.includes('nothing') || lower.includes('asdf') || /^[a-z]{1,12}$/.test(lower);
     
     if (isVague) {
-      // Punish vague answers in scores
-      session.scoresAccumulated.technical.push(45);
-      session.scoresAccumulated.architecture.push(40);
-      session.scoresAccumulated.problemSolving.push(45);
-      session.scoresAccumulated.communication.push(50);
-      session.scoresAccumulated.domain.push(40);
+      // Heavily penalize vague/troll answers in scores
+      session.scoresAccumulated.technical.push(30);
+      session.scoresAccumulated.architecture.push(30);
+      session.scoresAccumulated.problemSolving.push(30);
+      session.scoresAccumulated.communication.push(35);
+      session.scoresAccumulated.codeCraft.push(30);
+      session.scoresAccumulated.domain.push(30);
 
       // Do NOT advance module, push back strictly!
       const pushback = await this.agentEngine.generateResponse({
@@ -150,28 +155,45 @@ export class InterviewStateMachine {
       }
     });
 
-    let turnTech = 80;
-    let turnArch = 80;
-    let turnSolve = 80;
+    let kwMatchCount = 0;
+    if (lower.includes('bm25') || lower.includes('dense') || lower.includes('rrf') || lower.includes('chunk') || lower.includes('embedding')) kwMatchCount += 1;
+    if (lower.includes('hnsw') || lower.includes('ivf') || lower.includes('quantization') || lower.includes('pq') || lower.includes('index')) kwMatchCount += 1;
+    if (lower.includes('react') || lower.includes('supervisor') || lower.includes('circuit') || lower.includes('mcp') || lower.includes('tool')) kwMatchCount += 1;
+    if (lower.includes('vllm') || lower.includes('pagedattention') || lower.includes('ttft') || lower.includes('cache') || lower.includes('redis')) kwMatchCount += 1;
+    if (lower.includes('latency') || lower.includes('tradeoff') || lower.includes('concurrency') || lower.includes('isolation') || lower.includes('p99')) kwMatchCount += 1;
 
-    if (lower.includes('bm25') || lower.includes('dense') || lower.includes('rrf') || lower.includes('chunk')) {
-      turnTech += 15;
-    }
-    if (lower.includes('hnsw') || lower.includes('ivf') || lower.includes('quantization') || lower.includes('pq')) {
-      turnArch += 15;
-    }
-    if (lower.includes('react') || lower.includes('supervisor') || lower.includes('circuit') || lower.includes('mcp')) {
-      turnSolve += 15;
-    }
-    if (lower.includes('vllm') || lower.includes('pagedattention') || lower.includes('ttft') || lower.includes('cache')) {
-      turnTech += 12;
+    let turnTech = 55;
+    let turnArch = 55;
+    let turnSolve = 58;
+    let turnComm = 60;
+    let turnDomain = 55;
+
+    if (kwMatchCount >= 3) {
+      turnTech = 95;
+      turnArch = 93;
+      turnSolve = 96;
+      turnComm = userText.length > 100 ? 92 : 82;
+      turnDomain = 94;
+    } else if (kwMatchCount >= 1) {
+      turnTech = 78;
+      turnArch = 76;
+      turnSolve = 80;
+      turnComm = userText.length > 80 ? 84 : 75;
+      turnDomain = 78;
+    } else {
+      turnTech = 58;
+      turnArch = 56;
+      turnSolve = 60;
+      turnComm = userText.length > 80 ? 70 : 55;
+      turnDomain = 58;
     }
 
-    session.scoresAccumulated.technical.push(Math.min(100, turnTech));
-    session.scoresAccumulated.architecture.push(Math.min(100, turnArch));
-    session.scoresAccumulated.problemSolving.push(Math.min(100, turnSolve));
-    session.scoresAccumulated.communication.push(userText.length > 100 ? 90 : 80);
-    session.scoresAccumulated.domain.push(90);
+    session.scoresAccumulated.technical.push(turnTech);
+    session.scoresAccumulated.architecture.push(turnArch);
+    session.scoresAccumulated.problemSolving.push(turnSolve);
+    session.scoresAccumulated.communication.push(turnComm);
+    session.scoresAccumulated.codeCraft.push(codeSnippet ? 92 : 65);
+    session.scoresAccumulated.domain.push(turnDomain);
 
     // 4. Cohort State Progression on Valid Technical Answer
     const validTurnCount = session.history.filter(m => m.sender === 'user' && m.text.trim().length >= 25).length;

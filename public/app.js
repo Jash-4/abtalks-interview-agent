@@ -23,12 +23,18 @@ if (voiceToggleBtn) {
 }
 
 function speakText(text) {
-  if (!voiceEnabled || !('speechSynthesis' in window)) return;
+  if (!('speechSynthesis' in window)) return;
   window.speechSynthesis.cancel();
   const clean = text.replace(/[*_#`]/g, '');
   const utterance = new SpeechSynthesisUtterance(clean);
-  utterance.rate = 1.05;
-  utterance.pitch = 0.95;
+  utterance.rate = 1.0;
+  utterance.pitch = 1.0;
+  
+  // Try selecting a natural English voice if available
+  const voices = window.speechSynthesis.getVoices();
+  const englishVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Daniel') || v.name.includes('Alex')));
+  if (englishVoice) utterance.voice = englishVoice;
+
   window.speechSynthesis.speak(utterance);
 }
 
@@ -227,9 +233,26 @@ function appendMessage(sender, text, persona, codeSnippet) {
   meta.className = 'bubble-meta';
   
   if (sender === 'agent') {
-    meta.innerHTML = isMentor 
-      ? `<span>🎙️ Anil Bajpai (ABTalks Career Mentor)</span><span>${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>`
-      : `<span>⚡ Alex Vance (FAANG Principal EM)</span><span>${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>`;
+    const personaTitle = isMentor ? '🎙️ Anil Bajpai (ABTalks Career Mentor)' : '⚡ Alex Vance (FAANG Principal EM)';
+    const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    meta.innerHTML = `<span>${personaTitle}</span>
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <button type="button" class="btn-bubble-tts" title="Listen to AI speech" style="background: rgba(99, 102, 241, 0.25); border: 1px solid rgba(129, 140, 248, 0.4); color: #fff; border-radius: 4px; padding: 2px 6px; font-size: 0.72rem; cursor: pointer; display: flex; align-items: center; gap: 3px;">
+          🔊 Listen
+        </button>
+        <span>${timeStr}</span>
+      </div>`;
+    
+    // Attach TTS listener to button
+    setTimeout(() => {
+      const ttsBtn = meta.querySelector('.btn-bubble-tts');
+      if (ttsBtn) {
+        ttsBtn.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          speakText(text);
+        });
+      }
+    }, 50);
   } else {
     meta.innerHTML = `<span>👤 Candidate</span><span>${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>`;
   }
