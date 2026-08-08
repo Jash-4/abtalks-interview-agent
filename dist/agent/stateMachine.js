@@ -77,30 +77,27 @@ class InterviewStateMachine {
             codeSnippet: codeSnippet
         };
         session.history.push(userMsg);
-        // 2. Technical Depth & Vague Answer Detection (Only penalize vague answers during Technical Core onwards)
-        const isGreetingPhase = session.currentPhase === 'GREETING';
-        const isVague = !isGreetingPhase && (trimmed.length < 20 ||
-            lower === 'idk' || lower === 'no idea' || lower === 'don\'t know' ||
-            lower.includes('shit') || lower.includes('whatever') || lower.includes('skip') ||
-            lower.includes('asdf'));
-        if (isGreetingPhase) {
-            // Normal greeting response - score baseline 75 communication and progress to TECHNICAL_CORE
-            session.scoresAccumulated.technical.push(70);
-            session.scoresAccumulated.architecture.push(70);
-            session.scoresAccumulated.problemSolving.push(72);
-            session.scoresAccumulated.communication.push(85);
-            session.scoresAccumulated.codeCraft.push(70);
-            session.scoresAccumulated.domain.push(70);
-            session.currentPhase = 'TECHNICAL_CORE';
+        // 2. Technical Depth & Vague Answer Detection
+        const isBrief = trimmed.length < 15 || lower === 'hi' || lower === 'hello' || lower === 'ok' || lower === 'yes';
+        if (isBrief) {
+            // Brief/one-word greeting or answer: Assign 45-50 score (< 59: Not Ready Yet) and push back for technical depth
+            session.scoresAccumulated.technical.push(45);
+            session.scoresAccumulated.architecture.push(45);
+            session.scoresAccumulated.problemSolving.push(48);
+            session.scoresAccumulated.communication.push(55);
+            session.scoresAccumulated.codeCraft.push(45);
+            session.scoresAccumulated.domain.push(45);
+            if (session.currentPhase === 'GREETING')
+                session.currentPhase = 'TECHNICAL_CORE';
         }
-        else if (isVague) {
-            // Moderate pushback penalty during technical core
-            session.scoresAccumulated.technical.push(50);
-            session.scoresAccumulated.architecture.push(50);
-            session.scoresAccumulated.problemSolving.push(50);
-            session.scoresAccumulated.communication.push(60);
-            session.scoresAccumulated.codeCraft.push(50);
-            session.scoresAccumulated.domain.push(50);
+        else if (trimmed.length < 30 || lower.includes('idk') || lower.includes('no idea')) {
+            // Moderate penalty
+            session.scoresAccumulated.technical.push(55);
+            session.scoresAccumulated.architecture.push(55);
+            session.scoresAccumulated.problemSolving.push(58);
+            session.scoresAccumulated.communication.push(65);
+            session.scoresAccumulated.codeCraft.push(55);
+            session.scoresAccumulated.domain.push(55);
             // Do NOT advance module, push back strictly!
             const pushback = await this.agentEngine.generateResponse({
                 persona: 'FAANG_EM',

@@ -21,6 +21,17 @@ An intelligent, autonomous AI Technical Interview Agent built for the **ABTalks 
 
 ---
 
+## 🏆 The 4 Evaluation Rating Tiers
+
+| Score Range | Verdict Tag | Meaning in ABTalks Cohort Evaluation |
+| :--- | :--- | :--- |
+| **88 – 100** | 🟢 **Immediate Strong Hire** | Passed deep technical grill (RAG BM25 + Dense, HNSW vector indexing, vLLM PagedAttention). FAANG L5/L6 Ready. |
+| **75 – 87** | 🔵 **Hire (L4 / Mid-Level)** | Solid technical depth, clean code snippets, and good system design intuition. |
+| **60 – 74** | 🟠 **Needs Mentorship & Refinement** | Baseline setup completed & role background verified. Ready to complete Stage 2-4 technical modules. |
+| **0 – 59** | 🔴 **Not Ready Yet** | Submitted brief/vague one-word answers (`"hi"`, `"idk"`) during technical questions or failed trade-off rigor. |
+
+---
+
 ## 👥 3-Member Team Domain Ownership
 
 | Member | Primary Role | Core Modules & Deliverables |
