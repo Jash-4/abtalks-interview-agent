@@ -231,37 +231,52 @@ function updateStages(phase) {
   else if (phase === 'CAREER_SYNTHESIS' || phase === 'COMPLETED') stageReport.classList.add('active');
 }
 
-// Stage Navigation Click Handlers
-stageGreeting.addEventListener('click', () => {
-  if (!currentSessionId) startForm.dispatchEvent(new Event('submit'));
+// Stage Navigation Click Handlers (Instantly interactive at any time)
+stageGreeting.addEventListener('click', async () => {
+  if (!currentSessionId) {
+    await startNewSession();
+  }
   userInput.focus();
 });
 
-stageTech.addEventListener('click', () => {
-  if (currentSessionId) {
-    userInput.value = "In high-throughput systems, I implement Redis distributed locks with Redlock and PostgreSQL serializable isolation to guarantee zero race conditions.";
-    userInput.focus();
+stageTech.addEventListener('click', async () => {
+  if (!currentSessionId) {
+    await startNewSession();
   }
+  userInput.value = "In high-throughput systems, I implement Redis distributed locks (Redlock) with a fence-token and PostgreSQL serializable isolation to guarantee zero race conditions.";
+  userInput.focus();
 });
 
-stageDesign.addEventListener('click', () => {
+stageDesign.addEventListener('click', async () => {
+  if (!currentSessionId) {
+    await startNewSession();
+  }
   codeBox.classList.remove('hidden');
-  codeSnippetInput.value = "// System Design: Caching Layer\nconst cache = new RedisCluster({\n  ttl: 3600,\n  eviction: 'volatile-lru'\n});";
+  codeSnippetInput.value = "// System Design: Caching Layer & Rate Limiting\nconst cache = new RedisCluster({\n  ttl: 3600,\n  eviction: 'volatile-lru'\n});";
   codeSnippetInput.focus();
 });
 
-stageMCP.addEventListener('click', () => {
+stageMCP.addEventListener('click', async () => {
+  if (!currentSessionId) {
+    await startNewSession();
+  }
   mcpCard.classList.remove('hidden');
   mcpCard.scrollIntoView({ behavior: 'smooth' });
 });
 
-stageReport.addEventListener('click', () => {
-  if (currentSessionId) {
-    finishEarlyBtn.click();
-  } else {
-    alert('Please click "Launch Interview Agent" first to begin your session!');
+stageReport.addEventListener('click', async () => {
+  if (!currentSessionId) {
+    await startNewSession();
   }
+  finishEarlyBtn.click();
 });
+
+async function startNewSession() {
+  return new Promise((resolve) => {
+    startForm.dispatchEvent(new Event('submit'));
+    setTimeout(resolve, 600);
+  });
+}
 
 function updatePersonaBadge(persona) {
   if (persona === 'ABTALKS_MENTOR') {
