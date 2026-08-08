@@ -5,22 +5,6 @@ let voiceEnabled = false;
 
 // DOM Elements
 const voiceToggleBtn = document.getElementById('voiceToggleBtn');
-if (voiceToggleBtn) {
-  voiceToggleBtn.addEventListener('click', () => {
-    voiceEnabled = !voiceEnabled;
-    if (voiceEnabled) {
-      voiceToggleBtn.innerText = '🔊 Voice Audio: ON';
-      voiceToggleBtn.style.background = 'rgba(99, 102, 241, 0.35)';
-      voiceToggleBtn.style.color = '#fff';
-      speakText('Voice synthesis activated. I am ready to begin your technical interview.');
-    } else {
-      voiceToggleBtn.innerText = '🔇 Voice Audio: OFF';
-      voiceToggleBtn.style.background = 'rgba(6, 182, 212, 0.15)';
-      voiceToggleBtn.style.color = '#22d3ee';
-      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-    }
-  });
-}
 
 function speakText(text) {
   if (!('speechSynthesis' in window)) return;
@@ -69,22 +53,24 @@ const personaOverlay = document.getElementById('personaModalOverlay');
 const closePersonaBtn = document.getElementById('closePersonaBtn');
 
 // Voice Audio Button Click Handler
-voiceToggleBtn.addEventListener('click', () => {
-  voiceEnabled = !voiceEnabled;
-  if (voiceEnabled) {
-    voiceToggleBtn.innerText = '🔊 Voice Audio: ON';
-    voiceToggleBtn.style.background = 'rgba(16, 185, 129, 0.25)';
-    voiceToggleBtn.style.borderColor = 'rgba(16, 185, 129, 0.5)';
-    voiceToggleBtn.style.color = '#34d399';
-    speakText('Voice synthesis audio enabled.');
-  } else {
-    voiceToggleBtn.innerText = '🔊 Voice Audio: OFF';
-    voiceToggleBtn.style.background = 'rgba(99, 102, 241, 0.2)';
-    voiceToggleBtn.style.borderColor = '#818cf8';
-    voiceToggleBtn.style.color = '#fff';
-    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-  }
-});
+if (voiceToggleBtn) {
+  voiceToggleBtn.addEventListener('click', () => {
+    voiceEnabled = !voiceEnabled;
+    if (voiceEnabled) {
+      voiceToggleBtn.innerText = '🔊 Voice Audio: ON';
+      voiceToggleBtn.style.background = 'rgba(16, 185, 129, 0.25)';
+      voiceToggleBtn.style.borderColor = 'rgba(16, 185, 129, 0.5)';
+      voiceToggleBtn.style.color = '#34d399';
+      speakText('Voice synthesis audio enabled.');
+    } else {
+      voiceToggleBtn.innerText = '🔊 Voice Audio: OFF';
+      voiceToggleBtn.style.background = 'rgba(99, 102, 241, 0.2)';
+      voiceToggleBtn.style.borderColor = '#818cf8';
+      voiceToggleBtn.style.color = '#fff';
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    }
+  });
+}
 
 // Mock MCP Badge Click Handler
 if (mcpBadge) {
