@@ -72,7 +72,15 @@ Synthesize their strengths, honest growth areas, and outline an actionable caree
           systemInstruction: systemInstruction
         });
 
-        const promptText = `
+        let promptText = '';
+        if (isPushback) {
+          promptText = `
+CRITICAL INSTRUCTION: The candidate gave a brief, vague, or non-technical response: "${userMessage}".
+DO NOT PRAISE THEM. DO NOT MOVE TO A NEW TECHNICAL TOPIC.
+In character as ${persona}, politely but strictly inform candidate ${candidate.name} that their answer ("${userMessage}") lacks technical substance for a FAANG engineering evaluation. Demand specific algorithms, memory footprints, and architectural trade-offs for Module ${currentModule || 'RAG_EMBEDDINGS'}.
+`;
+        } else {
+          promptText = `
 Candidate Name: ${candidate.name}
 Current Persona: ${persona}
 Phase: ${isGreeting ? 'GREETING' : isWrapUp ? 'FINAL_SYNTHESIS' : 'TECHNICAL_EVALUATION'}
@@ -82,6 +90,7 @@ Candidate's Answer: "${userMessage}"
 
 Respond in character. If the answer is too short or lacks technical substance, demand algorithmic precision.
 `;
+        }
 
         const result = await model.generateContent(promptText);
         const text = result.response.text();

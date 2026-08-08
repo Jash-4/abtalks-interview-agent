@@ -125,7 +125,8 @@ export class InterviewStateMachine {
         conversationHistory: session.history.map(h => ({ sender: h.sender, text: h.text })),
         rubrics: session.rubricsRetrieved,
         mcpContext: session.mcpData,
-        isPushback: true
+        isPushback: true,
+        currentModule: session.currentPhase === 'GREETING' ? 'RAG_EMBEDDINGS' : session.currentPhase
       });
 
       const pushbackMsg: ChatMessage = {
