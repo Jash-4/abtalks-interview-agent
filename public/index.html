@@ -21,10 +21,10 @@
       </div>
     </div>
     <div class="status-tags">
-      <button type="button" class="badge badge-mcp clickable-badge" id="voiceToggleBtn" title="Toggle AI Text-to-Speech audio">🔊 Voice Audio: Off</button>
-      <button type="button" class="badge badge-mcp clickable-badge" id="mcpBadge" title="Inspect GitHub Mock MCP AST Tool">⚡ Mock MCP: Ready</button>
-      <button type="button" class="badge badge-rag clickable-badge" id="ragBadge" title="View 6 FAANG Assessment Rubrics">📚 RAG: 6 FAANG Rubrics</button>
-      <button type="button" class="badge badge-persona clickable-badge" id="personaBadge" title="View Dual-Persona Details">🎭 Persona: FAANG EM</button>
+      <button type="button" class="badge badge-mcp clickable-badge" id="voiceToggleBtn" title="Toggle AI Text-to-Speech audio" onclick="toggleVoiceAudio(event)">🔊 Voice Audio: Off</button>
+      <button type="button" class="badge badge-mcp clickable-badge" id="mcpBadge" title="Inspect GitHub Mock MCP AST Tool" onclick="showMcpCard(event)">⚡ Mock MCP: Ready</button>
+      <button type="button" class="badge badge-rag clickable-badge" id="ragBadge" title="View 6 FAANG Assessment Rubrics" onclick="toggleRubricsModal(true)">📚 RAG: 6 FAANG Rubrics</button>
+      <button type="button" class="badge badge-persona clickable-badge" id="personaBadge" title="View Dual-Persona Details" onclick="togglePersonaModal(true)">🎭 Persona: FAANG EM</button>
     </div>
   </header>
 
@@ -116,8 +116,8 @@
       <div class="input-container hidden" id="inputContainer">
         <!-- Quick Code Insert Toggle -->
         <div class="quick-tools">
-          <button type="button" class="btn-tool" id="toggleCodeBtn">💻 Add Code / Architecture Snippet</button>
-          <button type="button" class="btn-tool" id="finishEarlyBtn">🏁 Finish & View ABTalks Report</button>
+          <button type="button" class="btn-tool" id="toggleCodeBtn" onclick="toggleCode(event)">💻 Add Code / Architecture Snippet</button>
+          <button type="button" class="btn-tool" id="finishEarlyBtn" onclick="handleFinishEarly(event)">🏁 Finish & View ABTalks Report</button>
         </div>
 
         <div class="code-editor-box hidden" id="codeBox">
@@ -125,12 +125,12 @@
           <textarea id="codeSnippet" placeholder="// Paste your locking logic, SQL schema, or TypeScript code here..."></textarea>
         </div>
 
-        <form id="messageForm" class="message-form">
-          <textarea id="userInput" placeholder="Explain your answer, trade-offs, and algorithms... (Shift+Enter for newline, Enter to send)" rows="3" required></textarea>
-          <button type="button" class="btn btn-mic" id="micBtn" title="Click to speak your answer (Voice Speech-to-Text)">
+        <form id="messageForm" class="message-form" onsubmit="handleSendMessage(event)">
+          <textarea id="userInput" placeholder="Explain your answer, trade-offs, and algorithms... (Shift+Enter for newline, Enter to send)" rows="3" onkeydown="if(event.key === 'Enter' && !event.shiftKey){ event.preventDefault(); handleSendMessage(event); }" required></textarea>
+          <button type="button" class="btn btn-mic" id="micBtn" title="Click to speak your answer (Voice Speech-to-Text)" onclick="toggleMic(event)">
             <span id="micIcon">🎙️</span>
           </button>
-          <button type="submit" class="btn btn-send" id="sendBtn">
+          <button type="button" class="btn btn-send" id="sendBtn" onclick="handleSendMessage(event)">
             <span>Send</span>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
           </button>
@@ -229,11 +229,11 @@
   </main>
 
   <!-- Interactive Rubrics Modal -->
-  <div class="modal-overlay hidden" id="rubricsModalOverlay">
+  <div class="modal-overlay hidden" id="rubricsModalOverlay" onclick="if(event.target===this)toggleRubricsModal(false)">
     <div class="modal-card">
       <div class="modal-header">
         <h3>📚 RAG Knowledge Base — 6 FAANG System Rubrics</h3>
-        <button type="button" class="btn-close" id="closeRubricsBtn">&times;</button>
+        <button type="button" class="btn-close" id="closeRubricsBtn" onclick="toggleRubricsModal(false)">&times;</button>
       </div>
       <div class="modal-body">
         <p class="modal-desc">These 6 core FAANG engineering criteria ground Alex Vance's technical evaluation and score weights:</p>
@@ -268,11 +268,11 @@
   </div>
 
   <!-- Interactive Dual-Persona Modal -->
-  <div class="modal-overlay hidden" id="personaModalOverlay">
+  <div class="modal-overlay hidden" id="personaModalOverlay" onclick="if(event.target===this)togglePersonaModal(false)">
     <div class="modal-card">
       <div class="modal-header">
         <h3>🎭 Dual-Persona Architectural Architecture</h3>
-        <button type="button" class="btn-close" id="closePersonaBtn">&times;</button>
+        <button type="button" class="btn-close" id="closePersonaBtn" onclick="togglePersonaModal(false)">&times;</button>
       </div>
       <div class="modal-body">
         <div class="persona-card-row">
@@ -290,6 +290,83 @@
   </div>
 
   <script>
+    window.voiceEnabled = false;
+
+    function toggleVoiceAudio(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      var btn = document.getElementById('voiceToggleBtn');
+      window.voiceEnabled = !window.voiceEnabled;
+      if (btn) {
+        if (window.voiceEnabled) {
+          btn.innerText = '🔊 Voice Audio: ON';
+          btn.style.background = 'rgba(16, 185, 129, 0.25)';
+          btn.style.color = '#34d399';
+        } else {
+          btn.innerText = '🔊 Voice Audio: OFF';
+          btn.style.background = 'rgba(99, 102, 241, 0.2)';
+          btn.style.color = '#fff';
+        }
+      }
+    }
+
+    function showMcpCard(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      var mcpCard = document.getElementById('mcpCard');
+      if (mcpCard) {
+        mcpCard.classList.remove('hidden');
+        mcpCard.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+
+    function toggleRubricsModal(show) {
+      var overlay = document.getElementById('rubricsModalOverlay');
+      if (overlay) {
+        if (show) overlay.classList.remove('hidden');
+        else overlay.classList.add('hidden');
+      }
+    }
+
+    function togglePersonaModal(show) {
+      var overlay = document.getElementById('personaModalOverlay');
+      if (overlay) {
+        if (show) overlay.classList.remove('hidden');
+        else overlay.classList.add('hidden');
+      }
+    }
+
+    function toggleCode(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      var codeBox = document.getElementById('codeBox');
+      if (codeBox) codeBox.classList.toggle('hidden');
+    }
+
+    function toggleMic(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert('Web Speech API is not supported in this browser version.');
+        return;
+      }
+      var recognition = new SpeechRecognition();
+      recognition.lang = 'en-US';
+      recognition.interimResults = false;
+      var micBtn = document.getElementById('micBtn');
+      if (micBtn) micBtn.style.background = 'rgba(239, 68, 68, 0.4)';
+      recognition.onresult = function(event) {
+        var transcript = event.results[0][0].transcript;
+        var userInput = document.getElementById('userInput');
+        if (userInput) userInput.value = (userInput.value ? userInput.value + ' ' : '') + transcript;
+        if (micBtn) micBtn.style.background = 'rgba(99, 102, 241, 0.2)';
+      };
+      recognition.onerror = function() {
+        if (micBtn) micBtn.style.background = 'rgba(99, 102, 241, 0.2)';
+      };
+      recognition.onend = function() {
+        if (micBtn) micBtn.style.background = 'rgba(99, 102, 241, 0.2)';
+      };
+      recognition.start();
+    }
+
     async function handleStartInterview(e) {
       if (e) { e.preventDefault(); e.stopPropagation(); }
       var btn = document.getElementById('startBtn');
@@ -354,13 +431,128 @@
         }
 
       } catch (err) {
-        alert('Session Start Result: ' + err.message);
+        alert('Session Start Error: ' + err.message);
         btn.disabled = false;
         btn.innerText = '🚀 Launch Interview Agent';
       }
     }
+
+    async function handleSendMessage(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      var userInput = document.getElementById('userInput');
+      var codeSnippet = document.getElementById('codeSnippet');
+      if (!userInput) return;
+      var text = userInput.value.trim();
+      var code = codeSnippet ? codeSnippet.value.trim() : '';
+
+      if (!text || !window.currentSessionId) {
+        if (!window.currentSessionId) alert('Please click Launch Interview Agent first!');
+        return;
+      }
+
+      if (typeof appendMessage === 'function') {
+        appendMessage('user', text, null, code || undefined);
+      } else {
+        var viewport = document.getElementById('chatViewport');
+        var bubble = document.createElement('div');
+        bubble.className = 'chat-bubble user';
+        bubble.innerHTML = '<div class="bubble-meta"><span>👤 Candidate</span></div><div style="margin-top:8px;">' + text + '</div>';
+        if (viewport) viewport.appendChild(bubble);
+      }
+
+      userInput.value = '';
+      if (codeSnippet) codeSnippet.value = '';
+      var codeBox = document.getElementById('codeBox');
+      if (codeBox) codeBox.classList.add('hidden');
+
+      var chatViewport = document.getElementById('chatViewport');
+      var typingIndicator = document.createElement('div');
+      typingIndicator.className = 'chat-bubble agent';
+      typingIndicator.id = 'typingIndicator';
+      typingIndicator.innerText = window.activePersona === 'FAANG_EM' ? 'Alex Vance is analyzing system trade-offs...' : 'Anil Bajpai is evaluating Industry Readiness...';
+      if (chatViewport) {
+        chatViewport.appendChild(typingIndicator);
+        chatViewport.scrollTop = chatViewport.scrollHeight;
+      }
+
+      try {
+        var res = await fetch('/api/interview/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sessionId: window.currentSessionId,
+            message: text,
+            codeSnippet: code || undefined
+          })
+        });
+
+        var data = await res.json();
+        if (!data.success) throw new Error(data.error || 'Chat failed');
+
+        var ind = document.getElementById('typingIndicator');
+        if (ind) ind.remove();
+
+        window.activePersona = data.activePersona;
+        if (typeof updatePersonaBadge === 'function') updatePersonaBadge(window.activePersona);
+        if (typeof updateStages === 'function') updateStages(data.currentPhase);
+
+        if (typeof appendMessage === 'function') {
+          appendMessage('agent', data.agentReply, window.activePersona);
+        } else {
+          var bubble = document.createElement('div');
+          var isMentor = window.activePersona === 'ABTALKS_MENTOR';
+          bubble.className = 'chat-bubble agent ' + (isMentor ? 'mentor' : '');
+          var title = isMentor ? '🎙️ Anil Bajpai (ABTalks Career Mentor)' : '⚡ Alex Vance (FAANG Principal EM)';
+          bubble.innerHTML = '<div class="bubble-meta"><span>' + title + '</span></div><div style="margin-top:8px;">' + data.agentReply + '</div>';
+          if (chatViewport) chatViewport.appendChild(bubble);
+        }
+
+        if (data.isFinished && data.finalReport) {
+          setTimeout(function() {
+            if (typeof renderFinalReport === 'function') renderFinalReport(data.finalReport);
+          }, 1000);
+        }
+
+      } catch (err) {
+        var ind = document.getElementById('typingIndicator');
+        if (ind) ind.remove();
+        alert('Communication Error: ' + err.message);
+      }
+    }
+
+    async function handleFinishEarly(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      if (!window.currentSessionId) {
+        alert('Please launch an interview session first!');
+        return;
+      }
+      if (!confirm('Are you ready to conclude the technical grill and generate your ABTalks Industry Readiness Scorecard?')) return;
+
+      try {
+        var res = await fetch('/api/interview/finish', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sessionId: window.currentSessionId })
+        });
+        var data = await res.json();
+        if (data.success && data.report) {
+          if (typeof renderFinalReport === 'function') renderFinalReport(data.report);
+        }
+      } catch (err) {
+        alert('Error finalizing: ' + err.message);
+      }
+    }
+
     window.handleStartInterview = handleStartInterview;
+    window.handleSendMessage = handleSendMessage;
+    window.handleFinishEarly = handleFinishEarly;
+    window.toggleCode = toggleCode;
+    window.toggleMic = toggleMic;
+    window.toggleVoiceAudio = toggleVoiceAudio;
+    window.showMcpCard = showMcpCard;
+    window.toggleRubricsModal = toggleRubricsModal;
+    window.togglePersonaModal = togglePersonaModal;
   </script>
-  <script src="app.js?v=6_inline_fix"></script>
+  <script src="app.js?v=7_inline_all"></script>
 </body>
 </html>
