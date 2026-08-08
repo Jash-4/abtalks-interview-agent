@@ -128,17 +128,21 @@ const copyJsonBtn = document.getElementById('copyJsonBtn');
 const restartBtn = document.getElementById('restartBtn');
 
 // 1. Handle Start Interview
-startForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
+async function handleStartInterview(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  if (!startBtn || startBtn.disabled) return;
   startBtn.disabled = true;
   startBtn.innerText = 'Initializing Agent & MCP...';
 
   const payload = {
-    name: document.getElementById('candidateName').value,
-    role: document.getElementById('candidateRole').value,
-    experienceYears: document.getElementById('experienceYears').value,
-    targetCompanyLevel: document.getElementById('targetLevel').value,
-    githubUsername: document.getElementById('githubUsername').value
+    name: document.getElementById('candidateName')?.value || 'Alex Rivera',
+    role: document.getElementById('candidateRole')?.value || 'Senior Backend Engineer',
+    experienceYears: document.getElementById('experienceYears')?.value || '4',
+    targetCompanyLevel: document.getElementById('targetLevel')?.value || 'FAANG L5',
+    githubUsername: document.getElementById('githubUsername')?.value || 'alex-rivera-dev'
   };
 
   try {
@@ -149,24 +153,24 @@ startForm.addEventListener('submit', async (e) => {
     });
 
     const data = await res.json();
-    if (!data.success) throw new Error(data.error || 'Failed to start');
+    if (!data.success) throw new Error(data.error || 'Failed to start interview session');
 
     currentSessionId = data.sessionId;
     activePersona = data.activePersona;
 
     // Update UI
-    if (emptyState) emptyState.remove();
-    inputContainer.classList.remove('hidden');
+    if (emptyState) emptyState.style.display = 'none';
+    if (inputContainer) inputContainer.classList.remove('hidden');
     
     // Render MCP Data
-    if (data.mcpGithubContext) {
+    if (data.mcpGithubContext && mcpCard) {
       mcpCard.classList.remove('hidden');
-      mcpRepo.innerText = data.mcpGithubContext.repoName;
-      mcpGrade.innerText = `Grade ${data.mcpGithubContext.codeQualityRating}`;
-      mcpArch.innerText = data.mcpGithubContext.architectureType;
+      if (mcpRepo) mcpRepo.innerText = data.mcpGithubContext.repoName;
+      if (mcpGrade) mcpGrade.innerText = `Grade ${data.mcpGithubContext.codeQualityRating}`;
+      if (mcpArch) mcpArch.innerText = data.mcpGithubContext.architectureType;
       
-      mcpHighlights.innerHTML = data.mcpGithubContext.highlights.map(h => `<li>✨ ${h}</li>`).join('');
-      mcpSmells.innerHTML = data.mcpGithubContext.vulnerabilitiesOrSmells.map(s => `<li>⚠️ ${s}</li>`).join('');
+      if (mcpHighlights) mcpHighlights.innerHTML = data.mcpGithubContext.highlights.map(h => `<li>✨ ${h}</li>`).join('');
+      if (mcpSmells) mcpSmells.innerHTML = data.mcpGithubContext.vulnerabilitiesOrSmells.map(s => `<li>⚠️ ${s}</li>`).join('');
     }
 
     // Add Greeting Bubble
@@ -175,12 +179,14 @@ startForm.addEventListener('submit', async (e) => {
     speakText(data.greeting);
 
   } catch (err) {
-    alert('Error: ' + err.message);
-  } finally {
+    alert('Error starting interview: ' + err.message);
     startBtn.disabled = false;
-    startBtn.innerText = '🚀 Restart New Session';
+    startBtn.innerText = '🚀 Launch Interview Agent';
   }
-});
+}
+
+if (startForm) startForm.onsubmit = handleStartInterview;
+if (startBtn) startBtn.onclick = handleStartInterview;
 
 // 2. Handle Sending Candidate Message
 messageForm.addEventListener('submit', async (e) => {
