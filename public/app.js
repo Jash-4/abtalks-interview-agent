@@ -191,86 +191,100 @@ if (startBtn) startBtn.onclick = handleStartInterview;
 window.handleStartInterview = handleStartInterview;
 
 // 2. Handle Sending Candidate Message
-messageForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const text = userInput.value.trim();
-  const code = codeSnippetInput.value.trim();
+if (messageForm) {
+  messageForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const text = userInput ? userInput.value.trim() : '';
+    const code = codeSnippetInput ? codeSnippetInput.value.trim() : '';
 
-  if (!text || !currentSessionId) return;
+    if (!text || !currentSessionId) return;
 
-  // Append user bubble
-  appendMessage('user', text, null, code || undefined);
-  userInput.value = '';
-  codeSnippetInput.value = '';
-  codeBox.classList.add('hidden');
+    // Append user bubble
+    appendMessage('user', text, null, code || undefined);
+    if (userInput) userInput.value = '';
+    if (codeSnippetInput) codeSnippetInput.value = '';
+    if (codeBox) codeBox.classList.add('hidden');
 
-  // Show typing indicator
-  const typingIndicator = document.createElement('div');
-  typingIndicator.className = 'chat-bubble agent';
-  typingIndicator.id = 'typingIndicator';
-  typingIndicator.innerText = activePersona === 'FAANG_EM' ? 'Alex Vance is analyzing system trade-offs...' : 'Anil Bajpai is evaluating Industry Readiness...';
-  chatViewport.appendChild(typingIndicator);
-  chatViewport.scrollTop = chatViewport.scrollHeight;
-
-  try {
-    const apiBase = window.location.origin;
-    const res = await fetch(`${apiBase}/api/interview/chat`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        sessionId: currentSessionId,
-        message: text,
-        codeSnippet: code || undefined
-      })
-    });
-
-    const data = await res.json();
-    if (!data.success) throw new Error(data.error || 'Failed to chat');
-
-    const ind = document.getElementById('typingIndicator');
-    if (ind) ind.remove();
-
-    activePersona = data.activePersona;
-    updatePersonaBadge(activePersona);
-    updateStages(data.currentPhase);
-
-    // Append agent reply
-    appendMessage('agent', data.agentReply, activePersona);
-    speakText(data.agentReply);
-
-    // Check if interview completed
-    if (data.isFinished && data.finalReport) {
-      setTimeout(() => {
-        renderFinalReport(data.finalReport);
-      }, 1200);
+    // Show typing indicator
+    const typingIndicator = document.createElement('div');
+    typingIndicator.className = 'chat-bubble agent';
+    typingIndicator.id = 'typingIndicator';
+    typingIndicator.innerText = activePersona === 'FAANG_EM' ? 'Alex Vance is analyzing system trade-offs...' : 'Anil Bajpai is evaluating Industry Readiness...';
+    if (chatViewport) {
+      chatViewport.appendChild(typingIndicator);
+      chatViewport.scrollTop = chatViewport.scrollHeight;
     }
 
-  } catch (err) {
-    const ind = document.getElementById('typingIndicator');
-    if (ind) ind.remove();
-    alert('Communication error: ' + err.message);
-  }
-});
+    try {
+      const apiBase = window.location.origin;
+      const res = await fetch(`${apiBase}/api/interview/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId: currentSessionId,
+          message: text,
+          codeSnippet: code || undefined
+        })
+      });
+
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || 'Failed to chat');
+
+      const ind = document.getElementById('typingIndicator');
+      if (ind) ind.remove();
+
+      activePersona = data.activePersona;
+      updatePersonaBadge(activePersona);
+      updateStages(data.currentPhase);
+
+      // Append agent reply
+      appendMessage('agent', data.agentReply, activePersona);
+      speakText(data.agentReply);
+
+      // Check if interview completed
+      if (data.isFinished && data.finalReport) {
+        setTimeout(() => {
+          renderFinalReport(data.finalReport);
+        }, 1200);
+      }
+
+    } catch (err) {
+      const ind = document.getElementById('typingIndicator');
+      if (ind) ind.remove();
+      alert('Communication error: ' + err.message);
+    }
+  });
+}
+
+// Toggle Code Editor
+if (toggleCodeBtn && codeBox) {
+  toggleCodeBtn.addEventListener('click', () => {
+    codeBox.classList.toggle('hidden');
+  });
+}
 
 // 3. Early Finish Trigger
-finishEarlyBtn.addEventListener('click', async () => {
-  if (!currentSessionId) return;
-  if (!confirm('Are you ready to conclude the technical grill and generate your ABTalks Industry Readiness Scorecard?')) return;
+if (finishEarlyBtn) {
+  finishEarlyBtn.addEventListener('click', async () => {
+    if (!currentSessionId) return;
+    if (!confirm('Are you ready to conclude the technical grill and generate your ABTalks Industry Readiness Scorecard?')) return;
 
-  try {
-    const res = await fetch('/api/interview/finish', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sessionId: currentSessionId })
-    });
-    const data = await res.json();
-    if (data.success && data.report) {
-      renderFinalReport(data.report);
+    try {
+      const apiBase = window.location.origin;
+      const res = await fetch(`${apiBase}/api/interview/finish`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId: currentSessionId })
+      });
+      const data = await res.json();
+      if (data.success && data.report) {
+        renderFinalReport(data.report);
+      }
+    } catch (err) {
+      alert('Error finalizing: ' + err.message);
     }
-  } catch (err) {
-    alert('Error finalizing: ' + err.message);
-  }
-});
+  });
+}
 
 // Helper: Append Chat Bubble
 function appendMessage(sender, text, persona, codeSnippet) {
