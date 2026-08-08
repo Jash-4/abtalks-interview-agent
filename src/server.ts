@@ -24,7 +24,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.static(path.join(__dirname, '../public')));
+const publicDir = path.resolve(process.cwd(), 'public');
+app.use(express.static(publicDir));
 
 // Initialize State Machine
 const stateMachine = new InterviewStateMachine();
@@ -175,7 +176,7 @@ app.get('/api/rubrics', (req: Request, res: Response): void => {
 
 // Fallback to Index for SPA
 app.get('*', (req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
+  res.sendFile(path.resolve(process.cwd(), 'public/index.html'));
 });
 
 // Start Server
