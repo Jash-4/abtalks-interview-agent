@@ -2,6 +2,9 @@
 
 An intelligent, autonomous AI Technical Interview Agent built for the **ABTalks Hackathon** (judged by **Anil Bajpai**).
 
+🎬 **Demo Video**: [Watch 2-Min Live Interview Demo](https://youtube.com) *(Update with your YouTube Link)*
+🌐 **Live App**: [https://abtalks-interview-agent.vercel.app](https://abtalks-interview-agent.vercel.app)
+
 ---
 
 ## 🌟 What Makes It "God Mode"?
