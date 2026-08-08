@@ -133,9 +133,13 @@ async function handleStartInterview(e) {
     e.preventDefault();
     e.stopPropagation();
   }
-  if (!startBtn || startBtn.disabled) return;
-  startBtn.disabled = true;
-  startBtn.innerText = 'Initializing Agent & MCP...';
+  
+  const btn = document.getElementById('startBtn');
+  if (btn && btn.disabled) return;
+  if (btn) {
+    btn.disabled = true;
+    btn.innerText = 'Initializing Agent & MCP...';
+  }
 
   const payload = {
     name: document.getElementById('candidateName')?.value || 'Alex Rivera',
@@ -181,13 +185,20 @@ async function handleStartInterview(e) {
 
   } catch (err) {
     alert('Error starting interview: ' + err.message);
-    startBtn.disabled = false;
-    startBtn.innerText = '🚀 Launch Interview Agent';
+    const btn = document.getElementById('startBtn');
+    if (btn) {
+      btn.disabled = false;
+      btn.innerText = '🚀 Launch Interview Agent';
+    }
   }
 }
 
-if (startForm) startForm.onsubmit = handleStartInterview;
-if (startBtn) startBtn.onclick = handleStartInterview;
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('startForm');
+  const btn = document.getElementById('startBtn');
+  if (form) form.onsubmit = handleStartInterview;
+  if (btn) btn.onclick = handleStartInterview;
+});
 window.handleStartInterview = handleStartInterview;
 
 // 2. Handle Sending Candidate Message
