@@ -96,11 +96,11 @@
     <section class="main-arena">
       <!-- Top Stage Tracker -->
       <div class="stage-bar">
-        <div class="stage-item active" id="stageGreeting">1. Greeting</div>
-        <div class="stage-item" id="stageTech">2. Concurrency & DB</div>
-        <div class="stage-item" id="stageDesign">3. System & Caching</div>
-        <div class="stage-item" id="stageMCP">4. Code & MCP</div>
-        <div class="stage-item" id="stageReport">5. ABTalks Scorecard</div>
+        <button type="button" class="stage-item active" id="stageGreeting" onclick="switchStageView('GREETING')">1. Greeting</button>
+        <button type="button" class="stage-item" id="stageTech" onclick="switchStageView('TECHNICAL_CORE')">2. Concurrency & DB</button>
+        <button type="button" class="stage-item" id="stageDesign" onclick="switchStageView('SYSTEM_DESIGN')">3. System & Caching</button>
+        <button type="button" class="stage-item" id="stageMCP" onclick="switchStageView('CODE_REVIEW')">4. Code & MCP</button>
+        <button type="button" class="stage-item" id="stageReport" onclick="handleFinishEarly(event)">5. ABTalks Scorecard</button>
       </div>
 
       <!-- Chat History Stream -->
@@ -214,15 +214,15 @@
           <div class="json-header">
             <h4>📦 Structured Output JSON (Judges Submission Standard)</h4>
             <div class="json-actions">
-              <button class="btn-copy" id="copyJsonBtn">📋 Copy JSON</button>
-              <button class="btn-copy" id="downloadMdBtn">📄 Download Report (.md)</button>
+              <button type="button" class="btn-copy" id="copyJsonBtn" onclick="copyJsonPayload(event)">📋 Copy JSON</button>
+              <button type="button" class="btn-copy" id="downloadMdBtn" onclick="downloadReportMd(event)">📄 Download Report (.md)</button>
             </div>
           </div>
           <pre><code id="jsonCodeBlock">{}</code></pre>
         </div>
 
         <div class="report-actions">
-          <button class="btn btn-primary" id="restartBtn">🔄 Start Another Interview</button>
+          <button type="button" class="btn btn-primary" id="restartBtn" onclick="location.reload()">🔄 Start Another Interview</button>
         </div>
       </div>
     </section>
@@ -543,6 +543,194 @@
       }
     }
 
+    function updateStages(currentPhase) {
+      var stages = {
+        'GREETING': 'stageGreeting',
+        'TECHNICAL_CORE': 'stageTech',
+        'SYSTEM_DESIGN': 'stageDesign',
+        'CODE_REVIEW': 'stageMCP',
+        'REPORT': 'stageReport'
+      };
+      var allKeys = Object.keys(stages);
+      var activeId = stages[currentPhase] || 'stageGreeting';
+
+      allKeys.forEach(function(phase) {
+        var el = document.getElementById(stages[phase]);
+        if (el) {
+          if (stages[phase] === activeId) {
+            el.classList.add('active');
+          } else {
+            el.classList.remove('active');
+          }
+        }
+      });
+    }
+
+    function switchStageView(stage) {
+      updateStages(stage);
+      var chatViewport = document.getElementById('chatViewport');
+      var inputContainer = document.getElementById('inputContainer');
+      var reportView = document.getElementById('reportView');
+      if (reportView) reportView.classList.add('hidden');
+      if (chatViewport) chatViewport.classList.remove('hidden');
+      if (inputContainer && window.currentSessionId) inputContainer.classList.remove('hidden');
+    }
+
+    function renderRadarChart(scores) {
+      var s = scores || {};
+      var tech = s.technicalDepth || s.technicalProficiency || 70;
+      var arch = s.architecture || s.systemArchitecture || 70;
+      var solve = s.problemSolving || 70;
+      var comm = s.communicationClarity || 70;
+      var craft = s.codeCraftsmanship || 70;
+      var domain = s.domainExpertise || 70;
+
+      var center = 140, radius = 90;
+      var values = [tech, arch, solve, comm, craft, domain];
+      var angles = [0, 60, 120, 180, 240, 300];
+
+      var points = angles.map(function(angle, i) {
+        var rad = (angle - 90) * (Math.PI / 180);
+        var r = (values[i] / 100) * radius;
+        return (center + r * Math.cos(rad)).toFixed(1) + ',' + (center + r * Math.sin(rad)).toFixed(1);
+      }).join(' ');
+
+      var poly = document.getElementById('radarPolygon');
+      if (poly) poly.setAttribute('points', points);
+    }
+
+    function renderFinalReport(report) {
+      window.lastReportData = report;
+      var chatViewport = document.getElementById('chatViewport');
+      var inputContainer = document.getElementById('inputContainer');
+      var reportView = document.getElementById('reportView');
+
+      if (chatViewport) chatViewport.classList.add('hidden');
+      if (inputContainer) inputContainer.classList.add('hidden');
+      if (reportView) reportView.classList.remove('hidden');
+
+      updateStages('REPORT');
+
+      var repName = document.getElementById('repCandidateName');
+      var repVerdict = document.getElementById('repVerdict');
+      var repScore = document.getElementById('repReadinessScore');
+      var repVerdictBox = document.getElementById('repVerdictBox');
+
+      if (repName) repName.innerText = (report.candidate || 'Alex Rivera') + ' — ' + (report.role || 'Software Engineer');
+      var scoreVal = report.readinessScore || report.industryReadinessScore || 75;
+      if (repScore) repScore.innerText = scoreVal;
+
+      var verdictText = report.verdict || report.overallVerdict || 'Needs Mentorship';
+      if (repVerdict) repVerdict.innerText = verdictText;
+
+      if (repVerdictBox) {
+        if (scoreVal >= 80) {
+          repVerdictBox.style.background = 'rgba(16, 185, 129, 0.2)';
+          repVerdictBox.style.borderColor = '#10b981';
+          if (repVerdict) repVerdict.style.color = '#34d399';
+        } else if (scoreVal >= 65) {
+          repVerdictBox.style.background = 'rgba(245, 158, 11, 0.2)';
+          repVerdictBox.style.borderColor = '#f59e0b';
+          if (repVerdict) repVerdict.style.color = '#fbbf24';
+        } else {
+          repVerdictBox.style.background = 'rgba(239, 68, 68, 0.2)';
+          repVerdictBox.style.borderColor = '#ef4444';
+          if (repVerdict) repVerdict.style.color = '#f87171';
+        }
+      }
+
+      var b = report.scores || report.breakdown || {};
+      var valTech = document.getElementById('valTech');
+      var barTech = document.getElementById('barTech');
+      var valArch = document.getElementById('valArch');
+      var barArch = document.getElementById('barArch');
+      var valSolve = document.getElementById('valSolve');
+      var barSolve = document.getElementById('barSolve');
+      var valComm = document.getElementById('valComm');
+      var barComm = document.getElementById('barComm');
+
+      var tVal = b.technicalDepth || b.technicalProficiency || 70;
+      var aVal = b.architecture || b.systemArchitecture || 70;
+      var sVal = b.problemSolving || 70;
+      var cVal = b.communicationClarity || 70;
+
+      if (valTech) valTech.innerText = tVal + '%';
+      if (barTech) barTech.style.width = tVal + '%';
+      if (valArch) valArch.innerText = aVal + '%';
+      if (barArch) barArch.style.width = aVal + '%';
+      if (valSolve) valSolve.innerText = sVal + '%';
+      if (barSolve) barSolve.style.width = sVal + '%';
+      if (valComm) valComm.innerText = cVal + '%';
+      if (barComm) barComm.style.width = cVal + '%';
+
+      renderRadarChart(b);
+
+      var strList = document.getElementById('repStrengthsList');
+      var impList = document.getElementById('repImprovementsList');
+      var roadList = document.getElementById('repRoadmapList');
+
+      if (strList && report.strengths) strList.innerHTML = report.strengths.map(function(s) { return '<li>' + s + '</li>'; }).join('');
+      if (impList && (report.areasForImprovement || report.improvements)) {
+        var arr = report.areasForImprovement || report.improvements;
+        impList.innerHTML = arr.map(function(i) { return '<li>' + i + '</li>'; }).join('');
+      }
+      if (roadList && (report.careerMentorshipRoadmap || report.roadmap)) {
+        var arrR = report.careerMentorshipRoadmap || report.roadmap;
+        roadList.innerHTML = arrR.map(function(r) { return '<li>' + r + '</li>'; }).join('');
+      }
+
+      var jsonBlock = document.getElementById('jsonCodeBlock');
+      if (jsonBlock) jsonBlock.innerText = JSON.stringify(report, null, 2);
+
+      if (reportView) reportView.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function downloadReportMd(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      var report = window.lastReportData;
+      if (!report) {
+        alert('No active evaluation report found to download.');
+        return;
+      }
+      var b = report.scores || report.breakdown || {};
+      var mdContent = '# ABTalks Technical Evaluation & Readiness Certificate\n\n' +
+        '**Candidate Name:** ' + (report.candidate || 'Alex Rivera') + '\n' +
+        '**Target Role:** ' + (report.role || 'Senior Backend Engineer') + '\n' +
+        '**Overall Readiness Score:** ' + (report.readinessScore || report.industryReadinessScore || 75) + '/100\n' +
+        '**Verdict:** ' + (report.verdict || report.overallVerdict || 'Needs Mentorship') + '\n\n' +
+        '## Competency Score Breakdown\n' +
+        '- Technical Depth: ' + (b.technicalDepth || b.technicalProficiency || 70) + '/100\n' +
+        '- System Architecture: ' + (b.architecture || b.systemArchitecture || 70) + '/100\n' +
+        '- Problem Solving: ' + (b.problemSolving || 70) + '/100\n' +
+        '- Communication Clarity: ' + (b.communicationClarity || 70) + '/100\n\n' +
+        '## Key Strengths\n' +
+        (report.strengths ? report.strengths.map(function(s) { return '- ' + s; }).join('\n') : '- Strong technical fundamentals') + '\n\n' +
+        '## Growth Areas\n' +
+        ((report.areasForImprovement || report.improvements) ? (report.areasForImprovement || report.improvements).map(function(i) { return '- ' + i; }).join('\n') : '- Deepen distributed locking mechanics') + '\n\n' +
+        '## ABTalks Career Roadmap\n' +
+        ((report.careerMentorshipRoadmap || report.roadmap) ? (report.careerMentorshipRoadmap || report.roadmap).map(function(r) { return '1. ' + r; }).join('\n') : '1. Practice HNSW vs IVF vector indexing');
+
+      var blob = new Blob([mdContent], { type: 'text/markdown' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'ABTalks_Report_' + (report.candidate || 'Candidate').replace(/\s+/g, '_') + '.md';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function copyJsonPayload(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      var jsonBlock = document.getElementById('jsonCodeBlock');
+      if (jsonBlock && jsonBlock.innerText) {
+        navigator.clipboard.writeText(jsonBlock.innerText).then(function() {
+          alert('ABTalks Scorecard JSON copied to clipboard!');
+        });
+      }
+    }
+
     window.handleStartInterview = handleStartInterview;
     window.handleSendMessage = handleSendMessage;
     window.handleFinishEarly = handleFinishEarly;
@@ -552,6 +740,11 @@
     window.showMcpCard = showMcpCard;
     window.toggleRubricsModal = toggleRubricsModal;
     window.togglePersonaModal = togglePersonaModal;
+    window.switchStageView = switchStageView;
+    window.renderFinalReport = renderFinalReport;
+    window.downloadReportMd = downloadReportMd;
+    window.copyJsonPayload = copyJsonPayload;
+    window.updateStages = updateStages;
   </script>
   <script src="app.js?v=7_inline_all"></script>
 </body>
