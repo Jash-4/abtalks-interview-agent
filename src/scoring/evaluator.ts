@@ -5,16 +5,20 @@ export class InterviewEvaluator {
     const candidateName = session.candidate.name || 'Candidate';
     const role = session.candidate.role || 'Enterprise AI Engineer';
 
+    const userMessages = session.history.filter(m => m.sender === 'user');
+    const isUnansweredEarlyFinish = userMessages.length === 0;
+    const defaultBaseline = isUnansweredEarlyFinish ? 68 : 55;
+
     // Calculate aggregated scores with safety bounds
     const avg = (nums: number[], fallback: number) => 
       nums.length > 0 ? Math.round(nums.reduce((a, b) => a + b, 0) / nums.length) : fallback;
 
-    const technical = avg(session.scoresAccumulated.technical, 30);
-    const architecture = avg(session.scoresAccumulated.architecture, 30);
-    const problemSolving = avg(session.scoresAccumulated.problemSolving, 30);
-    const communication = avg(session.scoresAccumulated.communication, 35);
-    const codeCraft = avg(session.scoresAccumulated.codeCraft, 30);
-    const domainExpertise = avg(session.scoresAccumulated.domain, 30);
+    const technical = avg(session.scoresAccumulated.technical, defaultBaseline);
+    const architecture = avg(session.scoresAccumulated.architecture, defaultBaseline);
+    const problemSolving = avg(session.scoresAccumulated.problemSolving, defaultBaseline);
+    const communication = avg(session.scoresAccumulated.communication, isUnansweredEarlyFinish ? 75 : 60);
+    const codeCraft = avg(session.scoresAccumulated.codeCraft, defaultBaseline);
+    const domainExpertise = avg(session.scoresAccumulated.domain, defaultBaseline);
 
     const breakdown: ScorecardBreakdown = {
       technicalProficiency: technical,
@@ -35,7 +39,9 @@ export class InterviewEvaluator {
 
     // Dynamic verdict based on actual candidate performance
     let overallVerdict: StructuredInterviewReport['overallVerdict'] = 'Needs Mentorship & Refinement';
-    if (industryReadinessScore >= 88) {
+    if (isUnansweredEarlyFinish) {
+      overallVerdict = 'Needs Mentorship & Refinement';
+    } else if (industryReadinessScore >= 88) {
       overallVerdict = 'Immediate Strong Hire';
     } else if (industryReadinessScore >= 75) {
       overallVerdict = 'Hire (L4/Mid-Level)';
@@ -90,7 +96,6 @@ export class InterviewEvaluator {
       'Frame technical solutions through business ROI and MTTR impact as advocated in ABTalks sessions.'
     ];
 
-    const userMessages = session.history.filter(m => m.sender === 'user');
     const questionByQuestionAnalysis = userMessages.map((msg, index) => {
       const isBrief = msg.text.trim().length < 25;
       return {

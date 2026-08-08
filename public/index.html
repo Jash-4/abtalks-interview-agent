@@ -433,6 +433,16 @@
         window.currentSessionId = data.sessionId;
         window.activePersona = data.activePersona;
 
+        // Auto-enable Voice Audio on session launch
+        window.voiceEnabled = true;
+        var btnVoice = document.getElementById('voiceToggleBtn');
+        if (btnVoice) {
+          btnVoice.innerText = '🔊 Voice Audio: ON';
+          btnVoice.style.background = 'rgba(16, 185, 129, 0.25)';
+          btnVoice.style.borderColor = 'rgba(16, 185, 129, 0.5)';
+          btnVoice.style.color = '#34d399';
+        }
+
         var emptyState = document.getElementById('emptyState');
         if (emptyState) emptyState.style.display = 'none';
 
