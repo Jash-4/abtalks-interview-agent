@@ -21,7 +21,6 @@
       </div>
     </div>
     <div class="status-tags">
-      <button type="button" class="badge badge-mcp clickable-badge" id="voiceToggleBtn" title="Toggle AI Text-to-Speech audio" onclick="toggleVoiceAudio(event)">🔊 Voice Audio: Off</button>
       <button type="button" class="badge badge-mcp clickable-badge" id="mcpBadge" title="Inspect GitHub Mock MCP AST Tool" onclick="showMcpCard(event)">⚡ Mock MCP: Ready</button>
       <button type="button" class="badge badge-rag clickable-badge" id="ragBadge" title="View 6 FAANG Assessment Rubrics" onclick="toggleRubricsModal(true)">📚 RAG: 6 FAANG Rubrics</button>
       <button type="button" class="badge badge-persona clickable-badge" id="personaBadge" title="View Dual-Persona Details" onclick="togglePersonaModal(true)">🎭 Persona: FAANG EM</button>
@@ -127,9 +126,6 @@
 
         <form id="messageForm" class="message-form" onsubmit="handleSendMessage(event)">
           <textarea id="userInput" placeholder="Explain your answer, trade-offs, and algorithms... (Shift+Enter for newline, Enter to send)" rows="3" onkeydown="if(event.key === 'Enter' && !event.shiftKey){ event.preventDefault(); handleSendMessage(event); }" required></textarea>
-          <button type="button" class="btn btn-mic" id="micBtn" title="Click to speak your answer (Voice Speech-to-Text)" onclick="toggleMic(event)">
-            <span id="micIcon">🎙️</span>
-          </button>
           <button type="button" class="btn btn-send" id="sendBtn" onclick="handleSendMessage(event)">
             <span>Send</span>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
@@ -292,56 +288,11 @@
   <script>
     window.voiceEnabled = false;
 
-    function speakText(text) {
-      if (!window.voiceEnabled) return;
-      if (!('speechSynthesis' in window)) return;
-      
-      try {
-        window.speechSynthesis.cancel();
-        var clean = (text || '').replace(/[*_#`]/g, '').replace(/<[^>]*>/g, '');
-        if (!clean.trim()) return;
-        var utterance = new SpeechSynthesisUtterance(clean);
-        utterance.rate = 1.0;
-        utterance.pitch = 1.0;
-        utterance.volume = 1.0;
-
-        var voices = window.speechSynthesis.getVoices();
-        if (voices && voices.length > 0) {
-          var englishVoice = voices.find(function(v) {
-            return v.lang && v.lang.startsWith('en') && (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Daniel') || v.name.includes('Alex') || v.name.includes('Microsoft') || v.name.includes('English'));
-          });
-          if (englishVoice) utterance.voice = englishVoice;
-        }
-
-        setTimeout(function() {
-          window.speechSynthesis.speak(utterance);
-        }, 60);
-      } catch (err) {
-        console.warn('Speech synthesis error:', err);
-      }
-    }
+    function speakText(text) {}
     window.speakText = speakText;
 
-    function toggleVoiceAudio(e) {
-      if (e) { e.preventDefault(); e.stopPropagation(); }
-      var btn = document.getElementById('voiceToggleBtn');
-      window.voiceEnabled = !window.voiceEnabled;
-      if (btn) {
-        if (window.voiceEnabled) {
-          btn.innerText = '🔊 Voice Audio: ON';
-          btn.style.background = 'rgba(16, 185, 129, 0.25)';
-          btn.style.borderColor = 'rgba(16, 185, 129, 0.5)';
-          btn.style.color = '#34d399';
-          speakText('Voice synthesis audio enabled. Ready to conduct evaluation.');
-        } else {
-          btn.innerText = '🔊 Voice Audio: OFF';
-          btn.style.background = 'rgba(99, 102, 241, 0.2)';
-          btn.style.borderColor = '#818cf8';
-          btn.style.color = '#fff';
-          if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-        }
-      }
-    }
+    function toggleVoiceAudio(e) {}
+    function toggleMic(e) {}
 
     function showMcpCard(e) {
       if (e) { e.preventDefault(); e.stopPropagation(); }
