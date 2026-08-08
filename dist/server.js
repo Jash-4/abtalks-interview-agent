@@ -173,7 +173,7 @@ app.get('*', (req, res) => {
     res.sendFile(path_1.default.resolve(process.cwd(), 'public/index.html'));
 });
 // Start Server
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== 'test' && !process.env.VERCEL) {
     app.listen(PORT, () => {
         console.log(`=======================================================`);
         console.log(`🚀 ABTalks AI Interview Agent API running on port ${PORT}`);
