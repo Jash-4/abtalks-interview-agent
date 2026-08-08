@@ -51,14 +51,68 @@ const codeBox = document.getElementById('codeBox');
 const codeSnippetInput = document.getElementById('codeSnippet');
 const finishEarlyBtn = document.getElementById('finishEarlyBtn');
 
-// Badges & Drawer
+// Badges & Modals
 const personaBadge = document.getElementById('personaBadge');
+const ragBadge = document.getElementById('ragBadge');
+const mcpBadge = document.getElementById('mcpBadge');
 const mcpCard = document.getElementById('mcpCard');
 const mcpRepo = document.getElementById('mcpRepo');
 const mcpGrade = document.getElementById('mcpGrade');
 const mcpArch = document.getElementById('mcpArch');
 const mcpHighlights = document.getElementById('mcpHighlights');
 const mcpSmells = document.getElementById('mcpSmells');
+
+// Modals
+const rubricsOverlay = document.getElementById('rubricsModalOverlay');
+const closeRubricsBtn = document.getElementById('closeRubricsBtn');
+const personaOverlay = document.getElementById('personaModalOverlay');
+const closePersonaBtn = document.getElementById('closePersonaBtn');
+
+// Voice Audio Button Click Handler
+voiceToggleBtn.addEventListener('click', () => {
+  voiceEnabled = !voiceEnabled;
+  if (voiceEnabled) {
+    voiceToggleBtn.innerText = '🔊 Voice Audio: ON';
+    voiceToggleBtn.style.background = 'rgba(16, 185, 129, 0.25)';
+    voiceToggleBtn.style.borderColor = 'rgba(16, 185, 129, 0.5)';
+    voiceToggleBtn.style.color = '#34d399';
+    speakText('Voice synthesis audio enabled.');
+  } else {
+    voiceToggleBtn.innerText = '🔊 Voice Audio: OFF';
+    voiceToggleBtn.style.background = 'rgba(99, 102, 241, 0.2)';
+    voiceToggleBtn.style.borderColor = '#818cf8';
+    voiceToggleBtn.style.color = '#fff';
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  }
+});
+
+// Mock MCP Badge Click Handler
+if (mcpBadge) {
+  mcpBadge.addEventListener('click', () => {
+    mcpCard.classList.remove('hidden');
+    mcpCard.scrollIntoView({ behavior: 'smooth' });
+    mcpCard.style.animation = 'none';
+    setTimeout(() => { mcpCard.style.animation = 'fadeIn 0.3s ease-out'; }, 10);
+  });
+}
+
+// RAG Rubrics Badge Click Handler
+if (ragBadge && rubricsOverlay && closeRubricsBtn) {
+  ragBadge.addEventListener('click', () => rubricsOverlay.classList.remove('hidden'));
+  closeRubricsBtn.addEventListener('click', () => rubricsOverlay.classList.add('hidden'));
+  rubricsOverlay.addEventListener('click', (e) => {
+    if (e.target === rubricsOverlay) rubricsOverlay.classList.add('hidden');
+  });
+}
+
+// Dual Persona Badge Click Handler
+if (personaBadge && personaOverlay && closePersonaBtn) {
+  personaBadge.addEventListener('click', () => personaOverlay.classList.remove('hidden'));
+  closePersonaBtn.addEventListener('click', () => personaOverlay.classList.add('hidden'));
+  personaOverlay.addEventListener('click', (e) => {
+    if (e.target === personaOverlay) personaOverlay.classList.add('hidden');
+  });
+}
 
 // Stages
 const stageGreeting = document.getElementById('stageGreeting');
