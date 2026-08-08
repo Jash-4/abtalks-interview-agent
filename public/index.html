@@ -616,6 +616,9 @@
 
     function switchStageView(stage) {
       updateStages(stage);
+      if (stage === 'REPORT' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
       var chatViewport = document.getElementById('chatViewport');
       var inputContainer = document.getElementById('inputContainer');
       var reportView = document.getElementById('reportView');
@@ -688,6 +691,9 @@
     }
 
     function renderFinalReport(report) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
       window.lastReportData = report;
       var chatViewport = document.getElementById('chatViewport');
       var inputContainer = document.getElementById('inputContainer');

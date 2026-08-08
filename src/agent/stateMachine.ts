@@ -101,21 +101,32 @@ export class InterviewStateMachine {
     };
     session.history.push(userMsg);
 
-    // 2. Strict Technical Depth & Vague Answer Detection
-    const isVague = trimmed.length < 30 || 
-      lower === 'hi' || lower === 'hello' || lower === 'ok' || lower === 'yes' || lower === 'no' ||
-      lower.includes('idk') || lower.includes('no idea') || lower.includes('don\'t know') ||
-      lower.includes('shit') || lower.includes('whatever') || lower.includes('bad') || lower.includes('skip') ||
-      lower.includes('nothing') || lower.includes('asdf') || /^[a-z]{1,12}$/.test(lower);
+    // 2. Technical Depth & Vague Answer Detection (Only penalize vague answers during Technical Core onwards)
+    const isGreetingPhase = session.currentPhase === 'GREETING';
+    const isVague = !isGreetingPhase && (
+      trimmed.length < 20 || 
+      lower === 'idk' || lower === 'no idea' || lower === 'don\'t know' ||
+      lower.includes('shit') || lower.includes('whatever') || lower.includes('skip') ||
+      lower.includes('asdf')
+    );
     
-    if (isVague) {
-      // Heavily penalize vague/troll answers in scores
-      session.scoresAccumulated.technical.push(30);
-      session.scoresAccumulated.architecture.push(30);
-      session.scoresAccumulated.problemSolving.push(30);
-      session.scoresAccumulated.communication.push(35);
-      session.scoresAccumulated.codeCraft.push(30);
-      session.scoresAccumulated.domain.push(30);
+    if (isGreetingPhase) {
+      // Normal greeting response - score baseline 75 communication and progress to TECHNICAL_CORE
+      session.scoresAccumulated.technical.push(70);
+      session.scoresAccumulated.architecture.push(70);
+      session.scoresAccumulated.problemSolving.push(72);
+      session.scoresAccumulated.communication.push(85);
+      session.scoresAccumulated.codeCraft.push(70);
+      session.scoresAccumulated.domain.push(70);
+      session.currentPhase = 'TECHNICAL_CORE';
+    } else if (isVague) {
+      // Moderate pushback penalty during technical core
+      session.scoresAccumulated.technical.push(50);
+      session.scoresAccumulated.architecture.push(50);
+      session.scoresAccumulated.problemSolving.push(50);
+      session.scoresAccumulated.communication.push(60);
+      session.scoresAccumulated.codeCraft.push(50);
+      session.scoresAccumulated.domain.push(50);
 
       // Do NOT advance module, push back strictly!
       const pushback = await this.agentEngine.generateResponse({
@@ -126,7 +137,7 @@ export class InterviewStateMachine {
         rubrics: session.rubricsRetrieved,
         mcpContext: session.mcpData,
         isPushback: true,
-        currentModule: session.currentPhase === 'GREETING' ? 'RAG_EMBEDDINGS' : session.currentPhase
+        currentModule: session.currentPhase
       });
 
       const pushbackMsg: ChatMessage = {

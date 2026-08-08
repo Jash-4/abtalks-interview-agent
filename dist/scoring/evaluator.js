@@ -7,7 +7,7 @@ class InterviewEvaluator {
         const role = session.candidate.role || 'Enterprise AI Engineer';
         const userMessages = session.history.filter(m => m.sender === 'user');
         const isUnansweredEarlyFinish = userMessages.length === 0;
-        const defaultBaseline = isUnansweredEarlyFinish ? 68 : 55;
+        const defaultBaseline = isUnansweredEarlyFinish ? 72 : 70;
         // Calculate aggregated scores with safety bounds
         const avg = (nums, fallback) => nums.length > 0 ? Math.round(nums.reduce((a, b) => a + b, 0) / nums.length) : fallback;
         const technical = avg(session.scoresAccumulated.technical, defaultBaseline);

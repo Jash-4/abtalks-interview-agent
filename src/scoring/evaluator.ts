@@ -7,7 +7,7 @@ export class InterviewEvaluator {
 
     const userMessages = session.history.filter(m => m.sender === 'user');
     const isUnansweredEarlyFinish = userMessages.length === 0;
-    const defaultBaseline = isUnansweredEarlyFinish ? 68 : 55;
+    const defaultBaseline = isUnansweredEarlyFinish ? 72 : 70;
 
     // Calculate aggregated scores with safety bounds
     const avg = (nums: number[], fallback: number) => 
