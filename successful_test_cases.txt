@@ -2,28 +2,23 @@
 🚀 ABTALKS AI INTERVIEW AGENT — SUCCESSFUL HIGH-SCORING TEST CASES GUIDE
 ================================================================================
 
-Copy and paste these exact deep technical answers into the Candidate Portal (http://localhost:3000)
+Copy and paste these exact deep technical answers sequentially into the Candidate Portal (http://localhost:3000)
 to achieve HIRE / IMMEDIATE STRONG HIRE (79 - 94/100) for every profile!
 
 --------------------------------------------------------------------------------
 1. 🟢 AARAV SHARMA (Senior Backend Engineer — IIT Bombay, 8.9 / 10.0 CGPA)
 --------------------------------------------------------------------------------
-Target Score: 79 - 88 / 100 (Hire / Immediate Strong Hire)
+Target Score: 88 - 94 / 100 (🟢 Immediate Strong Hire)
 
-[Candidate Setup Parameters]
-- Candidate Name: Aarav Sharma
-- Target Role: Senior Backend Engineer (Distributed Systems)
-- Experience: 4 Years (FAANG L5)
-- GitHub Username: aarav-sharma-dev
+[Setup Parameters]
+- Name: Aarav Sharma
+- Role: Senior Backend Engineer (Distributed Systems)
 
-[Copy-Paste Technical Answer]
+[Turn 1: Concurrency & Distributed Locking]
 We prevent race conditions and double-spending across our microservices by combining Redis Redlock distributed locking with monotonically increasing fencing tokens. For database consistency under high concurrency (50k QPS), we enforce PostgreSQL Repeatable Read isolation levels paired with PgBouncer connection pool tuning to eliminate deadlocks. For async event propagation, we stream database mutations out of PostgreSQL using Debezium CDC into Apache Kafka topics with idempotent consumer deduplication.
 
-[Optional Code Snippet to Paste in Code Box]
-const lock = await redis.lock("account_transfer_8910", {
-  ttl: 5000,
-  fencingToken: 40291
-});
+[Turn 2: CDC, Logical Replication & Schema Evolution (Shown in Screenshot)]
+We configure PostgreSQL logical replication using the pgoutput plugin connected to a Debezium connector on Kafka Connect. To stream mutation events without acquiring heavy table locks on primary databases, Debezium reads Write-Ahead Logs (WAL) asynchronously. For schema evolution, we enforce Confluent Avro Schema Registry with BACKWARD_TRANSITIVE compatibility, ensuring column additions or type migrations do not break downstream consumer deserialization.
 
 
 --------------------------------------------------------------------------------
@@ -31,43 +26,31 @@ const lock = await redis.lock("account_transfer_8910", {
 --------------------------------------------------------------------------------
 Target Score: 94 / 100 (🟢 Immediate Strong Hire — FAANG L5/L6 Ready)
 
-[Candidate Setup Parameters]
-- Candidate Name: Priya Sharma
-- Target Role: AI / RAG Platform Engineer
-- Experience: 3 Years (FAANG L5 AI Systems)
-- GitHub Username: priya-sharma-rag-dev
+[Setup Parameters]
+- Name: Priya Sharma
+- Role: AI / RAG Platform Engineer
 
-[Copy-Paste Technical Answer]
+[Turn 1: Hybrid Search, BM25/RRF & Vector Quantization]
 Our enterprise RAG hybrid retrieval pipeline fuses keyword BM25 score ranks for exact acronyms with Dense Cosine semantic embeddings using Reciprocal Rank Fusion (RRF with k=60). For vector database indexing, we utilize HNSW graph indexing with M=16 and efConstruction=200 to achieve sub-10ms query latencies at 98% recall. On the LLM serving layer, we deploy vLLM with PagedAttention to eliminate KV-cache memory fragmentation and cache frequent query prefix embeddings in Redis.
 
-[Optional Code Snippet to Paste in Code Box]
-function computeRRF(bm25Rank: number, denseRank: number, k = 60): number {
-  return (1 / (k + bm25Rank)) + (1 / (k + denseRank));
-}
+[Turn 2: vLLM PagedAttention Memory Management & Continuous Batching]
+To prevent KV-cache memory fragmentation during high burst traffic, vLLM partitions key-value memory into non-contiguous physical block tables allocated dynamically via PagedAttention. Combined with continuous iteration-level batching and Redis semantic prompt caching, we reduce Time-To-First-Token (TTFT) by 65% while maintaining strict p99 SLA latency bounds.
 
 
 --------------------------------------------------------------------------------
 3. 🟢 ROHAN PATEL (Staff Systems Architect — IIT Delhi, 9.1 / 10.0 CGPA)
 --------------------------------------------------------------------------------
-Target Score: 88 - 94 / 100 (🟢 Immediate Strong Hire — FAANG L6 Staff Ready)
+Target Score: 94 / 100 (🟢 Immediate Strong Hire — FAANG L6 Staff Ready)
 
-[Candidate Setup Parameters]
-- Candidate Name: Rohan Patel
-- Target Role: Staff Systems Architect (High Throughput)
-- Experience: 6 Years (FAANG L6 Staff Architect)
-- GitHub Username: rohan-patel-systems-architect
+[Setup Parameters]
+- Name: Rohan Patel
+- Role: Staff Systems Architect (High Throughput)
 
-[Copy-Paste Technical Answer]
+[Turn 1: Real-Time Gateways, Envoy & Circuit Breakers]
 To scale our real-time streaming infrastructure to 500k concurrent WebSocket connections, we deploy an Envoy service mesh edge gateway backed by a Redis Pub/Sub cluster. We enforce strict p99 latency SLAs (< 150ms) using circuit breakers with fallback degradation buffers. Our frontend leverages React 18 Streaming SSR with Suspense boundaries, while auto-scaling across Kubernetes worker nodes using KEDA metrics based on message queue depth.
 
-[Optional Code Snippet to Paste in Code Box]
-apiVersion: keda.sh/v1alpha1
-kind: ScaledObject
-metadata:
-  name: websocket-gateway-autoscaler
-spec:
-  minReplicaCount: 5
-  maxReplicaCount: 50
+[Turn 2: Kubernetes Pod Autoscaling (KEDA) & Failure Mode Recovery]
+We configure Kubernetes Event-driven Autoscaling (KEDA) with custom Prometheus metrics monitoring queue depth and socket connection counts. In failure scenarios where a Redis Pub/Sub node drops, Envoy circuit breakers trip to divert live traffic to fallback replica nodes with exponential backoff and jitter retry policies.
 
 ================================================================================
 🌐 LOCAL & LIVE APP LINKS
