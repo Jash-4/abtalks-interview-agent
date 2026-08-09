@@ -68,6 +68,15 @@ export class RubricKnowledgeBase {
       weight: 1.25
     },
     {
+      id: 'rubric_backend_08',
+      category: 'concurrency',
+      topic: 'Distributed Locking, Race Conditions & Database Isolation',
+      difficulty: 'Senior',
+      expectedKeywords: ['redlock', 'fencing tokens', 'repeatable read', 'serializable', 'pgbouncer', 'deadlock recovery', 'debezium', 'kafka cdc'],
+      evaluationGuide: 'Evaluates candidate understanding of distributed concurrency control, zero double-spending guarantees, fencing tokens in Redis Redlock, and PostgreSQL transaction isolation levels.',
+      weight: 1.3
+    },
+    {
       id: 'rubric_industry_readiness_07',
       category: 'industry_readiness',
       topic: 'ABTalks Real-World Engineering Maturity & Systems Ownership',

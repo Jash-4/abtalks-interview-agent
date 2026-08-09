@@ -23,7 +23,7 @@
     <div class="status-tags">
       <button type="button" class="badge badge-mcp clickable-badge" id="voiceToggleBtn" title="Toggle AI Text Reader Voice" onclick="toggleVoiceAudio(event)">🔊 Voice Audio: Off</button>
       <button type="button" class="badge badge-mcp clickable-badge" id="mcpBadge" title="Inspect GitHub Mock MCP AST Tool" onclick="showMcpCard(event)">⚡ Mock MCP: Ready</button>
-      <button type="button" class="badge badge-rag clickable-badge" id="ragBadge" title="View 6 FAANG Assessment Rubrics" onclick="toggleRubricsModal(true)">📚 RAG: 6 FAANG Rubrics</button>
+      <button type="button" class="badge badge-rag clickable-badge" id="ragBadge" title="View 7 FAANG Assessment Rubrics" onclick="toggleRubricsModal(true)">📚 RAG: 7 FAANG Rubrics</button>
       <button type="button" class="badge badge-persona clickable-badge" id="personaBadge" title="View Dual-Persona Details" onclick="togglePersonaModal(true)">🎭 Persona: FAANG EM</button>
     </div>
   </header>
@@ -270,35 +270,39 @@
   <div class="modal-overlay hidden" id="rubricsModalOverlay" onclick="if(event.target===this)toggleRubricsModal(false)">
     <div class="modal-card">
       <div class="modal-header">
-        <h3>📚 RAG Knowledge Base — 6 FAANG System Rubrics</h3>
+        <h3>📚 RAG Knowledge Base — 7 FAANG System Rubrics</h3>
         <button type="button" class="btn-close" id="closeRubricsBtn" onclick="toggleRubricsModal(false)">&times;</button>
       </div>
       <div class="modal-body">
-        <p class="modal-desc">These 6 core FAANG engineering criteria ground Alex Vance's technical evaluation and score weights:</p>
+        <p class="modal-desc">These 7 core FAANG engineering criteria ground Alex Vance's technical evaluation and score weights:</p>
         <div class="rubrics-grid">
           <div class="rubric-item">
             <div class="rubric-title">1. RAG & Hybrid Retrieval (BM25 + Dense + RRF)</div>
             <div class="rubric-detail">Weight: 30% • Tests chunking strategies, exact acronym matching via BM25, semantic vector embeddings, and Reciprocal Rank Fusion normalization.</div>
           </div>
           <div class="rubric-item">
-            <div class="rubric-title">2. Vector DB Indexing (HNSW vs IVF-PQ)</div>
+            <div class="rubric-title">2. Distributed Locks & DB Isolation (Redis Redlock & Postgres)</div>
+            <div class="rubric-detail">Weight: 25% • Evaluates Redis Redlock with fencing tokens, zero double-spending, Repeatable Read isolation, and deadlock recovery under 50k QPS.</div>
+          </div>
+          <div class="rubric-item">
+            <div class="rubric-title">3. Vector DB Indexing (HNSW vs IVF-PQ)</div>
             <div class="rubric-detail">Weight: 25% • Evaluates memory footprints, recall degradation, quantization trade-offs, and high-concurrency QPS bounds.</div>
           </div>
           <div class="rubric-item">
-            <div class="rubric-title">3. Agentic AI & Tool Orchestration (ReAct Loops)</div>
+            <div class="rubric-title">4. Agentic AI & Tool Orchestration (ReAct Loops)</div>
             <div class="rubric-detail">Weight: 25% • Assesses infinite ReAct loop detection, state persistence, circuit breakers, and supervisor agent reflection loops.</div>
           </div>
           <div class="rubric-item">
-            <div class="rubric-title">4. Model Context Protocol (MCP v1.0)</div>
+            <div class="rubric-title">5. Model Context Protocol (MCP v1.0)</div>
             <div class="rubric-detail">Weight: 20% • Tests standard JSON-RPC tool discovery, security permission boundaries, AST parsing, and database resources.</div>
           </div>
           <div class="rubric-item">
-            <div class="rubric-title">5. Production Serving & vLLM (PagedAttention)</div>
+            <div class="rubric-title">6. Production Serving & vLLM (PagedAttention)</div>
             <div class="rubric-detail">Weight: 20% • Tests KV cache memory fragmentation elimination, Redis semantic caching, and Time-To-First-Token (TTFT) reduction.</div>
           </div>
           <div class="rubric-item">
-            <div class="rubric-title">6. Distributed Systems Observability & Telemetry</div>
-            <div class="rubric-detail">Weight: 15% • Tests p99 latency SLA targets, circuit breaking, OpenTelemetry tracing, and graceful degradation under burst traffic.</div>
+            <div class="rubric-title">7. Real-Time Gateways & Microservice Mesh Circuit Breakers</div>
+            <div class="rubric-detail">Weight: 15% • Tests WebSocket Pub/Sub gateway scale, Envoy circuit breaking, p99 latency SLA targets, and graceful degradation.</div>
           </div>
         </div>
       </div>
