@@ -5,6 +5,8 @@ import { GithubRepoMockData } from '../types';
  * 
  * Simulates tool invocation where the LLM queries the candidate's live code,
  * inspects ASTs, commits, and tests to ground interview questions on their real project.
+ * 
+ * @author Moguluri Sri Ranga Sesha Siva Jaswanth <sivajaswanthmsr@gmail.com>
  */
 export class MockGithubMcpService {
   private static repositoryBank: Record<string, GithubRepoMockData> = {

@@ -6,6 +6,8 @@ exports.MockGithubMcpService = void 0;
  *
  * Simulates tool invocation where the LLM queries the candidate's live code,
  * inspects ASTs, commits, and tests to ground interview questions on their real project.
+ *
+ * @author Moguluri Sri Ranga Sesha Siva Jaswanth <sivajaswanthmsr@gmail.com>
  */
 class MockGithubMcpService {
     static repositoryBank = {
