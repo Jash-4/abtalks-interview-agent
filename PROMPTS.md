@@ -59,10 +59,10 @@ Create a modern, dark-mode web application (HTML/CSS/JS):
 
 ---
 
-## ☁️ 5. Zero-Downtime Reliability & Render Cloud Deployment Prompt
+## ☁️ 5. Zero-Downtime Reliability & Netlify Cloud Deployment Prompt
 
 ```text
 Ensure 100% test reliability:
 - Implement a robust procedural fallback in `src/agent/dualPersonaEngine.ts` so the API never fails even if API keys expire or hit rate limits during judging.
-- Provide `render.yaml` for 1-click zero-downtime deployment on Render.com.
+- Provide `netlify.toml` and serverless API handlers for 1-click zero-downtime deployment on Netlify Cloud.
 ```
