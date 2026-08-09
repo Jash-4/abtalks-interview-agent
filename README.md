@@ -10,20 +10,23 @@ An intelligent, autonomous AI Technical Interview Agent built for the **ABTalks 
 ## 🌟 What Makes It "God Mode"?
 
 1. **🎭 Dual-Persona Agentic Workflow**:
-   - **Persona A (Alex Vance - FAANG Principal EM)**: Conducts a rigorous, deep technical grill session on concurrency, race conditions, distributed locks, and database isolation levels.
+   - **Persona A (Alex Vance - FAANG Principal EM)**: Conducts a rigorous, deep technical grill session on concurrency, race conditions, distributed locks, database isolation, and vector systems.
    - **Persona B (Anil Bajpai - ABTalks Career Mentor)**: Transitions seamlessly at the end of the interview to deliver the candidate's **Industry Readiness Index** and an actionable career acceleration roadmap.
-2. **📚 Retrieval-Augmented Generation (RAG)**:
-   - Evaluates answers in real-time against dynamic FAANG grading rubrics and systems benchmarks.
-3. **⚡ Mock Model Context Protocol (MCP)**:
+2. **👥 Preset Candidate Roster & Resume Inspector Modal**:
+   - Includes verified candidate profiles from top Indian institutes (**IIT Bombay**, **IISc Bangalore**, **IIT Delhi**) on a **10.0 CGPA scale**.
+   - Features an interactive **Background Resume Inspector Modal** displaying candidate education, executive summary, tech stack, and GitHub project ASTs.
+3. **🎯 100% Strict Role-Grounded Interview Engine**:
+   - Tailors all interview questions, pushbacks, and technical module transitions strictly according to the candidate's applied target role (*Senior Backend Engineer*, *AI/RAG Platform Engineer*, *Staff Systems Architect*).
+4. **📚 RAG Knowledge Base — 7 FAANG System Rubrics**:
+   - Evaluates answers in real-time against 7 enterprise grading rubrics: BM25+Dense RRF, Distributed Locking & DB Isolation, HNSW vs IVF-PQ Quantization, ReAct Loops, MCP v1.0 JSON-RPC, vLLM PagedAttention, and Microservice Gateway Mesh.
+5. **⚡ Mock Model Context Protocol (MCP)**:
    - Simulates live inspection of the candidate’s GitHub repository (`mcp__inspect_github_repo`), detecting architecture patterns, test coverage, and code smells to tailor interview questions.
-4. **📊 6-Dimensional Competency SVG Radar Visualization**:
+6. **📊 6-Dimensional Competency SVG Radar Visualization**:
    - Renders dynamic SVG Radar Chart polygon, axis spokes, vertex data points, and dimension labels (*Technical Depth*, *Architecture*, *Problem Solving*, *Communication*, *Code Craft*, *Domain Expertise*).
-5. **🔊 AI Text Reader Voice Engine**:
+7. **🔊 AI Text Reader Voice Engine**:
    - Real-time SpeechSynthesis text reader with auto-silence upon entering the ABTalks report card view.
-6. **📄 1-Click Markdown & JSON Export**:
+8. **📄 1-Click Markdown & JSON Export**:
    - Exports `ABTalks_Report_CandidateName.md` and copies structured JSON payloads directly for judge evaluation.
-7. **📦 Structured Output JSON**:
-   - Outputs a production-grade scorecard with category-by-category metrics, key strengths, targeted growth areas, and the ABTalks Industry Readiness Index.
 
 ---
 
