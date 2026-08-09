@@ -45,9 +45,9 @@ An intelligent, autonomous AI Technical Interview Agent built for the **ABTalks 
 
 | Member | Primary Role & Equal Domain Ownership | Core Modules & Deliverables |
 | :--- | :--- | :--- |
-| **Dhanwinn (Lead)** | **Agent Engine & Orchestration** | `src/agent/dualPersonaEngine.ts`<br>`src/agent/stateMachine.ts`<br>`src/server.ts` |
-| **Sreesanth (Member 2)** | **RAG Knowledge Base & Scoring Pipeline** | `src/rag/rubricStore.ts`<br>`src/scoring/evaluator.ts`<br>`src/types.ts` |
-| **Moguluri Sri Ranga Sesha Siva Jaswanth / Jash-4 (Member 3)** | **Interactive UI, Netlify Cloud & Submission** | `public/index.html`<br>`public/style.css`<br>`public/app.js`<br>`netlify.toml`<br>`src/functions/server.ts` |
+| **Dhanwinn (Lead)** | **RAG Knowledge Base & Scoring Pipeline** | `src/rag/rubricStore.ts`<br>`src/scoring/evaluator.ts`<br>`src/types.ts` |
+| **Sreesanth (Member 2)** | **Interactive UI, Netlify Cloud & Submission** | `public/index.html`<br>`public/style.css`<br>`public/app.js`<br>`netlify.toml`<br>`src/functions/server.ts` |
+| **Moguluri Sri Ranga Sesha Siva Jaswanth (Member 3)** | **Agent Engine & Orchestration** | `src/agent/dualPersonaEngine.ts`<br>`src/agent/stateMachine.ts`<br>`src/server.ts` |
 
 ---
 
