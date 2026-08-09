@@ -8,7 +8,7 @@ to achieve HIRE / IMMEDIATE STRONG HIRE (79 - 94/100) for every profile!
 --------------------------------------------------------------------------------
 1. 🟢 AARAV SHARMA (Senior Backend Engineer — IIT Bombay, 8.9 / 10.0 CGPA)
 --------------------------------------------------------------------------------
-Target Score: 88 - 94 / 100 (🟢 Immediate Strong Hire)
+Target Score: 94 / 100 (🟢 Immediate Strong Hire)
 
 [Setup Parameters]
 - Name: Aarav Sharma
@@ -17,8 +17,11 @@ Target Score: 88 - 94 / 100 (🟢 Immediate Strong Hire)
 [Turn 1: Concurrency & Distributed Locking]
 We prevent race conditions and double-spending across our microservices by combining Redis Redlock distributed locking with monotonically increasing fencing tokens. For database consistency under high concurrency (50k QPS), we enforce PostgreSQL Repeatable Read isolation levels paired with PgBouncer connection pool tuning to eliminate deadlocks. For async event propagation, we stream database mutations out of PostgreSQL using Debezium CDC into Apache Kafka topics with idempotent consumer deduplication.
 
-[Turn 2: CDC, Logical Replication & Schema Evolution (Shown in Screenshot)]
+[Turn 2: CDC, Logical Replication & Schema Evolution]
 We configure PostgreSQL logical replication using the pgoutput plugin connected to a Debezium connector on Kafka Connect. To stream mutation events without acquiring heavy table locks on primary databases, Debezium reads Write-Ahead Logs (WAL) asynchronously. For schema evolution, we enforce Confluent Avro Schema Registry with BACKWARD_TRANSITIVE compatibility, ensuring column additions or type migrations do not break downstream consumer deserialization.
+
+[Turn 3: Token Bucket Rate Limiting & Kafka DLQ (Shown in Screenshot)]
+We implement a Token Bucket rate limiter middleware in Go using Redis sorted sets (ZSET) to maintain sliding log timestamps per IP. When tokens refill at rate r, atomic Lua scripts check ZREMRANGEBYSCORE and ZCARD to enforce max request bursts under 2ms overhead. For Kafka consumers, we configure enable.auto.commit=false with manual offset commits after processing. If message deserialization or downstream database errors recur after 3 retries with exponential backoff, messages are routed to a Dead Letter Queue (DLQ) topic for asynchronous inspection.
 
 
 --------------------------------------------------------------------------------
