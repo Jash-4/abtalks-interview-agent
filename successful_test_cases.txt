@@ -84,13 +84,11 @@ Click "Finish & View ABTalks Report" or "5. ABTalks Scorecard" to view Priya Sha
 ================================================================================
 3. 🟢 ROHAN PATEL (Staff Systems Architect — IIT Delhi, 9.1 / 10.0 CGPA)
 ================================================================================
-Target Score: 94 / 100 (🟢 Immediate Strong Hire — FAANG L6 Staff Architect Ready)
+Target Score: 94 / 100 (🟢 Immediate Strong Hire — FAANG L6 Staff Ready)
 
 [Candidate Setup Parameters]
 - Candidate Name: Rohan Patel
 - Target Role: Staff Systems Architect (High Throughput)
-- Experience: 6 Years (FAANG L6 Staff Architect)
-- Candidate GitHub: rohan-patel-systems-architect
 
 --------------------------------------------------------------------------------
 👉 TURN 1 (Stage 1 & 2: Real-Time Gateways & Envoy Service Mesh)
@@ -113,6 +111,7 @@ Click "Finish & View ABTalks Report" or "5. ABTalks Scorecard" to view Rohan Pat
 🌐 LOCAL & LIVE APP LINKS
 ================================================================================
 - Local Developer Portal: http://localhost:3000
-- Vercel Live Deployment: https://abtalks-interview-agent.vercel.app
+- Netlify Live Deployment: https://admirable-mooncake-4bab98.netlify.app
+- YouTube Demo Video: https://youtu.be/m4YVTdReBa0?si=F04wui-IUgLc5Vi5
 - GitHub Repository: https://github.com/Jash-4/abtalks-interview-agent.git
 ================================================================================

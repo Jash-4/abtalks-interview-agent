@@ -2,8 +2,8 @@
 
 An intelligent, autonomous AI Technical Interview Agent built for the **ABTalks Hackathon** (judged by **Anil Bajpai**).
 
-🎬 **Demo Video**: [Watch 2-Min Live Interview Demo](https://youtube.com) *(Update with your YouTube Link)*
-🌐 **Live App**: [https://abtalks-interview-agent.vercel.app](https://abtalks-interview-agent.vercel.app)
+🎬 **Demo Video**: [Watch 2-Min Live Interview Demo](https://youtu.be/m4YVTdReBa0?si=F04wui-IUgLc5Vi5)
+🌐 **Live App**: [https://admirable-mooncake-4bab98.netlify.app](https://admirable-mooncake-4bab98.netlify.app)
 
 ---
 
@@ -41,13 +41,13 @@ An intelligent, autonomous AI Technical Interview Agent built for the **ABTalks 
 
 ---
 
-## 👥 3-Member Team Domain Ownership
+## 👥 3-Member Team Domain Ownership (Equal Contribution & Work Distribution)
 
-| Member | Primary Role | Core Modules & Deliverables |
+| Member | Primary Role & Equal Domain Ownership | Core Modules & Deliverables |
 | :--- | :--- | :--- |
 | **Dhanwinn (Lead)** | **Agent Engine & Orchestration** | `src/agent/dualPersonaEngine.ts`<br>`src/agent/stateMachine.ts`<br>`src/server.ts` |
 | **Sreesanth (Member 2)** | **RAG Knowledge Base & Scoring Pipeline** | `src/rag/rubricStore.ts`<br>`src/scoring/evaluator.ts`<br>`src/types.ts` |
-| **Moguluri Sri Ranga Sesha Siva Jaswanth / Jash-4 (Member 3)** | **Interactive UI, Deployment & Submission** | `public/index.html`<br>`public/style.css`<br>`public/app.js`<br>`render.yaml` |
+| **Moguluri Sri Ranga Sesha Siva Jaswanth / Jash-4 (Member 3)** | **Interactive UI, Netlify Cloud & Submission** | `public/index.html`<br>`public/style.css`<br>`public/app.js`<br>`netlify.toml`<br>`src/functions/server.ts` |
 
 ---
 
@@ -84,10 +84,10 @@ Open your browser at: **`http://localhost:3000`**
 curl -X POST http://localhost:3000/api/interview/start \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "Alex Rivera",
+    "name": "Aarav Sharma",
     "role": "Senior Backend Engineer",
     "experienceYears": 4,
-    "githubUsername": "alex-rivera-dev"
+    "githubUsername": "aarav-sharma-dev"
   }'
 ```
 
@@ -97,7 +97,7 @@ curl -X POST http://localhost:3000/api/interview/chat \
   -H "Content-Type: application/json" \
   -d '{
     "sessionId": "<SESSION_ID>",
-    "message": "We use Redis distributed locks with a fence-token and optimistic locking in PostgreSQL with Repeatable Read isolation.",
+    "message": "We use Redis distributed locks with a fence token and optimistic locking in PostgreSQL with Repeatable Read isolation.",
     "codeSnippet": "const lock = await redis.lock(\"resource_key\", { ttl: 5000 });"
   }'
 ```
@@ -113,12 +113,12 @@ curl -X POST http://localhost:3000/api/interview/finish \
 
 ### 4. Direct Mock MCP GitHub Inspector
 ```bash
-curl "http://localhost:3000/api/mcp/github-inspect?username=candidate-dev&role=backend"
+curl "http://localhost:3000/api/mcp/github-inspect?username=aarav-sharma-dev&role=backend"
 ```
 
 ---
 
-## ☁️ Deployment on Render.com
+## ☁️ Deployment on Netlify Cloud
 
 1. Create a public repository on GitHub named `abtalks-interview-agent`.
 2. Push your code:
@@ -130,8 +130,9 @@ curl "http://localhost:3000/api/mcp/github-inspect?username=candidate-dev&role=b
    git remote add origin https://github.com/<your-username>/abtalks-interview-agent.git
    git push -u origin main
    ```
-3. Sign in to [Render.com](https://render.com), click **New Web Service**, connect the repository, and set:
-   - **Environment**: `Node`
-   - **Build Command**: `npm install && npm run build`
-   - **Start Command**: `npm start`
+3. Sign in to [Netlify.com](https://app.netlify.com), click **Import from Git**, connect your repository, and Netlify automatically detects `netlify.toml`:
+   - **Build Command**: `npm run build`
+   - **Publish Directory**: `public`
+   - **Functions Directory**: `dist/functions`
    - **Environment Variable**: `GEMINI_API_KEY` = your Google AI Studio API key.
+4. **Live Netlify Application Link**: [https://admirable-mooncake-4bab98.netlify.app](https://admirable-mooncake-4bab98.netlify.app)
