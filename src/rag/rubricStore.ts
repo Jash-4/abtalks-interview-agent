@@ -10,6 +10,8 @@ import { RubricCriteria } from '../types';
  * - Module 4: Agentic AI & Tool Calling Orchestration (Days 18-23)
  * - Module 5: Model Context Protocol (MCP) & Custom Tools (Days 24-27)
  * - Module 6: Production AI Systems, vLLM & Deployment (Days 28-31)
+ * 
+ * @author Sreesanth <Muddarsusreesanth@gmail.com> (RAG Knowledge Base & Scoring Pipeline Specialist)
  */
 export class RubricKnowledgeBase {
   private static rubrics: RubricCriteria[] = [
