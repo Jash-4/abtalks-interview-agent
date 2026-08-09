@@ -144,22 +144,25 @@ function enterProctoredFullscreen() {
   } catch (err) {}
 }
 
-// Fullscreen state listener
-document.addEventListener('fullscreenchange', () => {
-  const badge = document.getElementById('fullscreenBadge');
-  if (badge) {
-    if (document.fullscreenElement) {
-      badge.innerText = '🔒 Proctored Fullscreen: ACTIVE';
-      badge.style.background = 'rgba(16, 185, 129, 0.25)';
-      badge.style.borderColor = 'rgba(16, 185, 129, 0.5)';
-      badge.style.color = '#34d399';
-    } else {
-      badge.innerText = '🖥️ Fullscreen Mode';
-      badge.style.background = '';
-      badge.style.borderColor = '';
-      badge.style.color = '';
+// Fullscreen state listener with cross-browser vendor support
+['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange', 'MSFullscreenChange'].forEach(evt => {
+  document.addEventListener(evt, () => {
+    const badge = document.getElementById('fullscreenBadge');
+    const isFS = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+    if (badge) {
+      if (isFS) {
+        badge.innerText = '🔒 Proctored Fullscreen: ACTIVE';
+        badge.style.background = 'rgba(16, 185, 129, 0.25)';
+        badge.style.borderColor = 'rgba(16, 185, 129, 0.5)';
+        badge.style.color = '#34d399';
+      } else {
+        badge.innerText = '🖥️ Fullscreen Mode';
+        badge.style.background = '';
+        badge.style.borderColor = '';
+        badge.style.color = '';
+      }
     }
-  }
+  });
 });
 
 // 1. Handle Start Interview
