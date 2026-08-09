@@ -27,6 +27,8 @@ An intelligent, autonomous AI Technical Interview Agent built for the **ABTalks 
    - Real-time SpeechSynthesis text reader with auto-silence upon entering the ABTalks report card view.
 8. **📄 1-Click Markdown & JSON Export**:
    - Exports `ABTalks_Report_CandidateName.md` and copies structured JSON payloads directly for judge evaluation.
+9. **🔒 Proctored Fullscreen Interview Mode & F11 OS Fullscreen Banner**:
+   - Implements distraction-free proctored interview environment with dual viewport overlay (`100vw`/`100vh`), cross-browser vendor prefix listeners (`fullscreenchange`), glowing green active badge (`🔒 Proctored Fullscreen: ACTIVE`), and interactive keyboard **F11** OS Fullscreen guide banner.
 
 ---
 

@@ -66,3 +66,15 @@ Ensure 100% test reliability:
 - Implement a robust procedural fallback in `src/agent/dualPersonaEngine.ts` so the API never fails even if API keys expire or hit rate limits during judging.
 - Provide `netlify.toml` and serverless API handlers for 1-click zero-downtime deployment on Netlify Cloud.
 ```
+
+---
+
+## 🔒 6. Proctored Fullscreen Interview & Cross-Browser Event Prompt
+
+```text
+Implement a distraction-free Proctored Fullscreen Interview Mode:
+- Trigger synchronous Fullscreen API request on user launch gestures.
+- Add CSS viewport overlay (`100vw`/`100vh` with `z-index: 999999`) for 100% viewport coverage.
+- Add cross-browser vendor listeners (`fullscreenchange`, `webkitfullscreenchange`, `mozfullscreenchange`).
+- Add glowing green header badge (`🔒 Proctored Fullscreen: ACTIVE`) and interactive F11 keyboard guide banner.
+```
