@@ -1055,7 +1055,7 @@
         '</div>';
 
       var startBtn = document.getElementById('modalStartBtn');
-      if (startBtn) startBtn.innerText = '🚀 Launch Interview for ' + cand.name;
+      if (startBtn) startBtn.innerText = '🖥️ Launch Proctored Fullscreen Interview for ' + cand.name;
 
       var overlay = document.getElementById('profileModalOverlay');
       if (overlay) overlay.classList.remove('hidden');
@@ -1070,8 +1070,8 @@
       if (e) { e.preventDefault(); e.stopPropagation(); }
       closeProfileModal();
       selectCandidatePreset(window.selectedCandidateKey || 'alex');
-      if (typeof enterProctoredFullscreen === 'function') enterProctoredFullscreen();
-      if (typeof handleStartInterview === 'function') handleStartInterview(e);
+      if (window.enterProctoredFullscreen) window.enterProctoredFullscreen();
+      if (window.handleStartInterview) window.handleStartInterview(e);
     }
 
     window.selectCandidatePreset = selectCandidatePreset;

@@ -501,10 +501,7 @@ restartBtn.addEventListener('click', () => {
   startForm.dispatchEvent(new Event('submit'));
 });
 
-// Enter key submit in textarea
-userInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    messageForm.dispatchEvent(new Event('submit'));
-  }
-});
+// Expose functions globally for inline HTML event handlers
+window.enterProctoredFullscreen = enterProctoredFullscreen;
+window.handleStartInterview = handleStartInterview;
+
