@@ -31,6 +31,47 @@
   <main class="app-container">
     <!-- Left Sidebar: Session Config & Candidate Profile -->
     <aside class="sidebar" id="sidebarPanel">
+      <!-- Preset Candidate Roster Card -->
+      <div class="card preset-card">
+        <div class="card-header-sm">
+          <h3>👥 Preset Candidate Roster</h3>
+          <span class="badge-preset-count">3 Verified Candidates</span>
+        </div>
+        <p class="desc-sm">Select candidate to inspect resume/projects or launch role-grounded interview.</p>
+        
+        <div class="candidate-roster">
+          <div class="roster-item active" id="rosterAlex" onclick="selectCandidatePreset('alex')">
+            <div class="roster-avatar">👤</div>
+            <div class="roster-meta">
+              <div class="roster-name">Alex Rivera</div>
+              <div class="roster-role">Senior Backend Engineer</div>
+            </div>
+          </div>
+
+          <div class="roster-item" id="rosterPriya" onclick="selectCandidatePreset('priya')">
+            <div class="roster-avatar">👩‍💻</div>
+            <div class="roster-meta">
+              <div class="roster-name">Priya Sharma</div>
+              <div class="roster-role">AI / RAG Platform Engineer</div>
+            </div>
+          </div>
+
+          <div class="roster-item" id="rosterDavid" onclick="selectCandidatePreset('david')">
+            <div class="roster-avatar">👨‍💼</div>
+            <div class="roster-meta">
+              <div class="roster-name">David Chen</div>
+              <div class="roster-role">Staff Systems Architect</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="roster-actions">
+          <button type="button" class="btn-profile-inspect" onclick="openProfileModal(event)">
+            🔍 View Full Resume & Profile
+          </button>
+        </div>
+      </div>
+
       <div class="card config-card" id="configCard">
         <h2>Candidate Setup</h2>
         <p class="desc">Enter candidate parameters to ground the FAANG EM & RAG questions.</p>
@@ -282,6 +323,23 @@
             <p>Phase 5 Evaluator. Synthesizes overall performance, generates the ABTalks Industry Readiness Scorecard, and delivers an actionable mentorship roadmap.</p>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Candidate Resume & Profile Inspector Modal -->
+  <div class="modal-overlay hidden" id="profileModalOverlay" onclick="if(event.target===this)closeProfileModal()">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <h3>📄 Candidate Resume & Background Inspector</h3>
+        <button type="button" class="btn-close" onclick="closeProfileModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="profileModalContent">
+        <!-- Dynamic Profile Content loaded via JS -->
+      </div>
+      <div class="modal-footer-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeProfileModal()">Close</button>
+        <button type="button" class="btn btn-primary" id="modalStartBtn" onclick="startInterviewFromModal()">🚀 Launch Role-Grounded Interview</button>
       </div>
     </div>
   </div>
@@ -854,6 +912,163 @@
     window.downloadReportMd = downloadReportMd;
     window.copyJsonPayload = copyJsonPayload;
     window.updateStages = updateStages;
+
+    window.candidatePresets = {
+      alex: {
+        key: 'alex',
+        name: 'Alex Rivera',
+        role: 'Senior Backend Engineer (Distributed Systems)',
+        experienceYears: 4,
+        targetLevel: 'FAANG L5',
+        githubUsername: 'alex-rivera-dev',
+        avatar: '👤',
+        title: 'Ex-Stripe Senior Backend Engineer',
+        education: 'B.S. in Computer Science, UC Berkeley (GPA 3.8 / 4.0)',
+        skills: ['Node.js', 'Go', 'PostgreSQL', 'Redis', 'Kafka', 'Docker', 'Kubernetes', 'gRPC', 'Distributed Locks'],
+        summary: 'Specializes in high-throughput transactional backends, database isolation guarantees, and microservice concurrency control.',
+        projects: [
+          { name: 'Multi-Region Redis Redlock Engine', desc: 'Built distributed Redlock with fencing tokens handling 50k QPS with zero double-spending.' },
+          { name: 'PostgreSQL CDC Event Streamer', desc: 'Deployed Debezium + Kafka streaming pipeline for real-time ledger replication.' },
+          { name: 'High-Scale Token Bucket Limiter', desc: 'Implemented sliding window rate limiter in Go with sub-2ms p99 latency.' }
+        ],
+        interviewScope: 'PostgreSQL Transaction Isolation, Redis Distributed Locks, Race Conditions, Deadlock Recovery, gRPC Protocols.'
+      },
+      priya: {
+        key: 'priya',
+        name: 'Priya Sharma',
+        role: 'AI / RAG Platform Engineer',
+        experienceYears: 3,
+        targetLevel: 'FAANG L5 (AI Systems)',
+        githubUsername: 'priya-sharma-rag-dev',
+        avatar: '👩‍💻',
+        title: 'Ex-Cohere AI Platform Engineer',
+        education: 'M.S. in Artificial Intelligence, CMU (Carnegie Mellon University) (GPA 3.9 / 4.0)',
+        skills: ['Python', 'PyTorch', 'Qdrant Vector DB', 'Milvus', 'LangChain', 'vLLM', 'FastAPI', 'Ray', 'BM25/RRF'],
+        summary: 'Specializes in enterprise RAG architectures, vector database quantization (IVF-PQ), LLM serving optimization, and agentic ReAct loops.',
+        projects: [
+          { name: 'Hybrid BM25 + Dense RRF Retriever', desc: 'Engineered dual-retrieval pipeline with Reciprocal Rank Fusion, boosting retrieval MRR@10 from 0.62 to 0.89.' },
+          { name: 'Vector DB Index Quantizer', desc: 'Indexed 20M 1536-dim embeddings using IVF-PQ in Qdrant, dropping RAM footprint by 75% while keeping 94% recall.' },
+          { name: 'vLLM PagedAttention Cluster', desc: 'Deployed multi-GPU vLLM serving with KV-cache PagedAttention, reducing TTFT by 60%.' }
+        ],
+        interviewScope: 'BM25 vs Dense Embedding, Reciprocal Rank Fusion (RRF), HNSW vs IVF-PQ Vector Indexing, ReAct Loops, vLLM PagedAttention.'
+      },
+      david: {
+        key: 'david',
+        name: 'David Chen',
+        role: 'Staff Systems Architect (High Throughput)',
+        experienceYears: 6,
+        targetLevel: 'FAANG L6 (Staff Architect)',
+        githubUsername: 'david-chen-systems-architect',
+        avatar: '👨‍💼',
+        title: 'Ex-Uber Staff Infrastructure Architect',
+        education: 'B.S. in Software Engineering, MIT (Massachusetts Institute of Technology) (GPA 3.9 / 4.0)',
+        skills: ['React', 'TypeScript', 'Node.js', 'GraphQL', 'WebSocket Gateway', 'AWS', 'Kubernetes', 'Terraform', 'System Design'],
+        summary: 'Specializes in full-stack infrastructure resilience, real-time WebSocket gateways, microservice service mesh breaking, and cloud auto-scaling.',
+        projects: [
+          { name: 'WebSocket Gateway Cluster', desc: 'Architected real-time WebSocket gateway with Redis Pub/Sub backplane scaling to 500k concurrent client connections.' },
+          { name: 'Envoy Service Mesh Circuit Breaker', desc: 'Implemented circuit breaking with dynamic fallback queues during downstream microservice outages.' },
+          { name: 'Streaming React SSR Engine', desc: 'Optimized enterprise frontend bundle size by 45% using streaming SSR and dynamic code-splitting.' }
+        ],
+        interviewScope: 'Real-Time WebSocket Gateways, Microservices Circuit Breakers, Streaming SSR Hydration, Kubernetes Pod Autoscaling.'
+      }
+    };
+
+    window.selectedCandidateKey = 'alex';
+
+    function selectCandidatePreset(key) {
+      var cand = window.candidatePresets[key];
+      if (!cand) return;
+      window.selectedCandidateKey = key;
+
+      document.querySelectorAll('.roster-item').forEach(function(el) { el.classList.remove('active'); });
+      var activeItem = document.getElementById('roster' + key.charAt(0).toUpperCase() + key.slice(1));
+      if (activeItem) activeItem.classList.add('active');
+
+      var cName = document.getElementById('candidateName');
+      var cRole = document.getElementById('candidateRole');
+      var cExp = document.getElementById('experienceYears');
+      var cLvl = document.getElementById('targetLevel');
+      var cGit = document.getElementById('githubUsername');
+
+      if (cName) cName.value = cand.name;
+      if (cRole) cRole.value = cand.role;
+      if (cExp) cExp.value = cand.experienceYears;
+      if (cLvl) cLvl.value = cand.targetLevel;
+      if (cGit) cGit.value = cand.githubUsername;
+    }
+
+    function openProfileModal(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      var cand = window.candidatePresets[window.selectedCandidateKey || 'alex'];
+      if (!cand) return;
+
+      var body = document.getElementById('profileModalContent');
+      if (!body) return;
+
+      var projectsHtml = cand.projects.map(function(p) {
+        return '<div class="profile-proj-card">' +
+          '<div class="proj-name">📌 ' + p.name + '</div>' +
+          '<div class="proj-desc">' + p.desc + '</div>' +
+        '</div>';
+      }).join('');
+
+      var skillsHtml = cand.skills.map(function(s) {
+        return '<span class="skill-tag">' + s + '</span>';
+      }).join('');
+
+      body.innerHTML = 
+        '<div class="profile-header-card">' +
+          '<div class="profile-avatar">' + cand.avatar + '</div>' +
+          '<div class="profile-head-info">' +
+            '<h4>' + cand.name + '</h4>' +
+            '<div class="profile-title">' + cand.title + ' • ' + cand.experienceYears + ' Years Exp</div>' +
+            '<div class="profile-role-tag">Applied Role: ' + cand.role + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="profile-section">' +
+          '<div class="section-label">🎓 Education & Background:</div>' +
+          '<div class="section-val">' + cand.education + '</div>' +
+        '</div>' +
+        '<div class="profile-section">' +
+          '<div class="section-label">📝 Executive Summary:</div>' +
+          '<div class="section-val">' + cand.summary + '</div>' +
+        '</div>' +
+        '<div class="profile-section">' +
+          '<div class="section-label">🛠️ Technical Skills & Stack:</div>' +
+          '<div class="skills-wrapper">' + skillsHtml + '</div>' +
+        '</div>' +
+        '<div class="profile-section">' +
+          '<div class="section-label">🚀 Featured Projects & MCP Repository:</div>' +
+          '<div class="projects-grid">' + projectsHtml + '</div>' +
+        '</div>' +
+        '<div class="profile-section scope-box">' +
+          '<div class="section-label">🎯 Targeted Interview Scope & Topics:</div>' +
+          '<div class="section-val scope-text">' + cand.interviewScope + '</div>' +
+        '</div>';
+
+      var startBtn = document.getElementById('modalStartBtn');
+      if (startBtn) startBtn.innerText = '🚀 Launch Interview for ' + cand.name;
+
+      var overlay = document.getElementById('profileModalOverlay');
+      if (overlay) overlay.classList.remove('hidden');
+    }
+
+    function closeProfileModal() {
+      var overlay = document.getElementById('profileModalOverlay');
+      if (overlay) overlay.classList.add('hidden');
+    }
+
+    function startInterviewFromModal() {
+      closeProfileModal();
+      selectCandidatePreset(window.selectedCandidateKey);
+      var startBtn = document.getElementById('startBtn');
+      if (startBtn) startBtn.click();
+    }
+
+    window.selectCandidatePreset = selectCandidatePreset;
+    window.openProfileModal = openProfileModal;
+    window.closeProfileModal = closeProfileModal;
+    window.startInterviewFromModal = startInterviewFromModal;
   </script>
   <script src="app.js?v=7_inline_all"></script>
 </body>

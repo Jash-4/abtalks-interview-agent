@@ -119,7 +119,16 @@ Respond in character. If the answer is too short or lacks technical substance, d
         const name = candidate.name || 'Candidate';
         const text = (userMessage || '').trim().toLowerCase();
         if (isGreeting) {
-            return `Welcome, ${name}. I'm Alex Vance, Principal Engineering Manager. I see you've completed the 31-Day Enterprise AI Engineering Cohort covering RAG, Vector DBs, Agentic AI, and MCP.\n\nToday, we're going to assess your deep systems mastery across the cohort modules. Let's start with **Module 2: RAG & Hybrid Retrieval**.\n\nWhen building a production RAG system for legal or financial documents, why is pure dense embedding search insufficient for exact acronyms and part numbers, and how do you implement **Hybrid Search (BM25 + Dense)** with **Reciprocal Rank Fusion (RRF)**? Walk me through your chunking strategy and score normalization.`;
+            const roleLower = (candidate.role || '').toLowerCase();
+            if (roleLower.includes('backend')) {
+                return `Welcome, ${name}. I'm Alex Vance, Principal Engineering Manager. I see you've applied for **${candidate.role}** and brought 4+ years of distributed backend experience.\n\nLet's start with **Module 1: High-Concurrency Backend Systems & Distributed Locking**.\n\nWhen scaling a distributed payment or inventory service to handle 50,000 QPS with zero double-spending, why is simple Redis key setting insufficient, and how do you implement the **Redis Redlock algorithm with fencing tokens** and **PostgreSQL Repeatable Read / Serializable isolation levels**? Walk me through your deadlock handling and connection pool tuning.`;
+            }
+            else if (roleLower.includes('full stack') || roleLower.includes('architect')) {
+                return `Welcome, ${name}. I'm Alex Vance, Principal Engineering Manager. I see you've applied for **${candidate.role}** with extensive full-stack system architecture experience.\n\nLet's start with **Module 1: Real-Time Full Stack Architecture & Resilient Microservices**.\n\nWhen serving millions of concurrent web clients with live updates, how do you architect a **WebSocket Gateway with Redis Pub/Sub backplane**, and how do you implement **circuit breaker state machines with fallback queues** to prevent cascading failures across backend microservices?`;
+            }
+            else {
+                return `Welcome, ${name}. I'm Alex Vance, Principal Engineering Manager. I see you've applied for **${candidate.role}** covering RAG, Vector DBs, Agentic AI, and MCP.\n\nLet's start with **Module 2: RAG & Hybrid Retrieval**.\n\nWhen building a production RAG system for legal or financial documents, why is pure dense embedding search insufficient for exact acronyms and part numbers, and how do you implement **Hybrid Search (BM25 + Dense)** with **Reciprocal Rank Fusion (RRF)**? Walk me through your chunking strategy and score normalization.`;
+            }
         }
         // Direct pushback for vague, short, or greeting responses
         if (isPushback || text.length < 25 || text === 'hi' || text === 'hello' || text === 'ok' || text === 'yes') {
