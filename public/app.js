@@ -164,9 +164,17 @@ async function handleStartInterview(e) {
     currentSessionId = data.sessionId;
     activePersona = data.activePersona;
 
-    // Update UI
+    // Update UI & Enter Fullscreen
     if (emptyState) emptyState.style.display = 'none';
     if (inputContainer) inputContainer.classList.remove('hidden');
+
+    try {
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else if (document.documentElement.webkitRequestFullscreen) {
+        document.documentElement.webkitRequestFullscreen().catch(() => {});
+      }
+    } catch (fsErr) {}
     
     // Render MCP Data
     if (data.mcpGithubContext && mcpCard) {
@@ -427,6 +435,16 @@ toggleCodeBtn.addEventListener('click', () => {
 
 // Render Final Report
 function renderFinalReport(report) {
+  try {
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen().catch(() => {});
+      }
+    }
+  } catch (exErr) {}
+
   chatViewport.classList.add('hidden');
   inputContainer.classList.add('hidden');
   reportView.classList.remove('hidden');
