@@ -201,28 +201,40 @@ export class InterviewStateMachine {
     session.scoresAccumulated.codeCraft.push(codeSnippet ? 92 : 65);
     session.scoresAccumulated.domain.push(turnDomain);
 
-    // 4. Cohort State Progression on Valid Technical Answer
+    // 4. Cohort State Progression across 8 Modules (4 Curriculum Days)
     const validTurnCount = session.history.filter(m => m.sender === 'user' && m.text.trim().length >= 25).length;
     let isFinished = false;
-    let currentModule = 'RAG_EMBEDDINGS';
+    let currentModule = 'RAG_RETRIEVAL_DAY1';
 
     if (validTurnCount === 1) {
       session.currentPhase = 'TECHNICAL_CORE';
-      currentModule = 'VECTOR_INDEXING';
+      currentModule = 'VECTOR_INDEXING_DAY2';
       session.activePersona = 'FAANG_EM';
     } else if (validTurnCount === 2) {
-      session.currentPhase = 'SYSTEM_DESIGN_CODE';
-      currentModule = 'AGENTIC_AI';
+      session.currentPhase = 'TECHNICAL_CORE';
+      currentModule = 'CONCURRENCY_LOCKS_DAY3';
       session.activePersona = 'FAANG_EM';
     } else if (validTurnCount === 3) {
-      session.currentPhase = 'MCP_CODE_REVIEW';
-      currentModule = 'MCP_PROTOCOL';
+      session.currentPhase = 'SYSTEM_DESIGN_CODE';
+      currentModule = 'AGENTIC_MCP_DAY4';
       session.activePersona = 'FAANG_EM';
     } else if (validTurnCount === 4) {
       session.currentPhase = 'SYSTEM_DESIGN_CODE';
-      currentModule = 'PRODUCTION_SERVING';
+      currentModule = 'RATE_LIMITING_QUEUES_DAY4';
       session.activePersona = 'FAANG_EM';
-    } else if (validTurnCount >= 5) {
+    } else if (validTurnCount === 5) {
+      session.currentPhase = 'MCP_CODE_REVIEW';
+      currentModule = 'MCP_AST_INSPECTION_DAY4';
+      session.activePersona = 'FAANG_EM';
+    } else if (validTurnCount === 6) {
+      session.currentPhase = 'MCP_CODE_REVIEW';
+      currentModule = 'VLLM_PAGED_ATTENTION_DAY3';
+      session.activePersona = 'FAANG_EM';
+    } else if (validTurnCount === 7) {
+      session.currentPhase = 'SYSTEM_DESIGN_CODE';
+      currentModule = 'PRODUCTION_GATEWAY_MESH_DAY4';
+      session.activePersona = 'FAANG_EM';
+    } else if (validTurnCount >= 8) {
       session.currentPhase = 'CAREER_SYNTHESIS';
       session.activePersona = 'ABTALKS_MENTOR';
       isFinished = true;
