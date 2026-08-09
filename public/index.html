@@ -43,7 +43,7 @@
           <div class="roster-item active" id="rosterAlex" onclick="selectCandidatePreset('alex')">
             <div class="roster-avatar">👤</div>
             <div class="roster-meta">
-              <div class="roster-name">Alex Rivera</div>
+              <div class="roster-name">Aarav Sharma</div>
               <div class="roster-role">Senior Backend Engineer</div>
             </div>
           </div>
@@ -59,7 +59,7 @@
           <div class="roster-item" id="rosterDavid" onclick="selectCandidatePreset('david')">
             <div class="roster-avatar">👨‍💼</div>
             <div class="roster-meta">
-              <div class="roster-name">David Chen</div>
+              <div class="roster-name">Rohan Patel</div>
               <div class="roster-role">Staff Systems Architect</div>
             </div>
           </div>
@@ -79,7 +79,7 @@
         <form id="startForm">
           <div class="form-group">
             <label for="candidateName">Candidate Name</label>
-            <input type="text" id="candidateName" value="Alex Rivera" placeholder="e.g. Alex Rivera" required />
+            <input type="text" id="candidateName" value="Aarav Sharma" placeholder="e.g. Aarav Sharma" required />
           </div>
 
           <div class="form-group">
@@ -868,7 +868,7 @@
       }
       var b = report.scores || report.breakdown || {};
       var mdContent = '# ABTalks Technical Evaluation & Readiness Certificate\n\n' +
-        '**Candidate Name:** ' + (report.candidate || 'Alex Rivera') + '\n' +
+        '**Candidate Name:** ' + (report.candidate || 'Aarav Sharma') + '\n' +
         '**Target Role:** ' + (report.role || 'Senior Backend Engineer') + '\n' +
         '**Overall Readiness Score:** ' + (report.readinessScore || report.industryReadinessScore || 75) + '/100\n' +
         '**Verdict:** ' + (report.verdict || report.overallVerdict || 'Needs Mentorship') + '\n\n' +
@@ -923,11 +923,11 @@
     window.candidatePresets = {
       alex: {
         key: 'alex',
-        name: 'Alex Rivera',
+        name: 'Aarav Sharma',
         role: 'Senior Backend Engineer (Distributed Systems)',
         experienceYears: 4,
         targetLevel: 'FAANG L5',
-        githubUsername: 'alex-rivera-dev',
+        githubUsername: 'aarav-sharma-dev',
         avatar: '👤',
         title: 'Ex-Swiggy / Stripe India Senior Backend Engineer',
         education: 'B.Tech. in Computer Science & Engineering, IIT Bombay (Indian Institute of Technology Bombay) (CGPA: 8.9 / 10.0)',
@@ -961,11 +961,11 @@
       },
       david: {
         key: 'david',
-        name: 'David Chen',
+        name: 'Rohan Patel',
         role: 'Staff Systems Architect (High Throughput)',
         experienceYears: 6,
         targetLevel: 'FAANG L6 (Staff Architect)',
-        githubUsername: 'david-chen-systems-architect',
+        githubUsername: 'rohan-patel-systems-architect',
         avatar: '👨‍💼',
         title: 'Ex-Uber India Staff Infrastructure Architect',
         education: 'B.Tech. in Computer Science & IT, IIT Delhi (Indian Institute of Technology Delhi) (CGPA: 9.1 / 10.0)',
