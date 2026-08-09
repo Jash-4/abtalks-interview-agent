@@ -21,6 +21,7 @@
       </div>
     </div>
     <div class="status-tags">
+      <button type="button" class="badge badge-mcp clickable-badge" id="fullscreenBadge" title="Toggle Proctored Fullscreen Mode" onclick="enterProctoredFullscreen()">🖥️ Fullscreen Mode</button>
       <button type="button" class="badge badge-mcp clickable-badge" id="voiceToggleBtn" title="Toggle AI Text Reader Voice" onclick="toggleVoiceAudio(event)">🔊 Voice Audio: Off</button>
       <button type="button" class="badge badge-mcp clickable-badge" id="mcpBadge" title="Inspect GitHub Mock MCP AST Tool" onclick="showMcpCard(event)">⚡ Mock MCP: Ready</button>
       <button type="button" class="badge badge-rag clickable-badge" id="ragBadge" title="View 7 FAANG Assessment Rubrics" onclick="toggleRubricsModal(true)">📚 RAG: 7 FAANG Rubrics</button>
@@ -108,8 +109,8 @@
             <input type="text" id="githubUsername" value="alex-rivera-dev" />
           </div>
 
-          <button type="button" class="btn btn-primary" id="startBtn" onclick="handleStartInterview(event)">
-            🚀 Launch Interview Agent
+          <button type="button" class="btn btn-primary" id="startBtn" onclick="enterProctoredFullscreen(); handleStartInterview(event)">
+            🖥️ Launch Proctored Fullscreen Interview
           </button>
         </form>
       </div>

@@ -128,6 +128,20 @@ const jsonCodeBlock = document.getElementById('jsonCodeBlock');
 const copyJsonBtn = document.getElementById('copyJsonBtn');
 const restartBtn = document.getElementById('restartBtn');
 
+// Helper: Enter Fullscreen Mode
+function enterProctoredFullscreen() {
+  try {
+    const docEl = document.documentElement;
+    if (docEl.requestFullscreen) {
+      docEl.requestFullscreen().catch(() => {});
+    } else if (docEl.webkitRequestFullscreen) {
+      docEl.webkitRequestFullscreen().catch(() => {});
+    } else if (docEl.msRequestFullscreen) {
+      docEl.msRequestFullscreen().catch(() => {});
+    }
+  } catch (err) {}
+}
+
 // 1. Handle Start Interview
 async function handleStartInterview(e) {
   if (e) {
@@ -135,6 +149,9 @@ async function handleStartInterview(e) {
     e.stopPropagation();
   }
   
+  // Synchronous Fullscreen trigger on user gesture
+  enterProctoredFullscreen();
+
   const btn = document.getElementById('startBtn');
   if (btn && btn.disabled) return;
   if (btn) {
@@ -143,11 +160,11 @@ async function handleStartInterview(e) {
   }
 
   const payload = {
-    name: document.getElementById('candidateName')?.value || 'Alex Rivera',
+    name: document.getElementById('candidateName')?.value || 'Aarav Sharma',
     role: document.getElementById('candidateRole')?.value || 'Senior Backend Engineer',
     experienceYears: document.getElementById('experienceYears')?.value || '4',
     targetCompanyLevel: document.getElementById('targetLevel')?.value || 'FAANG L5',
-    githubUsername: document.getElementById('githubUsername')?.value || 'alex-rivera-dev'
+    githubUsername: document.getElementById('githubUsername')?.value || 'aarav-sharma-dev'
   };
 
   try {
@@ -164,17 +181,9 @@ async function handleStartInterview(e) {
     currentSessionId = data.sessionId;
     activePersona = data.activePersona;
 
-    // Update UI & Enter Fullscreen
+    // Update UI
     if (emptyState) emptyState.style.display = 'none';
     if (inputContainer) inputContainer.classList.remove('hidden');
-
-    try {
-      if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen().catch(() => {});
-      } else if (document.documentElement.webkitRequestFullscreen) {
-        document.documentElement.webkitRequestFullscreen().catch(() => {});
-      }
-    } catch (fsErr) {}
     
     // Render MCP Data
     if (data.mcpGithubContext && mcpCard) {
