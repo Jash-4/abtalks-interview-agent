@@ -89,6 +89,9 @@ class RubricKnowledgeBase {
             weight: 1.3
         }
     ];
+    static computeReciprocalRankFusion(bm25Rank, denseRank, k = 60) {
+        return (1 / (k + bm25Rank)) + (1 / (k + denseRank));
+    }
     static retrieveRelevantRubrics(context, maxResults = 3) {
         const normalized = context.toLowerCase();
         const scored = this.rubrics.map((rubric) => {

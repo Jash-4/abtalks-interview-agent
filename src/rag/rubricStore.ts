@@ -89,6 +89,10 @@ export class RubricKnowledgeBase {
     }
   ];
 
+  public static computeReciprocalRankFusion(bm25Rank: number, denseRank: number, k: number = 60): number {
+    return (1 / (k + bm25Rank)) + (1 / (k + denseRank));
+  }
+
   public static retrieveRelevantRubrics(context: string, maxResults: number = 3): RubricCriteria[] {
     const normalized = context.toLowerCase();
     
