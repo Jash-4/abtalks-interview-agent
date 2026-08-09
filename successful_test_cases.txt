@@ -1,0 +1,78 @@
+================================================================================
+🚀 ABTALKS AI INTERVIEW AGENT — SUCCESSFUL HIGH-SCORING TEST CASES GUIDE
+================================================================================
+
+Copy and paste these exact deep technical answers into the Candidate Portal (http://localhost:3000)
+to achieve HIRE / IMMEDIATE STRONG HIRE (79 - 94/100) for every profile!
+
+--------------------------------------------------------------------------------
+1. 🟢 AARAV SHARMA (Senior Backend Engineer — IIT Bombay, 8.9 / 10.0 CGPA)
+--------------------------------------------------------------------------------
+Target Score: 79 - 88 / 100 (Hire / Immediate Strong Hire)
+
+[Candidate Setup Parameters]
+- Candidate Name: Aarav Sharma
+- Target Role: Senior Backend Engineer (Distributed Systems)
+- Experience: 4 Years (FAANG L5)
+- GitHub Username: aarav-sharma-dev
+
+[Copy-Paste Technical Answer]
+We prevent race conditions and double-spending across our microservices by combining Redis Redlock distributed locking with monotonically increasing fencing tokens. For database consistency under high concurrency (50k QPS), we enforce PostgreSQL Repeatable Read isolation levels paired with PgBouncer connection pool tuning to eliminate deadlocks. For async event propagation, we stream database mutations out of PostgreSQL using Debezium CDC into Apache Kafka topics with idempotent consumer deduplication.
+
+[Optional Code Snippet to Paste in Code Box]
+const lock = await redis.lock("account_transfer_8910", {
+  ttl: 5000,
+  fencingToken: 40291
+});
+
+
+--------------------------------------------------------------------------------
+2. 🟢 PRIYA SHARMA (AI / RAG Platform Engineer — IISc Bangalore, 9.4 / 10.0 CGPA)
+--------------------------------------------------------------------------------
+Target Score: 94 / 100 (🟢 Immediate Strong Hire — FAANG L5/L6 Ready)
+
+[Candidate Setup Parameters]
+- Candidate Name: Priya Sharma
+- Target Role: AI / RAG Platform Engineer
+- Experience: 3 Years (FAANG L5 AI Systems)
+- GitHub Username: priya-sharma-rag-dev
+
+[Copy-Paste Technical Answer]
+Our enterprise RAG hybrid retrieval pipeline fuses keyword BM25 score ranks for exact acronyms with Dense Cosine semantic embeddings using Reciprocal Rank Fusion (RRF with k=60). For vector database indexing, we utilize HNSW graph indexing with M=16 and efConstruction=200 to achieve sub-10ms query latencies at 98% recall. On the LLM serving layer, we deploy vLLM with PagedAttention to eliminate KV-cache memory fragmentation and cache frequent query prefix embeddings in Redis.
+
+[Optional Code Snippet to Paste in Code Box]
+function computeRRF(bm25Rank: number, denseRank: number, k = 60): number {
+  return (1 / (k + bm25Rank)) + (1 / (k + denseRank));
+}
+
+
+--------------------------------------------------------------------------------
+3. 🟢 ROHAN PATEL (Staff Systems Architect — IIT Delhi, 9.1 / 10.0 CGPA)
+--------------------------------------------------------------------------------
+Target Score: 88 - 94 / 100 (🟢 Immediate Strong Hire — FAANG L6 Staff Ready)
+
+[Candidate Setup Parameters]
+- Candidate Name: Rohan Patel
+- Target Role: Staff Systems Architect (High Throughput)
+- Experience: 6 Years (FAANG L6 Staff Architect)
+- GitHub Username: rohan-patel-systems-architect
+
+[Copy-Paste Technical Answer]
+To scale our real-time streaming infrastructure to 500k concurrent WebSocket connections, we deploy an Envoy service mesh edge gateway backed by a Redis Pub/Sub cluster. We enforce strict p99 latency SLAs (< 150ms) using circuit breakers with fallback degradation buffers. Our frontend leverages React 18 Streaming SSR with Suspense boundaries, while auto-scaling across Kubernetes worker nodes using KEDA metrics based on message queue depth.
+
+[Optional Code Snippet to Paste in Code Box]
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: websocket-gateway-autoscaler
+spec:
+  minReplicaCount: 5
+  maxReplicaCount: 50
+
+================================================================================
+🌐 LOCAL & LIVE APP LINKS
+================================================================================
+- Local Developer Portal: http://localhost:3000
+- Vercel Live Deployment: https://abtalks-interview-agent.vercel.app
+- GitHub Repository: https://github.com/Jash-4/abtalks-interview-agent.git
+================================================================================
