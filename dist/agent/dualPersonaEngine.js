@@ -118,23 +118,52 @@ Respond in character. If the answer is too short or lacks technical substance, d
         const { persona, candidate, userMessage, mcpContext, isGreeting, isWrapUp, currentModule, isPushback } = params;
         const name = candidate.name || 'Candidate';
         const text = (userMessage || '').trim().toLowerCase();
+        const roleLower = (candidate.role || '').toLowerCase();
+        const isBackendRole = roleLower.includes('backend');
+        const isArchitectRole = roleLower.includes('full stack') || roleLower.includes('architect');
         if (isGreeting) {
-            const roleLower = (candidate.role || '').toLowerCase();
-            if (roleLower.includes('backend')) {
+            if (isBackendRole) {
                 return `Welcome, ${name}. I'm Alex Vance, Principal Engineering Manager. I see you've applied for **${candidate.role}** and brought 4+ years of distributed backend experience.\n\nLet's start with **Module 1: High-Concurrency Backend Systems & Distributed Locking**.\n\nWhen scaling a distributed payment or inventory service to handle 50,000 QPS with zero double-spending, why is simple Redis key setting insufficient, and how do you implement the **Redis Redlock algorithm with fencing tokens** and **PostgreSQL Repeatable Read / Serializable isolation levels**? Walk me through your deadlock handling and connection pool tuning.`;
             }
-            else if (roleLower.includes('full stack') || roleLower.includes('architect')) {
+            else if (isArchitectRole) {
                 return `Welcome, ${name}. I'm Alex Vance, Principal Engineering Manager. I see you've applied for **${candidate.role}** with extensive full-stack system architecture experience.\n\nLet's start with **Module 1: Real-Time Full Stack Architecture & Resilient Microservices**.\n\nWhen serving millions of concurrent web clients with live updates, how do you architect a **WebSocket Gateway with Redis Pub/Sub backplane**, and how do you implement **circuit breaker state machines with fallback queues** to prevent cascading failures across backend microservices?`;
             }
             else {
                 return `Welcome, ${name}. I'm Alex Vance, Principal Engineering Manager. I see you've applied for **${candidate.role}** covering RAG, Vector DBs, Agentic AI, and MCP.\n\nLet's start with **Module 2: RAG & Hybrid Retrieval**.\n\nWhen building a production RAG system for legal or financial documents, why is pure dense embedding search insufficient for exact acronyms and part numbers, and how do you implement **Hybrid Search (BM25 + Dense)** with **Reciprocal Rank Fusion (RRF)**? Walk me through your chunking strategy and score normalization.`;
             }
         }
-        // Direct pushback for vague, short, or greeting responses
+        // Direct pushback strictly tailored to applied role
         if (isPushback || text.length < 25 || text === 'hi' || text === 'hello' || text === 'ok' || text === 'yes') {
-            return `That is not an engineering response, ${name}. In a Principal FAANG systems interview, one-word answers or high-level buzzwords will not pass.\n\nPlease address the technical challenge: How do you implement **Hybrid Search (BM25 + Dense embeddings)** and normalize ranking scores using **Reciprocal Rank Fusion (RRF)**? What chunking strategy prevents context fragmentation?`;
+            if (isBackendRole) {
+                return `That is not an engineering response, ${name}. In a Principal FAANG evaluation for a **Senior Backend Engineer**, one-word answers or high-level buzzwords will not pass.\n\nPlease address the technical challenge: How do you implement **Redis Redlock with fencing tokens** and **PostgreSQL Repeatable Read isolation** to guarantee zero double-spending under 50,000 concurrent QPS?`;
+            }
+            else if (isArchitectRole) {
+                return `That is not an engineering response, ${name}. In a Principal FAANG evaluation for a **Staff Systems Architect**, one-word answers or high-level buzzwords will not pass.\n\nPlease address the technical challenge: How do you architect a **WebSocket Gateway with Redis Pub/Sub backplane** to handle 500,000 concurrent client connections without memory leaks or dropped frames?`;
+            }
+            else {
+                return `That is not an engineering response, ${name}. In a Principal FAANG evaluation for an **AI / RAG Platform Engineer**, one-word answers or high-level buzzwords will not pass.\n\nPlease address the technical challenge: How do you implement **Hybrid Search (BM25 + Dense embeddings)** and normalize ranking scores using **Reciprocal Rank Fusion (RRF)**? What chunking strategy prevents context fragmentation?`;
+            }
         }
         if (persona === 'FAANG_EM') {
+            if (isBackendRole) {
+                if (currentModule === 'VECTOR_INDEXING' || currentModule === 'BACKEND_MODULE_2') {
+                    return `Good breakdown on distributed locking, ${name}. Now let's test **Module 2: High-Scale Database Replication & Change Data Capture (CDC)**.\n\nWhen scaling your primary database to millions of write operations, how do you configure **PostgreSQL Logical Replication** with **Debezium and Apache Kafka** to stream order ledger changes to read replicas without locking primary tables? How do you handle schema evolution?`;
+                }
+                if (currentModule === 'AGENTIC_AI' || currentModule === 'BACKEND_MODULE_3') {
+                    return `Solid reasoning on CDC event streaming, ${name}.\n\nLet's test **Module 3: Asynchronous Message Queues & Rate Limiting**. How do you design a **Token Bucket Rate Limiter middleware in Go/Node.js** with Redis sliding logs to prevent DDoS, and how do you configure Kafka consumer groups and Dead Letter Queues (DLQ) for guaranteed at-least-once message processing?`;
+                }
+                return `Excellent backend analysis, ${name}. How do you tune PgBouncer connection pooling and TCP keepalive parameters to maintain sub-5ms latency under sudden 10x traffic spikes?`;
+            }
+            if (isArchitectRole) {
+                if (currentModule === 'VECTOR_INDEXING' || currentModule === 'ARCH_MODULE_2') {
+                    return `Good architectural breakdown, ${name}. Now let's test **Module 2: Microservices Circuit Breakers & Service Mesh Resilience**.\n\nWhen a downstream payment microservice experiences 2000ms latency degradation, how do you configure **Envoy Service Mesh circuit breakers (consecutive 5xx errors, outlier detection)** and dynamic fallback queues to preserve client UX?`;
+                }
+                if (currentModule === 'AGENTIC_AI' || currentModule === 'ARCH_MODULE_3') {
+                    return `Solid design on service mesh circuit breaking, ${name}.\n\nLet's test **Module 3: Frontend Streaming SSR & Real-Time State Hydration**. How do you optimize React 18 Streaming SSR with Selective Hydration to achieve sub-1.0s First Contentful Paint (FCP) across multi-tenant enterprise dashboards?`;
+                }
+                return `Great system design perspective, ${name}. How do you configure Kubernetes Horizontal Pod Autoscaling (HPA) based on custom Prometheus QPS metrics rather than CPU utilization alone?`;
+            }
+            // Default AI / RAG Role
             if (currentModule === 'VECTOR_INDEXING') {
                 return `Good breakdown on hybrid search and RRF normalization, ${name}. Now let's test **Module 3: Vector Databases & Indexing Internals**.\n\nWhen scaling to 20 million 1536-dimensional embeddings, an in-memory HNSW index will consume significant RAM (~120GB+). How do you decide between **HNSW** and **IVF-PQ (Inverted File with Product Quantization)**? What is the mathematical trade-off between recall degradation and query QPS under high concurrent load?`;
             }
@@ -151,7 +180,7 @@ Respond in character. If the answer is too short or lacks technical substance, d
             return `Good technical analysis, ${name}. Now walk me through the failure modes: When your p99 latency spikes above 1.5s under sudden burst traffic, how do you handle graceful degradation and telemetry tracing across your worker nodes?`;
         }
         if (isWrapUp || persona === 'ABTALKS_MENTOR') {
-            return `Hello ${name}! I'm transitioning in now—Anil Bajpai here from ABTalks. Congratulations on completing that rigorous technical evaluation across the 31-Day Enterprise AI Engineering Cohort!\n\nYou demonstrated your technical depth across RAG architectures, Vector DB indexing, and Agentic orchestration. Your ability to think through memory vs. recall trade-offs is what separates average developers from top-tier AI Engineers.\n\nI have synthesized your complete **ABTalks Industry Readiness Scorecard** below. Take a look at your competency breakdown, your top strengths, and the actionable career roadmap we've prepared for you!`;
+            return `Hello ${name}! I'm transitioning in now—Anil Bajpai here from ABTalks. Congratulations on completing that rigorous technical evaluation tailored strictly for your **${candidate.role}** role!\n\nYou demonstrated your technical depth across your domain specialization. Your ability to think through real-world system trade-offs is what separates average engineers from top-tier talent.\n\nI have synthesized your complete **ABTalks Industry Readiness Scorecard** below. Take a look at your competency breakdown, your top strengths, and the actionable career roadmap we've prepared for you!`;
         }
         return `Great reflection, ${name}. Let's look at your finalized evaluation report!`;
     }
