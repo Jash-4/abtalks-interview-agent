@@ -1130,3 +1130,19 @@ body.proctored-fullscreen-active .app-container {
 body.proctored-fullscreen-active .chat-viewport {
   height: calc(100vh - 220px) !important;
 }
+
+.proctored-fs-banner {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #34d399;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+}
