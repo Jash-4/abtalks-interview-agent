@@ -45,9 +45,9 @@ An intelligent, autonomous AI Technical Interview Agent built for the **ABTalks 
 
 | Member | Primary Role | Core Modules & Deliverables |
 | :--- | :--- | :--- |
-| **Member 1 (Lead)** | **Agent Engine & Orchestration** | `src/agent/dualPersonaEngine.ts`<br>`src/agent/stateMachine.ts`<br>`src/server.ts` |
-| **Member 2** | **RAG Knowledge Base & Scoring Pipeline** | `src/rag/rubricStore.ts`<br>`src/scoring/evaluator.ts`<br>`src/types.ts` |
-| **Member 3** | **Interactive UI, Deployment & Submission** | `public/index.html`<br>`public/style.css`<br>`public/app.js`<br>`render.yaml` |
+| **Dhanwinn (Lead)** | **Agent Engine & Orchestration** | `src/agent/dualPersonaEngine.ts`<br>`src/agent/stateMachine.ts`<br>`src/server.ts` |
+| **Sreesanth (Member 2)** | **RAG Knowledge Base & Scoring Pipeline** | `src/rag/rubricStore.ts`<br>`src/scoring/evaluator.ts`<br>`src/types.ts` |
+| **Siva Jaswanth / Jash-4 (Member 3)** | **Interactive UI, Deployment & Submission** | `public/index.html`<br>`public/style.css`<br>`public/app.js`<br>`render.yaml` |
 
 ---
 
