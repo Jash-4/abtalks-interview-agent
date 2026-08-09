@@ -2,7 +2,7 @@
 
 An intelligent, autonomous AI Technical Interview Agent built for the **ABTalks Hackathon** (judged by **Anil Bajpai**).
 
-🎬 **Demo Video**: [Watch 2-Min Live Interview Demo](https://youtu.be/m4YVTdReBa0?si=F04wui-IUgLc5Vi5)
+🎬 **Demo Video**: [Watch 4-Min Live Interview Demo](https://youtu.be/m4YVTdReBa0?si=F04wui-IUgLc5Vi5)
 🌐 **Live App**: [https://admirable-mooncake-4bab98.netlify.app](https://admirable-mooncake-4bab98.netlify.app)
 
 ---
