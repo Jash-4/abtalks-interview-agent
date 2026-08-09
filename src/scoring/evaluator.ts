@@ -1,5 +1,8 @@
 import { InterviewSession, StructuredInterviewReport, ScorecardBreakdown } from '../types';
 
+/**
+ * @author Sreesanth <Muddarsusreesanth@gmail.com> (Scoring Matrix & Readiness Evaluator)
+ */
 export class InterviewEvaluator {
   public static generateStructuredReport(session: InterviewSession): StructuredInterviewReport {
     const candidateName = session.candidate.name || 'Candidate';

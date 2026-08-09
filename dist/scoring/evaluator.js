@@ -1,6 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.InterviewEvaluator = void 0;
+/**
+ * @author Sreesanth <Muddarsusreesanth@gmail.com> (Scoring Matrix & Readiness Evaluator)
+ */
 class InterviewEvaluator {
     static generateStructuredReport(session) {
         const candidateName = session.candidate.name || 'Candidate';
