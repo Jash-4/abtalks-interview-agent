@@ -344,7 +344,7 @@
       </div>
       <div class="modal-footer-actions">
         <button type="button" class="btn btn-secondary" onclick="closeProfileModal()">Close</button>
-        <button type="button" class="btn btn-primary" id="modalStartBtn" onclick="startInterviewFromModal()">🚀 Launch Role-Grounded Interview</button>
+        <button type="button" class="btn btn-primary" id="modalStartBtn" onclick="startInterviewFromModal(event)">🚀 Launch Proctored Fullscreen Interview</button>
       </div>
     </div>
   </div>
@@ -1066,11 +1066,12 @@
       if (overlay) overlay.classList.add('hidden');
     }
 
-    function startInterviewFromModal() {
+    function startInterviewFromModal(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
       closeProfileModal();
-      selectCandidatePreset(window.selectedCandidateKey);
-      var startBtn = document.getElementById('startBtn');
-      if (startBtn) startBtn.click();
+      selectCandidatePreset(window.selectedCandidateKey || 'alex');
+      if (typeof enterProctoredFullscreen === 'function') enterProctoredFullscreen();
+      if (typeof handleStartInterview === 'function') handleStartInterview(e);
     }
 
     window.selectCandidatePreset = selectCandidatePreset;
