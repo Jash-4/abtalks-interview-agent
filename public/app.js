@@ -130,16 +130,23 @@ const restartBtn = document.getElementById('restartBtn');
 
 // Helper: Enter Proctored Fullscreen Mode
 function enterProctoredFullscreen() {
-  document.body.classList.add('proctored-fullscreen-active');
+  const docEl = document.documentElement;
+  const body = document.body;
+
+  body.classList.add('proctored-fullscreen-active');
+  docEl.style.width = '100vw';
+  docEl.style.height = '100vh';
+  docEl.style.overflow = 'hidden';
+
   const badge = document.getElementById('fullscreenBadge');
   if (badge) {
     badge.innerText = '🔒 Proctored Fullscreen: ACTIVE';
-    badge.style.background = 'rgba(16, 185, 129, 0.25)';
-    badge.style.borderColor = 'rgba(16, 185, 129, 0.5)';
+    badge.style.background = 'rgba(16, 185, 129, 0.35)';
+    badge.style.borderColor = 'rgba(16, 185, 129, 0.7)';
     badge.style.color = '#34d399';
   }
+
   try {
-    const docEl = document.documentElement;
     if (!document.fullscreenElement && !document.webkitFullscreenElement) {
       if (docEl.requestFullscreen) {
         docEl.requestFullscreen().catch(() => {});
@@ -154,11 +161,15 @@ function enterProctoredFullscreen() {
 
 function toggleProctoredFullscreen() {
   const body = document.body;
+  const docEl = document.documentElement;
   const isFS = document.fullscreenElement || document.webkitFullscreenElement || body.classList.contains('proctored-fullscreen-active');
   const badge = document.getElementById('fullscreenBadge');
 
   if (isFS) {
     body.classList.remove('proctored-fullscreen-active');
+    docEl.style.width = '';
+    docEl.style.height = '';
+    docEl.style.overflow = '';
     if (document.exitFullscreen) {
       document.exitFullscreen().catch(() => {});
     } else if (document.webkitExitFullscreen) {
