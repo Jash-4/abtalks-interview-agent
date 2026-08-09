@@ -128,8 +128,16 @@ const jsonCodeBlock = document.getElementById('jsonCodeBlock');
 const copyJsonBtn = document.getElementById('copyJsonBtn');
 const restartBtn = document.getElementById('restartBtn');
 
-// Helper: Enter Fullscreen Mode
+// Helper: Enter Proctored Fullscreen Mode
 function enterProctoredFullscreen() {
+  document.body.classList.add('proctored-fullscreen-active');
+  const badge = document.getElementById('fullscreenBadge');
+  if (badge) {
+    badge.innerText = '🔒 Proctored Fullscreen: ACTIVE';
+    badge.style.background = 'rgba(16, 185, 129, 0.25)';
+    badge.style.borderColor = 'rgba(16, 185, 129, 0.5)';
+    badge.style.color = '#34d399';
+  }
   try {
     const docEl = document.documentElement;
     if (!document.fullscreenElement && !document.webkitFullscreenElement) {
@@ -142,6 +150,29 @@ function enterProctoredFullscreen() {
       }
     }
   } catch (err) {}
+}
+
+function toggleProctoredFullscreen() {
+  const body = document.body;
+  const isFS = document.fullscreenElement || document.webkitFullscreenElement || body.classList.contains('proctored-fullscreen-active');
+  const badge = document.getElementById('fullscreenBadge');
+
+  if (isFS) {
+    body.classList.remove('proctored-fullscreen-active');
+    if (document.exitFullscreen) {
+      document.exitFullscreen().catch(() => {});
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen().catch(() => {});
+    }
+    if (badge) {
+      badge.innerText = '🖥️ Fullscreen Mode';
+      badge.style.background = '';
+      badge.style.borderColor = '';
+      badge.style.color = '';
+    }
+  } else {
+    enterProctoredFullscreen();
+  }
 }
 
 // Fullscreen state listener with cross-browser vendor support
@@ -526,5 +557,6 @@ restartBtn.addEventListener('click', () => {
 
 // Expose functions globally for inline HTML event handlers
 window.enterProctoredFullscreen = enterProctoredFullscreen;
+window.toggleProctoredFullscreen = toggleProctoredFullscreen;
 window.handleStartInterview = handleStartInterview;
 
