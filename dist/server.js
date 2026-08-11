@@ -104,14 +104,14 @@ apiRouter.post('/interview/chat', async (req, res) => {
  * 3. Finalize & Get Structured JSON Report
  * POST /api/interview/finish
  */
-apiRouter.post('/interview/finish', (req, res) => {
+apiRouter.post('/interview/finish', async (req, res) => {
     try {
         const { sessionId } = req.body;
         if (!sessionId) {
             res.status(400).json({ success: false, error: 'sessionId is required.' });
             return;
         }
-        const report = stateMachine.finalizeInterview(sessionId);
+        const report = await stateMachine.finalizeInterview(sessionId);
         res.status(200).json({
             success: true,
             report

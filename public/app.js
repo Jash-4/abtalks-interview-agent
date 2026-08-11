@@ -224,12 +224,18 @@ async function handleStartInterview(e) {
     btn.innerText = 'Initializing Agent & MCP...';
   }
 
+  const nameVal = document.getElementById('candidateName')?.value?.trim();
+  const roleVal = document.getElementById('candidateRole')?.value?.trim();
+  const expVal = document.getElementById('experienceYears')?.value?.trim();
+  const levelVal = document.getElementById('targetLevel')?.value?.trim();
+  const ghVal = document.getElementById('githubUsername')?.value?.trim();
+
   const payload = {
-    name: document.getElementById('candidateName')?.value || 'Aarav Sharma',
-    role: document.getElementById('candidateRole')?.value || 'Senior Backend Engineer',
-    experienceYears: document.getElementById('experienceYears')?.value || '4',
-    targetCompanyLevel: document.getElementById('targetLevel')?.value || 'FAANG L5',
-    githubUsername: document.getElementById('githubUsername')?.value || 'aarav-sharma-dev'
+    name: nameVal || 'Aarav Sharma',
+    role: roleVal || 'Senior Backend Engineer',
+    experienceYears: expVal || '4',
+    targetCompanyLevel: levelVal || 'FAANG L5',
+    githubUsername: ghVal || (nameVal ? nameVal.toLowerCase().replace(/\s+/g, '-') : 'aarav-sharma-dev')
   };
 
   try {
