@@ -1073,7 +1073,10 @@
     function startInterviewFromModal(e) {
       if (e) { e.preventDefault(); e.stopPropagation(); }
       closeProfileModal();
-      selectCandidatePreset(window.selectedCandidateKey || 'alex');
+      var cName = document.getElementById('candidateName');
+      if (!cName || !cName.value || !cName.value.trim()) {
+        selectCandidatePreset(window.selectedCandidateKey || 'alex');
+      }
       if (window.enterProctoredFullscreen) window.enterProctoredFullscreen();
       if (window.handleStartInterview) window.handleStartInterview(e);
     }
