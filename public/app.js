@@ -232,6 +232,17 @@ async function handleStartInterview(e) {
     btn.innerText = 'Initializing Agent & MCP...';
   }
 
+  // Purge empty state & show input container SYNCHRONOUSLY before fetch
+  const es = document.getElementById('emptyState');
+  if (es) {
+    es.remove();
+  }
+  const ic = document.getElementById('inputContainer');
+  if (ic) {
+    ic.classList.remove('hidden');
+    ic.style.display = 'block';
+  }
+
   const nameVal = document.getElementById('candidateName')?.value?.trim();
   const roleVal = document.getElementById('candidateRole')?.value?.trim();
   const expVal = document.getElementById('experienceYears')?.value?.trim();
@@ -259,17 +270,6 @@ async function handleStartInterview(e) {
 
     currentSessionId = data.sessionId;
     activePersona = data.activePersona;
-
-    // Update UI & Purge Empty State
-    const es = document.getElementById('emptyState');
-    if (es) {
-      es.remove();
-    }
-    const ic = document.getElementById('inputContainer');
-    if (ic) {
-      ic.classList.remove('hidden');
-      ic.style.display = 'block';
-    }
     
     // Render MCP Data
     if (data.mcpGithubContext && mcpCard) {
