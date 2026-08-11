@@ -260,12 +260,16 @@ async function handleStartInterview(e) {
     currentSessionId = data.sessionId;
     activePersona = data.activePersona;
 
-    // Update UI
-    if (emptyState) {
-      emptyState.classList.add('hidden');
-      emptyState.style.display = 'none';
+    // Update UI & Purge Empty State
+    const es = document.getElementById('emptyState');
+    if (es) {
+      es.remove();
     }
-    if (inputContainer) inputContainer.classList.remove('hidden');
+    const ic = document.getElementById('inputContainer');
+    if (ic) {
+      ic.classList.remove('hidden');
+      ic.style.display = 'block';
+    }
     
     // Render MCP Data
     if (data.mcpGithubContext && mcpCard) {
