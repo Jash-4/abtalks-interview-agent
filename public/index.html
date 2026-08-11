@@ -109,7 +109,7 @@
             <input type="text" id="githubUsername" value="alex-rivera-dev" />
           </div>
 
-          <button type="submit" class="btn btn-primary" id="startBtn" onclick="event.preventDefault(); enterProctoredFullscreen(); handleStartInterview(event);">
+          <button type="submit" class="btn btn-primary" id="startBtn" onclick="event.preventDefault(); if(window.enterProctoredFullscreen){ window.enterProctoredFullscreen(); } if(window.handleStartInterview){ window.handleStartInterview(event); } return false;">
             🖥️ Launch Proctored Fullscreen Interview
           </button>
         </form>
@@ -1083,6 +1083,6 @@
     window.closeProfileModal = closeProfileModal;
     window.startInterviewFromModal = startInterviewFromModal;
   </script>
-  <script src="app.js?v=999999_bulletproof"></script>
+  <script src="app.js?v=9999999_ready_state_fix"></script>
 </body>
 </html>

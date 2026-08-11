@@ -299,12 +299,24 @@ async function handleStartInterview(e) {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+function attachStartListeners() {
   const form = document.getElementById('startForm');
   const btn = document.getElementById('startBtn');
   if (form) form.onsubmit = handleStartInterview;
-  if (btn) btn.onclick = handleStartInterview;
-});
+  if (btn) {
+    btn.onclick = function(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      if (window.enterProctoredFullscreen) window.enterProctoredFullscreen();
+      handleStartInterview(e);
+    };
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', attachStartListeners);
+} else {
+  attachStartListeners();
+}
 window.handleStartInterview = handleStartInterview;
 
 // 2. Handle Sending Candidate Message
