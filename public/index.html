@@ -77,7 +77,7 @@
         <h2>Candidate Setup</h2>
         <p class="desc">Enter candidate parameters to ground the FAANG EM & RAG questions.</p>
         
-        <form id="startForm">
+        <form id="startForm" onsubmit="event.preventDefault(); handleStartInterview(event); return false;">
           <div class="form-group">
             <label for="candidateName">Candidate Name</label>
             <input type="text" id="candidateName" value="Aarav Sharma" placeholder="e.g. Aarav Sharma" required />
@@ -109,7 +109,7 @@
             <input type="text" id="githubUsername" value="alex-rivera-dev" />
           </div>
 
-          <button type="button" class="btn btn-primary" id="startBtn" onclick="enterProctoredFullscreen(); handleStartInterview(event)">
+          <button type="submit" class="btn btn-primary" id="startBtn" onclick="event.preventDefault(); enterProctoredFullscreen(); handleStartInterview(event);">
             🖥️ Launch Proctored Fullscreen Interview
           </button>
         </form>
@@ -1083,6 +1083,6 @@
     window.closeProfileModal = closeProfileModal;
     window.startInterviewFromModal = startInterviewFromModal;
   </script>
-  <script src="app.js?v=10000_purge_empty"></script>
+  <script src="app.js?v=10001_form_onsubmit"></script>
 </body>
 </html>
