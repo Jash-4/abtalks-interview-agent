@@ -208,17 +208,25 @@ function toggleProctoredFullscreen() {
 });
 
 // 1. Handle Start Interview
+let isStartingInterview = false;
+
 async function handleStartInterview(e) {
-  if (e) {
+  if (e && e.preventDefault) {
     e.preventDefault();
+  }
+  if (e && e.stopPropagation) {
     e.stopPropagation();
   }
   
   // Synchronous Fullscreen trigger on user gesture
-  enterProctoredFullscreen();
+  if (window.enterProctoredFullscreen) {
+    window.enterProctoredFullscreen();
+  }
+
+  if (isStartingInterview) return;
+  isStartingInterview = true;
 
   const btn = document.getElementById('startBtn');
-  if (btn && btn.disabled) return;
   if (btn) {
     btn.disabled = true;
     btn.innerText = 'Initializing Agent & MCP...';
@@ -253,7 +261,10 @@ async function handleStartInterview(e) {
     activePersona = data.activePersona;
 
     // Update UI
-    if (emptyState) emptyState.style.display = 'none';
+    if (emptyState) {
+      emptyState.classList.add('hidden');
+      emptyState.style.display = 'none';
+    }
     if (inputContainer) inputContainer.classList.remove('hidden');
     
     // Render MCP Data
@@ -274,10 +285,12 @@ async function handleStartInterview(e) {
 
   } catch (err) {
     alert('Error starting interview: ' + err.message);
+  } finally {
+    isStartingInterview = false;
     const btn = document.getElementById('startBtn');
     if (btn) {
       btn.disabled = false;
-      btn.innerText = '🚀 Launch Interview Agent';
+      btn.innerText = '🖥️ Launch Proctored Fullscreen Interview';
     }
   }
 }
