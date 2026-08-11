@@ -7,20 +7,21 @@ let voiceEnabled = false;
 const voiceToggleBtn = document.getElementById('voiceToggleBtn');
 
 function speakText(text) {
-  if (!window.voiceEnabled && !voiceEnabled) return;
-  if (!('speechSynthesis' in window)) return;
-  window.speechSynthesis.cancel();
-  const clean = text.replace(/[*_#`]/g, '');
-  const utterance = new SpeechSynthesisUtterance(clean);
-  utterance.rate = 1.0;
-  utterance.pitch = 1.0;
-  
-  // Try selecting a natural English voice if available
-  const voices = window.speechSynthesis.getVoices();
-  const englishVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Daniel') || v.name.includes('Alex')));
-  if (englishVoice) utterance.voice = englishVoice;
+  try {
+    if (!window.voiceEnabled && !voiceEnabled) return;
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const clean = text.replace(/[*_#`]/g, '');
+    const utterance = new SpeechSynthesisUtterance(clean);
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+    
+    const voices = window.speechSynthesis.getVoices() || [];
+    const englishVoice = voices.find(v => v && v.lang && v.lang.startsWith('en') && (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Samantha') || v.name.includes('Daniel') || v.name.includes('Alex')));
+    if (englishVoice) utterance.voice = englishVoice;
 
-  window.speechSynthesis.speak(utterance);
+    window.speechSynthesis.speak(utterance);
+  } catch (err) {}
 }
 
 // DOM Elements
